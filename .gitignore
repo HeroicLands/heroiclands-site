@@ -1,0 +1,39 @@
+# Hugo build output
+public/
+resources/_gen/
+
+# Exported content (generated from Obsidian vault by export-hugo.ts)
+# Keep the hand-crafted _index.md but ignore generated type subdirectories
+content/worldbuilding/character/
+content/worldbuilding/continent/
+content/worldbuilding/creature/
+content/worldbuilding/faith/
+content/worldbuilding/lore/
+content/worldbuilding/organization/
+content/worldbuilding/page/
+content/worldbuilding/pantheon/
+content/worldbuilding/people/
+content/worldbuilding/polity/
+content/worldbuilding/region/
+content/worldbuilding/religion/
+content/worldbuilding/settlement/
+content/worldbuilding/site/
+content/worldbuilding/world/
+
+# Node
+node_modules/
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Hugo lock
+.hugo_build.lock

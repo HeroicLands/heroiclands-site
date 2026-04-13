@@ -1,0 +1,17 @@
+{
+  "name": "heroiclands-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "export": "npx ts-node scripts/export-hugo.ts",
+    "export:dry": "npx ts-node scripts/export-hugo.ts --dry-run --verbose",
+    "export:verbose": "npx ts-node scripts/export-hugo.ts --verbose"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "js-yaml": "^4.1.0",
+    "@types/js-yaml": "^4.0.9"
+  }
+}

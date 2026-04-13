@@ -1,0 +1,55 @@
+baseURL = "https://heroiclands.org/"
+languageCode = "en-us"
+title = "Heroic Lands"
+
+# We're using layouts directly, no external theme
+
+[params]
+  description = "The Lands of Thalorna — worldbuilding, game systems, and adventure"
+  author = "Tom"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "monokai"
+
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "Worldbuilding"
+    url = "/worldbuilding/"
+    weight = 2
+  [[menu.main]]
+    name = "Blog"
+    url = "/blog/"
+    weight = 3
+  [[menu.main]]
+    name = "Foundry VTT Systems & Modules"
+    url = "/projects/"
+    weight = 4
+    identifier = "fvtt"
+  [[menu.main]]
+    name = "Song of Heroic Lands"
+    url = "/projects/song-of-heroic-lands/"
+    weight = 1
+    parent = "fvtt"
+  [[menu.main]]
+    name = "Foundry VTT Modules"
+    url = "/projects/modules/"
+    weight = 2
+    parent = "fvtt"
+
+[outputs]
+  home = ["HTML"]
+  section = ["HTML"]
+  taxonomy = ["HTML"]
+  term = ["HTML"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
