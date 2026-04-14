@@ -21,8 +21,8 @@ title = "Heroic Lands"
     url = "/"
     weight = 1
   [[menu.main]]
-    name = "Worldbuilding"
-    url = "/worldbuilding/"
+    name = "Thalorna"
+    url = "/world/thalorna/"
     weight = 2
   [[menu.main]]
     name = "Blog"
@@ -33,23 +33,16 @@ title = "Heroic Lands"
     url = "/projects/"
     weight = 4
     identifier = "fvtt"
-  [[menu.main]]
-    name = "Song of Heroic Lands"
-    url = "/projects/song-of-heroic-lands/"
-    weight = 1
-    parent = "fvtt"
-  [[menu.main]]
-    name = "Foundry VTT Modules"
-    url = "/projects/modules/"
-    weight = 2
-    parent = "fvtt"
 
+# Section pages (_index.md) render to HTML so hand-crafted landing pages
+# like /projects/_index.md work. To prevent auto-generated directory
+# listings for sections without a hand-crafted _index.md, set
+# `_build.render = "never"` in the section's front matter, or simply
+# leave the section without any _index.md and Hugo will 404 it.
 [outputs]
   home = ["HTML"]
   section = ["HTML"]
-  taxonomy = ["HTML"]
-  term = ["HTML"]
+  taxonomy = []
+  term = []
 
 [taxonomies]
-  tag = "tags"
-  category = "categories"

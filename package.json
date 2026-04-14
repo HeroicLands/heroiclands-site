@@ -5,7 +5,14 @@
   "scripts": {
     "export": "npx ts-node scripts/export-hugo.ts",
     "export:dry": "npx ts-node scripts/export-hugo.ts --dry-run --verbose",
-    "export:verbose": "npx ts-node scripts/export-hugo.ts --verbose"
+    "export:verbose": "npx ts-node scripts/export-hugo.ts --verbose",
+    "clean": "npx ts-node scripts/clean.ts",
+    "clean:dry": "npx ts-node scripts/clean.ts --dry-run --verbose",
+    "clean:verbose": "npx ts-node scripts/clean.ts --verbose",
+    "build": "npm run clean && npm run export && hugo",
+    "build:verbose": "npm run clean:verbose && npm run export:verbose && hugo --verbose",
+    "serve": "hugo server",
+    "dev": "npm run export && hugo server"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",

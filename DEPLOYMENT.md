@@ -6,7 +6,7 @@ through Cloudflare as www.heroiclands.org.
 ## Architecture
 
 ```
-thalorna (Obsidian vault)
+HeroicLands (Obsidian vault)
     │
     │  export-hugo.ts
     ▼
@@ -23,7 +23,7 @@ Cloudflare → www.heroiclands.org
 
 ## How it works
 
-1. The **thalorna** repo is an Obsidian vault containing all worldbuilding
+1. The **HeroicLands** repo is an Obsidian vault containing all worldbuilding
    content. Files with `publish.website: true` in their front matter are
    eligible for the public site.
 
@@ -46,7 +46,7 @@ Cloudflare → www.heroiclands.org
 
 1. Create the `heroiclands-site` repo on GitHub (public or private).
 2. Create a **Personal Access Token** (classic, with `repo` scope) that
-   can read the `thalorna` repo.
+   can read the `HeroicLands` repo.
 3. Add it as a repository secret named `VAULT_TOKEN` in the
    `heroiclands-site` repo settings (Settings → Secrets → Actions).
 4. Enable GitHub Pages: Settings → Pages → Source: **GitHub Actions**.
@@ -68,11 +68,11 @@ Cloudflare → www.heroiclands.org
 
 ### Triggering a rebuild from vault changes
 
-Option A: Add a webhook or GitHub Action in the `thalorna` repo that sends
+Option A: Add a webhook or GitHub Action in the `HeroicLands` repo that sends
 a `repository_dispatch` event to `heroiclands-site`:
 
 ```yaml
-# In thalorna/.github/workflows/notify-site.yml
+# In HeroicLands/.github/workflows/notify-site.yml
 name: Notify site of vault update
 on:
   push:
@@ -107,6 +107,6 @@ npm run export:dry
 ## Environment variables
 
 | Variable     | Default                          | Description              |
-|-------------|----------------------------------|--------------------------|
-| `VAULT_ROOT` | `~/dev/github/thalorna`          | Path to Obsidian vault   |
+|--------------|----------------------------------|--------------------------|
+| `VAULT_ROOT` | `~/dev/github/HeroicLands`       | Path to Obsidian vault   |
 | `HUGO_ROOT`  | Parent of `scripts/` directory   | Path to Hugo project     |

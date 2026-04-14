@@ -14,7 +14,9 @@
  *   2. Builds a lookup map of all publishable files (filename → type, title, slug)
  *   3. Transforms front matter (strips game-mechanical fields, maps to Hugo fields)
  *   4. Rewrites Obsidian wikilinks and image embeds to Hugo-compatible Markdown
- *   5. Writes transformed files to content/worldbuilding/{type}/{slug}.md
+ *   5. Writes transformed files to bucket-specific output paths
+ *      (e.g. content/world/thalorna/{type}/{slug}.md,
+ *      content/project/{bucket}/{slug}.md, content/blog/YYYY/MM/{slug}.md)
  *   6. Copies referenced images to static/images/
  */
 
@@ -24,24 +26,27 @@ import * as path from "path";
 // ── Configuration ──────────────────────────────────────────────────
 
 const VAULT_ROOT = process.env.VAULT_ROOT
-    || path.join(process.env.HOME || "/Users/tomr", "dev/github/thalorna");
+    || path.join(process.env.HOME || "/Users/tomr", "dev/github/HeroicLands");
 const HUGO_ROOT = process.env.HUGO_ROOT
     || path.resolve(__dirname, "..");
-const HUGO_CONTENT = path.join(HUGO_ROOT, "content/worldbuilding");
+const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const HUGO_IMAGES = path.join(HUGO_ROOT, "static/images");
 
 const VALID_TYPES = [
+    "blog-post",
     "character",
     "continent",
     "creature",
     "faith",
     "religion",
+    "language",
     "lore",
     "organization",
     "page",
     "pantheon",
     "people",
     "polity",
+    "project-page",
     "region",
     "settlement",
     "site",
@@ -49,6 +54,50 @@ const VALID_TYPES = [
 ] as const;
 
 type ContentType = (typeof VALID_TYPES)[number];
+
+// ── Bucket configuration ───────────────────────────────────────────
+
+/**
+ * A bucket maps a vault-path prefix to a Hugo content path with a
+ * specific routing strategy for the files within it.
+ *
+ *   vaultPrefix: path under VAULT_ROOT that identifies this bucket
+ *     (must end with "/")
+ *   hugoPath:    destination path under HUGO_CONTENT (no leading slash)
+ *   routing:
+ *     "by-type"  - per-type subdir, e.g. content/world/thalorna/character/{slug}.md
+ *     "flat"     - all entries at bucket root, e.g. content/project/sohl/{slug}.md
+ *     "by-date"  - date-prefixed from frontmatter.date (YYYY-MM-DD),
+ *                  e.g. content/blog/YYYY/MM/{slug}.md
+ *
+ * Order matters: buckets are matched longest-prefix-first, so more
+ * specific paths (e.g. "Projects/Song_of_Heroic_Lands/") must come
+ * before less specific ones (e.g. "Projects/").
+ */
+interface BucketConfig {
+    vaultPrefix: string;
+    hugoPath: string;
+    routing: "by-type" | "flat" | "by-date";
+}
+
+const BUCKETS: BucketConfig[] = [
+    { vaultPrefix: "Projects/Song_of_Heroic_Lands/", hugoPath: "project/sohl",    routing: "flat"    },
+    { vaultPrefix: "Projects/HM3/",                  hugoPath: "project/hm3",     routing: "flat"    },
+    { vaultPrefix: "Projects/Modules/",              hugoPath: "project/modules", routing: "flat"    },
+    { vaultPrefix: "Projects/",                      hugoPath: "project",         routing: "flat"    },
+    { vaultPrefix: "Worlds/Thalorna/",               hugoPath: "world/thalorna",  routing: "by-type" },
+    { vaultPrefix: "Blog/",                          hugoPath: "blog",            routing: "by-date" },
+];
+
+function resolveBucket(filepath: string): BucketConfig | null {
+    const rel = path.relative(VAULT_ROOT, filepath);
+    for (const bucket of BUCKETS) {
+        if (rel.startsWith(bucket.vaultPrefix)) {
+            return bucket;
+        }
+    }
+    return null;
+}
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -61,18 +110,26 @@ interface VaultEntry {
     frontmatter: Record<string, any>;
     /** Markdown body (everything after front matter) */
     body: string;
-    /** Content type from front matter */
+    /** Content type from front matter (or "page" for _index.md section indexes) */
     type: ContentType;
     /** Display title from name.full or title or stem */
     title: string;
     /** Lowercase slug for Hugo path */
     slug: string;
+    /** Which bucket this entry belongs to, based on its vault path */
+    bucket: BucketConfig;
+    /** Whether this entry is a section index (_index.md) */
+    isIndex: boolean;
+    /** Absolute output path in the Hugo content tree */
+    outputPath: string;
+    /** Public URL path for wikilink resolution (leading slash, trailing slash) */
+    url: string;
 }
 
 interface LookupEntry {
-    type: ContentType;
     title: string;
-    slug: string;
+    /** Public URL path, e.g. "/world/thalorna/character/some-person/" */
+    url: string;
 }
 
 // ── Front matter parsing ───────────────────────────────────────────
@@ -225,18 +282,14 @@ function parseFrontMatter(
 }
 
 /**
- * Check if publish.website is true.
+ * Check if an entry is publishable.
+ *
+ * An entry is publishable unless it is explicitly marked as a draft.
+ * This matches the universal vault schema: `draft` defaults to false,
+ * so any file without an explicit `draft: true` is treated as ready.
  */
 function isPublishable(fm: Record<string, any>): boolean {
-    if (
-        fm.publish &&
-        typeof fm.publish === "object" &&
-        !Array.isArray(fm.publish) &&
-        fm.publish.website === true
-    ) {
-        return true;
-    }
-    return false;
+    return fm.draft !== true;
 }
 
 // ── Scanning ───────────────────────────────────────────────────────
@@ -269,6 +322,83 @@ function findMarkdownFiles(dir: string): string[] {
 /**
  * Scan the vault and build a list of publishable entries.
  */
+/**
+ * Given a bucket and source filepath, compute where the file should
+ * be written in the Hugo content tree and what its public URL will be.
+ *
+ * For `_index.md` files, the output is the section-index of the
+ * appropriate bucket-subpath (preserving the vault's directory nesting).
+ * For regular files, the bucket's routing strategy determines the
+ * output path shape.
+ *
+ * Returns null if the entry cannot be routed (e.g. by-date bucket
+ * but no valid date in frontmatter).
+ */
+function resolveOutputPath(
+    entry: Omit<VaultEntry, "outputPath" | "url" | "bucket" | "isIndex"> & {
+        bucket: BucketConfig;
+        isIndex: boolean;
+    },
+): { outputPath: string; url: string } | null {
+    const hugoBase = path.join(HUGO_CONTENT, entry.bucket.hugoPath);
+    const urlBase = `/${entry.bucket.hugoPath}`;
+
+    if (entry.isIndex) {
+        // Preserve vault subpath structure within the bucket.
+        const rel = path.relative(VAULT_ROOT, entry.filepath);
+        const vaultSubpath = path.dirname(
+            rel.substring(entry.bucket.vaultPrefix.length),
+        );
+        const subSegments =
+            vaultSubpath === "." || vaultSubpath === ""
+                ? []
+                : vaultSubpath.split(path.sep).map((s) => s.toLowerCase());
+        const outputPath = path.join(
+            hugoBase,
+            ...subSegments,
+            "_index.md",
+        );
+        const url = subSegments.length === 0
+            ? `${urlBase}/`
+            : `${urlBase}/${subSegments.join("/")}/`;
+        return { outputPath, url };
+    }
+
+    switch (entry.bucket.routing) {
+        case "by-type": {
+            const outputPath = path.join(
+                hugoBase,
+                entry.type,
+                `${entry.slug}.md`,
+            );
+            const url = `${urlBase}/${entry.type}/${entry.slug}/`;
+            return { outputPath, url };
+        }
+        case "flat": {
+            const outputPath = path.join(hugoBase, `${entry.slug}.md`);
+            const url = `${urlBase}/${entry.slug}/`;
+            return { outputPath, url };
+        }
+        case "by-date": {
+            const date = entry.frontmatter.date;
+            const match = typeof date === "string"
+                ? date.match(/^(\d{4})-(\d{2})-\d{2}/)
+                : null;
+            if (!match) return null;
+            const [, year, month] = match;
+            const outputPath = path.join(
+                hugoBase,
+                year,
+                month,
+                `${entry.slug}.md`,
+            );
+            const url = `${urlBase}/${year}/${month}/${entry.slug}/`;
+            return { outputPath, url };
+        }
+    }
+    return null;
+}
+
 function scanVault(verbose: boolean): VaultEntry[] {
     const files = findMarkdownFiles(VAULT_ROOT);
     const entries: VaultEntry[] = [];
@@ -286,29 +416,71 @@ function scanVault(verbose: boolean): VaultEntry[] {
 
         if (!isPublishable(fm)) continue;
 
-        const rawType = (fm.type || "").toString().toLowerCase();
-        if (!VALID_TYPES.includes(rawType as ContentType)) {
-            if (verbose) {
-                console.warn(
-                    `  Skipping ${filepath}: unknown type "${fm.type}"`,
-                );
-            }
+        const bucket = resolveBucket(filepath);
+        if (!bucket) {
+            // File sits outside any configured bucket (e.g. at vault root).
+            // These are meta files (CLAUDE.md, TASKS.md) — silently skip.
             continue;
         }
 
         const stem = path.basename(filepath, ".md");
+        const isIndex = stem === "_index";
+
+        // Section indexes don't require a type; they are handled specially.
+        // Regular entries must declare a type from VALID_TYPES.
+        let rawType: ContentType;
+        if (isIndex) {
+            rawType = "page";
+        } else {
+            const declaredType = (fm.type || "").toString().toLowerCase();
+            if (!VALID_TYPES.includes(declaredType as ContentType)) {
+                if (verbose) {
+                    console.warn(
+                        `  Skipping ${filepath}: unknown type "${fm.type}"`,
+                    );
+                }
+                continue;
+            }
+            rawType = declaredType as ContentType;
+        }
+
         const title =
             fm.name?.full || fm.title || stem.replace(/_/g, " ");
-        const slug = fm.slug || stem.toLowerCase();
+        const slug = fm.slug || stem.toLowerCase().replace(/_/g, "-");
+
+        const resolved = resolveOutputPath({
+            filepath,
+            stem,
+            frontmatter: fm,
+            body,
+            type: rawType,
+            title,
+            slug,
+            bucket,
+            isIndex,
+        });
+
+        if (!resolved) {
+            if (verbose) {
+                console.warn(
+                    `  Skipping ${filepath}: could not resolve output path (bucket "${bucket.hugoPath}", routing "${bucket.routing}" — check frontmatter)`,
+                );
+            }
+            continue;
+        }
 
         entries.push({
             filepath,
             stem,
             frontmatter: fm,
             body,
-            type: rawType as ContentType,
+            type: rawType,
             title,
             slug,
+            bucket,
+            isIndex,
+            outputPath: resolved.outputPath,
+            url: resolved.url,
         });
     }
 
@@ -325,13 +497,23 @@ function buildLookupMap(entries: VaultEntry[]): Map<string, LookupEntry> {
     const map = new Map<string, LookupEntry>();
     for (const entry of entries) {
         const lookupEntry: LookupEntry = {
-            type: entry.type,
             title: entry.title,
-            slug: entry.slug,
+            url: entry.url,
         };
 
-        // Index by filename stem (primary key)
-        map.set(entry.stem, lookupEntry);
+        if (entry.isIndex) {
+            // _index.md files all share the stem "_index", so indexing by
+            // stem would cause every index file to collide. Instead, index
+            // them by the name of their parent directory (which is what
+            // authors naturally wikilink to, e.g. [[Song_of_Heroic_Lands]]).
+            const parentDirName = path.basename(path.dirname(entry.filepath));
+            if (parentDirName && !map.has(parentDirName)) {
+                map.set(parentDirName, lookupEntry);
+            }
+        } else {
+            // Index by filename stem (primary key)
+            map.set(entry.stem, lookupEntry);
+        }
 
         // Index by aliases from front matter
         const aliases = entry.frontmatter.aliases;
@@ -500,26 +682,50 @@ function resolveDataviewQueries(
             const normalized = query.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
 
             const listMatch = normalized.match(/^LIST\s+(.*?)(?=\s+(?:FROM|WHERE|SORT)\s|$)/i);
-            if (!listMatch) {
+            const tableMatch = normalized.match(/^TABLE(\s+WITHOUT\s+ID)?\s+(.*?)(?=\s+(?:FROM|WHERE|SORT)\s|$)/i);
+
+            if (!listMatch && !tableMatch) {
                 if (verbose) console.warn(`    Unsupported dataview query type: ${normalized.substring(0, 40)}`);
                 return _match;
             }
 
-            let displayField = listMatch[1]?.trim() || "";
+            const isTable = !!tableMatch;
+            const tableWithoutId = !!(tableMatch && tableMatch[1]);
+            let displayField = listMatch ? listMatch[1]?.trim() || "" : "";
+            let tableColumnsRaw = tableMatch ? tableMatch[2]?.trim() || "" : "";
             let fromClause = "";
             let whereClause = "";
-            let sortField = "file.name";
-            let sortDir: "ASC" | "DESC" = "ASC";
+            let sortFields: Array<{ field: string; dir: "ASC" | "DESC" }> = [
+                { field: "file.name", dir: "ASC" },
+            ];
 
             const fromMatch = normalized.match(/\bFROM\s+(.*?)(?=\s+(?:WHERE|SORT)\s|$)/i);
             const whereMatch = normalized.match(/\bWHERE\s+(.*?)(?=\s+(?:SORT)\s|$)/i);
-            const sortMatch = normalized.match(/\bSORT\s+(\S+)\s*(ASC|DESC)?(?:\s|$)/i);
+            const sortMatch = normalized.match(/\bSORT\s+(.+?)$/i);
 
             if (fromMatch) fromClause = fromMatch[1].trim();
             if (whereMatch) whereClause = whereMatch[1].trim();
             if (sortMatch) {
-                sortField = sortMatch[1];
-                sortDir = (sortMatch[2]?.toUpperCase() as "ASC" | "DESC") || "ASC";
+                // Parse multi-field sort: "thalorna.realm, file.name ASC"
+                const sortExpr = sortMatch[1].trim();
+                const trailingDirMatch = sortExpr.match(/^(.*?)\s+(ASC|DESC)\s*$/i);
+                let sortBody = sortExpr;
+                let defaultDir: "ASC" | "DESC" = "ASC";
+                if (trailingDirMatch) {
+                    sortBody = trailingDirMatch[1].trim();
+                    defaultDir = trailingDirMatch[2].toUpperCase() as "ASC" | "DESC";
+                }
+                sortFields = sortBody.split(",").map((piece) => {
+                    const p = piece.trim();
+                    const withDir = p.match(/^(.+?)\s+(ASC|DESC)$/i);
+                    if (withDir) {
+                        return {
+                            field: withDir[1].trim(),
+                            dir: withDir[2].toUpperCase() as "ASC" | "DESC",
+                        };
+                    }
+                    return { field: p, dir: defaultDir };
+                });
             }
 
             // Filter entries
@@ -582,22 +788,21 @@ function resolveDataviewQueries(
                 }
             }
 
-            // Sort
+            // Multi-field sort
+            const fieldValueForSort = (e: VaultEntry, field: string): string => {
+                if (field === "file.name") return e.stem.toLowerCase();
+                if (field === "file.link") return e.stem.toLowerCase();
+                const v = getNestedValue(e.frontmatter, field);
+                return String(v ?? "").toLowerCase();
+            };
             filtered.sort((a, b) => {
-                let aVal: string, bVal: string;
-                if (sortField === "file.name") {
-                    aVal = a.stem.toLowerCase();
-                    bVal = b.stem.toLowerCase();
-                } else {
-                    aVal = String(
-                        getNestedValue(a.frontmatter, sortField) ?? a.title,
-                    ).toLowerCase();
-                    bVal = String(
-                        getNestedValue(b.frontmatter, sortField) ?? b.title,
-                    ).toLowerCase();
+                for (const { field, dir } of sortFields) {
+                    const aVal = fieldValueForSort(a, field);
+                    const bVal = fieldValueForSort(b, field);
+                    const cmp = aVal.localeCompare(bVal);
+                    if (cmp !== 0) return dir === "DESC" ? -cmp : cmp;
                 }
-                const cmp = aVal.localeCompare(bVal);
-                return sortDir === "DESC" ? -cmp : cmp;
+                return 0;
             });
 
             if (verbose) {
@@ -608,6 +813,84 @@ function resolveDataviewQueries(
                 return "*No matching entries.*\n";
             }
 
+            // ── TABLE output ────────────────────────────────────────
+            if (isTable) {
+                // Parse columns from tableColumnsRaw.
+                // Handles commas inside parens by tracking depth.
+                const splitColumns = (raw: string): string[] => {
+                    const parts: string[] = [];
+                    let depth = 0;
+                    let cur = "";
+                    for (const ch of raw) {
+                        if (ch === "(") depth++;
+                        else if (ch === ")") depth--;
+                        if (ch === "," && depth === 0) {
+                            parts.push(cur.trim());
+                            cur = "";
+                        } else {
+                            cur += ch;
+                        }
+                    }
+                    if (cur.trim()) parts.push(cur.trim());
+                    return parts;
+                };
+
+                type Col = { expr: string; header: string };
+                const columns: Col[] = splitColumns(tableColumnsRaw).map((piece) => {
+                    const asMatch = piece.match(/^(.+?)\s+AS\s+"([^"]+)"\s*$/i);
+                    if (asMatch) {
+                        return { expr: asMatch[1].trim(), header: asMatch[2] };
+                    }
+                    return { expr: piece.trim(), header: piece.trim() };
+                });
+
+                const resolveCell = (e: VaultEntry, expr: string): string => {
+                    // link(file.link, display_field) — render as markdown link
+                    const linkMatch = expr.match(/^link\(\s*([^,]+?)\s*,\s*(.+?)\s*\)$/i);
+                    if (linkMatch) {
+                        const displayExpr = linkMatch[2].trim();
+                        const displayVal = resolveCell(e, displayExpr) || e.title;
+                        const lookupEntry = lookup.get(e.stem);
+                        if (lookupEntry) {
+                            return `[${displayVal}](${lookupEntry.url})`;
+                        }
+                        return displayVal;
+                    }
+                    // file.link → same as bare link
+                    if (expr === "file.link") {
+                        const lookupEntry = lookup.get(e.stem);
+                        if (lookupEntry) {
+                            return `[${e.title}](${lookupEntry.url})`;
+                        }
+                        return e.title;
+                    }
+                    if (expr === "file.name") return e.stem;
+                    // Bracket notation this["foo.bar"]
+                    const bracket = expr.match(/^this\["([^"]+)"\]$/);
+                    const field = bracket ? bracket[1] : expr;
+                    const v = getNestedValue(e.frontmatter, field);
+                    if (v == null) return "";
+                    if (Array.isArray(v)) return v.join(", ");
+                    return String(v);
+                };
+
+                // Build markdown table
+                const headers = columns.map((c) => c.header);
+                const headerRow = `| ${headers.join(" | ")} |`;
+                const separator = `| ${headers.map(() => "---").join(" | ")} |`;
+                const dataRows = filtered.map((e) => {
+                    const cells = columns.map((c) =>
+                        resolveCell(e, c.expr).replace(/\|/g, "\\|"),
+                    );
+                    return `| ${cells.join(" | ")} |`;
+                });
+                // tableWithoutId suppresses the "File" column that dataview normally adds;
+                // since we only render declared columns, the flag is effectively honored already.
+                void tableWithoutId;
+                return [headerRow, separator, ...dataRows].join("\n") + "\n";
+            }
+
+            // ── LIST output ─────────────────────────────────────────
             // Clean up display field — handle this["name.full"] → name.full
             const bracketFieldMatch = displayField.match(
                 /^this\["([^"]+)"\]$/,
@@ -626,7 +909,7 @@ function resolveDataviewQueries(
 
                 const lookupEntry = lookup.get(e.stem);
                 if (lookupEntry) {
-                    return `- [${display}](/worldbuilding/${lookupEntry.type}/${lookupEntry.slug}/)`;
+                    return `- [${display}](${lookupEntry.url})`;
                 }
                 return `- ${display}`;
             });
@@ -657,13 +940,13 @@ function transformBody(
         return `![${basename}](/images/${filename})`;
     });
 
-    // Rewrite wikilinks with display text: [[Target|Display]] → [Display](/worldbuilding/type/slug/)
+    // Rewrite wikilinks with display text: [[Target|Display]] → [Display](/url/)
     result = result.replace(
         /\[\[([^\]|]+)\|([^\]]+)\]\]/g,
         (_match, target: string, display: string) => {
             const entry = lookup.get(target.trim());
             if (entry) {
-                return `[${display.trim()}](/worldbuilding/${entry.type}/${entry.slug}/)`;
+                return `[${display.trim()}](${entry.url})`;
             }
             if (verbose) {
                 console.warn(`  Unresolved wikilink: [[${target}|${display}]]`);
@@ -673,13 +956,13 @@ function transformBody(
         },
     );
 
-    // Rewrite plain wikilinks: [[Target]] → [Title](/worldbuilding/type/slug/)
+    // Rewrite plain wikilinks: [[Target]] → [Title](/url/)
     result = result.replace(
         /\[\[([^\]|]+)\]\]/g,
         (_match, target: string) => {
             const entry = lookup.get(target.trim());
             if (entry) {
-                return `[${entry.title}](/worldbuilding/${entry.type}/${entry.slug}/)`;
+                return `[${entry.title}](${entry.url})`;
             }
             if (verbose) {
                 console.warn(`  Unresolved wikilink: [[${target}]]`);
@@ -706,15 +989,14 @@ function writeHugoFile(
     transformedBody: string,
     dryRun: boolean,
 ): string {
-    const outDir = path.join(HUGO_CONTENT, entry.type);
-    const outPath = path.join(outDir, `${entry.slug}.md`);
+    const outPath = entry.outputPath;
 
     if (dryRun) {
         console.log(`  Would write: ${outPath}`);
         return outPath;
     }
 
-    ensureDir(outDir);
+    ensureDir(path.dirname(outPath));
     const content = serializeFrontMatter(hugoFm) + "\n" + transformedBody;
     fs.writeFileSync(outPath, content, "utf-8");
     return outPath;
@@ -792,24 +1074,32 @@ function cleanStaleFiles(
     dryRun: boolean,
     verbose: boolean,
 ): void {
-    // Build set of expected output paths
+    // Build set of expected output paths (both regular entries and _index files).
     const expectedFiles = new Set<string>();
     for (const entry of entries) {
-        expectedFiles.add(
-            path.join(HUGO_CONTENT, entry.type, `${entry.slug}.md`),
-        );
+        expectedFiles.add(entry.outputPath);
     }
 
-    // Walk the Hugo content/worldbuilding directory
-    if (!fs.existsSync(HUGO_CONTENT)) return;
+    // Walk each bucket's Hugo output tree and remove any .md files
+    // that aren't in the expected set. This catches files from deleted
+    // vault entries, renamed slugs, etc.
+    const bucketRoots = new Set<string>();
+    for (const bucket of BUCKETS) {
+        // Use only the top-level segment of hugoPath as the clean root,
+        // so buckets like "project/sohl" don't cause us to walk the
+        // "project/" tree once per sub-bucket.
+        const topSegment = bucket.hugoPath.split("/")[0];
+        bucketRoots.add(path.join(HUGO_CONTENT, topSegment));
+    }
 
     function walkClean(dir: string) {
+        if (!fs.existsSync(dir)) return;
         const dirEntries = fs.readdirSync(dir, { withFileTypes: true });
         for (const de of dirEntries) {
             const fullPath = path.join(dir, de.name);
             if (de.isDirectory()) {
                 walkClean(fullPath);
-            } else if (de.name.endsWith(".md") && de.name !== "_index.md") {
+            } else if (de.name.endsWith(".md")) {
                 if (!expectedFiles.has(fullPath)) {
                     if (dryRun) {
                         console.log(`  Would remove stale: ${fullPath}`);
@@ -824,26 +1114,8 @@ function cleanStaleFiles(
         }
     }
 
-    walkClean(HUGO_CONTENT);
-}
-
-// ── Section index files ────────────────────────────────────────────
-
-function ensureSectionIndexes(types: Set<ContentType>, dryRun: boolean): void {
-    for (const type of types) {
-        const indexPath = path.join(HUGO_CONTENT, type, "_index.md");
-        if (!fs.existsSync(indexPath) || dryRun) {
-            const displayName = type.charAt(0).toUpperCase() + type.slice(1);
-            const content = `---\ntitle: ${displayName}\n---\n`;
-            if (dryRun) {
-                console.log(`  Would create section index: ${indexPath}`);
-            } else {
-                ensureDir(path.join(HUGO_CONTENT, type));
-                if (!fs.existsSync(indexPath)) {
-                    fs.writeFileSync(indexPath, content, "utf-8");
-                }
-            }
-        }
+    for (const root of bucketRoots) {
+        walkClean(root);
     }
 }
 
@@ -869,8 +1141,6 @@ function main(): void {
     console.log(`\nBuilding lookup map (${entries.length} entries)...`);
     const lookup = buildLookupMap(entries);
 
-    // Track which types are used for section indexes
-    const usedTypes = new Set<ContentType>();
     const allImages: string[] = [];
     let filesWritten = 0;
 
@@ -879,8 +1149,6 @@ function main(): void {
         if (verbose) {
             console.log(`\n  Processing: ${entry.stem}`);
         }
-
-        usedTypes.add(entry.type);
 
         // Transform front matter
         const hugoFm = transformFrontMatter(entry.frontmatter);
@@ -899,10 +1167,6 @@ function main(): void {
         writeHugoFile(entry, hugoFm, transformedBody, dryRun);
         filesWritten++;
     }
-
-    // Ensure section _index.md files exist
-    console.log("\nEnsuring section indexes...");
-    ensureSectionIndexes(usedTypes, dryRun);
 
     // Copy referenced images
     const uniqueImages = [...new Set(allImages)];

@@ -1,20 +1,6 @@
 {{ define "main" }}
 <section class="section-header">
-  <h1>{{ .Title }}</h1>
-  {{ with .Content }}<div class="section-description">{{ . }}</div>{{ end }}
-</section>
-
-<section class="content-list">
-  {{ range .Pages.ByTitle }}
-  <article class="list-item">
-    <h2><a href="{{ .Permalink }}">{{ .Title }}</a></h2>
-    {{ with .Params.description }}<p class="item-description">{{ . }}</p>{{ end }}
-    {{ with .Params.tags }}
-    <div class="item-tags">
-      {{ range . }}<span class="tag">{{ . }}</span>{{ end }}
-    </div>
-    {{ end }}
-  </article>
-  {{ end }}
+  <h1>Page Not Found</h1>
+  <p>The page you're looking for doesn't exist. Try browsing from the <a href="/">home page</a>.</p>
 </section>
 {{ end }}
