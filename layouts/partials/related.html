@@ -1,0 +1,130 @@
+{{- /*
+  Related partial.
+
+  Renders a "Related" block at the bottom of a single page using the
+  backlinks and mentions lists injected into frontmatter by the Hugo
+  exporter (scripts/export-hugo.ts).
+
+  Structure in frontmatter:
+    related:
+      backlinks: [{ title, url, type }, ...]   # pages that link here
+      mentions:  [{ title, url, type }, ...]   # pages this page links to
+
+  Rendering strategy:
+    - Each direction is grouped by the linked page's `type`, then
+      rendered with a type-specific, direction-aware section label
+      (e.g. "People in this region" on a region page, "Places
+      mentioned" in a character's biography).
+    - If both directions reference the same page, it only appears
+      under "Mentions" (explicit link wins over inferred backlink).
+    - Emits nothing if there's no data in either direction.
+*/ -}}
+
+{{- $rel := .Params.related -}}
+{{- if not $rel -}}{{- return -}}{{- end -}}
+
+{{- $backlinks := or $rel.backlinks slice -}}
+{{- $mentions  := or $rel.mentions  slice -}}
+
+{{- if and (eq (len $backlinks) 0) (eq (len $mentions) 0) -}}
+  {{- return -}}
+{{- end -}}
+
+{{- /* Dedupe: if a page appears in both directions, keep it in mentions. */ -}}
+{{- $mentionUrls := slice -}}
+{{- range $mentions -}}
+  {{- $mentionUrls = $mentionUrls | append .url -}}
+{{- end -}}
+{{- $filteredBacklinks := slice -}}
+{{- range $backlinks -}}
+  {{- if not (in $mentionUrls .url) -}}
+    {{- $filteredBacklinks = $filteredBacklinks | append . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Mentions labels: the current page links OUT to something of this type. */ -}}
+{{- $mentionLabels := dict
+  "region"       "Places mentioned"
+  "polity"       "Polities mentioned"
+  "settlement"   "Settlements mentioned"
+  "site"         "Sites mentioned"
+  "continent"    "Continents mentioned"
+  "character"    "People mentioned"
+  "people"       "Peoples mentioned"
+  "creature"     "Creatures mentioned"
+  "organization" "Organizations mentioned"
+  "pantheon"     "Pantheons mentioned"
+  "faith"        "Faiths mentioned"
+  "religion"     "Religions mentioned"
+  "language"     "Languages mentioned"
+  "lore"         "Lore referenced"
+  "blog-post"    "Posts referenced"
+  "project-page" "Projects referenced"
+  "page"         "Pages referenced"
+-}}
+
+{{- /* Generic backlinks labels: something of this type links IN. */ -}}
+{{- $backlinkLabels := dict
+  "character"    "People connected here"
+  "creature"     "Creatures connected here"
+  "region"       "Regions that reference this"
+  "polity"       "Polities that reference this"
+  "settlement"   "Settlements that reference this"
+  "site"         "Sites that reference this"
+  "continent"    "Continents that reference this"
+  "organization" "Organizations that reference this"
+  "people"       "Peoples that reference this"
+  "pantheon"     "Pantheons that reference this"
+  "faith"        "Faiths that reference this"
+  "religion"     "Religions that reference this"
+  "language"     "Languages that reference this"
+  "lore"         "Lore that references this"
+  "blog-post"    "Posts that reference this"
+  "project-page" "Projects that reference this"
+  "page"         "Pages that reference this"
+-}}
+
+{{- /* Group refs by type, preserving alphabetical order within a group
+       (input is already sorted by the exporter). */ -}}
+{{- $groupMentions := dict -}}
+{{- range $mentions -}}
+  {{- $t := .type | default "page" -}}
+  {{- $existing := index $groupMentions $t | default slice -}}
+  {{- $groupMentions = merge $groupMentions (dict $t ($existing | append .)) -}}
+{{- end -}}
+
+{{- $groupBacklinks := dict -}}
+{{- range $filteredBacklinks -}}
+  {{- $t := .type | default "page" -}}
+  {{- $existing := index $groupBacklinks $t | default slice -}}
+  {{- $groupBacklinks = merge $groupBacklinks (dict $t ($existing | append .)) -}}
+{{- end -}}
+
+{{- /* On a place page, character backlinks read better as
+       "People in this region" etc. */ -}}
+{{- $pageType := .Params.type | default "" -}}
+
+<section class="related" aria-labelledby="related-heading">
+  <h2 id="related-heading" class="related-heading">Related</h2>
+
+  {{- /* Mentions first — explicit author choices. */ -}}
+  {{- range $type, $refs := $groupMentions -}}
+    {{- $label := index $mentionLabels $type | default (printf "%s mentioned" (humanize $type)) -}}
+    {{- partial "related-group.html" (dict "refs" $refs "label" $label) -}}
+  {{- end }}
+
+  {{- /* Then backlinks — pages that link here. */ -}}
+  {{- range $type, $refs := $groupBacklinks -}}
+    {{- $label := index $backlinkLabels $type | default (printf "%s that reference this" (humanize $type)) -}}
+    {{- if eq $type "character" -}}
+      {{- if eq $pageType "region"     -}}{{- $label = "People in this region" -}}{{- end -}}
+      {{- if eq $pageType "polity"     -}}{{- $label = "People in this polity" -}}{{- end -}}
+      {{- if eq $pageType "settlement" -}}{{- $label = "People in this settlement" -}}{{- end -}}
+      {{- if eq $pageType "site"       -}}{{- $label = "People connected to this site" -}}{{- end -}}
+      {{- if eq $pageType "continent"  -}}{{- $label = "People in this land" -}}{{- end -}}
+      {{- if eq $pageType "organization" -}}{{- $label = "Members and associates" -}}{{- end -}}
+      {{- if eq $pageType "people"     -}}{{- $label = "Notable members" -}}{{- end -}}
+    {{- end -}}
+    {{- partial "related-group.html" (dict "refs" $refs "label" $label) -}}
+  {{- end }}
+</section>

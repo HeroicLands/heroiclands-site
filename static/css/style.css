@@ -58,11 +58,23 @@ body {
 a {
   color: var(--accent);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 a:hover {
   color: var(--accent-hover);
+}
+
+/* Inline body links get a subtle underline on hover so they feel
+   tactile without competing with headings or navigation. Links
+   inside utility contexts (cards, nav, TOC) opt out via more
+   specific rules elsewhere. */
+.single-body a {
+  border-bottom: 1px solid transparent;
+}
+
+.single-body a:hover {
+  border-bottom-color: var(--accent-dim);
 }
 
 img {
@@ -597,10 +609,54 @@ a.tag:hover {
   margin: 1.5rem 0;
 }
 
-.single-content hr {
+/* Ornamental horizontal rule: thin line flanking a centered gold
+   diamond. Uses gradients on ::before/::after to keep the markup
+   clean (authors just write `---` in markdown). */
+.single-content hr,
+.single-body hr {
+  position: relative;
   border: none;
-  border-top: 1px solid var(--border);
-  margin: 2.5rem 0;
+  height: 1px;
+  margin: 3rem 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--border) 20%,
+    var(--border-light) 50%,
+    var(--border) 80%,
+    transparent 100%
+  );
+  overflow: visible;
+}
+
+.single-content hr::after,
+.single-body hr::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--gold-dim);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+
+/* ---- Typography: drop cap on opening paragraph ---- */
+
+/* The first paragraph of article body copy gets a large serif
+   drop cap. Scoped to direct children of .single-body so it only
+   affects the opening paragraph — not paragraphs inside blockquotes,
+   asides, or the related/TOC blocks. */
+.single-body > p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 3.6em;
+  line-height: 0.9;
+  float: left;
+  padding: 0.2rem 0.65rem 0 0;
+  margin-top: 0.25rem;
+  color: var(--gold);
 }
 
 /* ---- External URL shortcode ---- */
@@ -1183,4 +1239,165 @@ a.tag:hover {
   color: var(--text-muted);
   font-style: italic;
   margin: 1.5rem 0 0;
+}
+
+/* ---- Table of contents (right rail) ---- */
+
+/* Applied by single.html when the page has more than 3 H2s and is
+   not already using the info-sidebar (character/creature profiles).
+   Mirrors `.single-with-sidebar` but with a narrower rail. */
+.single.single-with-toc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(200px, 22vw, 260px);
+  gap: 3rem;
+  align-items: start;
+  padding-top: 2rem;
+}
+
+.single.single-with-toc .single-content {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .single.single-with-toc {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.toc {
+  align-self: start;
+  position: sticky;
+  top: 2rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  /* Cap height to the viewport so long TOCs scroll independently. */
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}
+
+.toc-inner {
+  border-left: 1px solid var(--border);
+  padding: 0.25rem 0 0.25rem 1rem;
+}
+
+.toc-label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 0.6rem;
+}
+
+.toc ul,
+.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc li {
+  margin: 0.25rem 0;
+  line-height: 1.35;
+}
+
+.toc a {
+  color: var(--text-muted);
+  border-bottom: none;
+  display: block;
+  padding: 0.1rem 0;
+}
+
+.toc a:hover {
+  color: var(--accent);
+}
+
+/* Nested items (h3 under h2) indent and shrink. */
+.toc ul ul,
+.toc ol ol {
+  margin-left: 0.75rem;
+  margin-top: 0.15rem;
+  border-left: 1px solid var(--border);
+  padding-left: 0.6rem;
+}
+
+.toc ul ul a,
+.toc ol ol a {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+@media (max-width: 960px) {
+  .toc {
+    position: static;
+    max-height: none;
+    margin-top: 2rem;
+  }
+
+  .toc-inner {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 1rem 0 0;
+  }
+}
+
+/* ---- Related section (bottom of article) ---- */
+
+.related {
+  margin: 3rem 0 1rem;
+  padding: 2rem 0 0;
+  border-top: 1px solid var(--border);
+}
+
+.related-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  margin: 0 0 1.5rem;
+}
+
+.related-group + .related-group {
+  margin-top: 1.5rem;
+}
+
+.related-group-title {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin: 0 0 0.65rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.related-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.35rem 1.25rem;
+}
+
+.related-list li {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.related-list a {
+  color: var(--text);
+  font-size: 0.92rem;
+  border-bottom: 1px solid transparent;
+  padding: 0.05rem 0;
+}
+
+.related-list a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent-dim);
 }

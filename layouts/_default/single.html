@@ -5,7 +5,16 @@
 {{- $type := .Params.type | default "" -}}
 {{- $hasSidebar := or (eq $type "character") (eq $type "creature") -}}
 
-<article class="single {{ if $hasSidebar }}single-with-sidebar{{ end }}">
+{{- /* The TOC partial only emits markup when the page has more than
+       3 H2 headings. To avoid laying the page out as a two-column
+       grid for nothing, detect the same condition here so we can
+       apply the `.single-with-toc` class conditionally. We don't
+       show the TOC on pages that already have a right-rail info
+       sidebar (character/creature profiles) — the sidebar wins. */ -}}
+{{- $h2Count := len (findRE `(?m)^##\s+\S` (.RawContent | default "")) -}}
+{{- $hasToc := and (not $hasSidebar) (gt $h2Count 3) -}}
+
+<article class="single{{ if $hasSidebar }} single-with-sidebar{{ end }}{{ if $hasToc }} single-with-toc{{ end }}">
   <div class="single-content">
     {{ if or .Params.date .Params.tags }}
     <div class="single-meta">
@@ -24,6 +33,8 @@
       {{ .Content }}
     </div>
 
+    {{ partial "related.html" . }}
+
     <nav class="single-nav">
       {{ with .PrevInSection }}<a href="{{ .Permalink }}" class="nav-prev">&larr; {{ .Title }}</a>{{ end }}
       {{ with .NextInSection }}<a href="{{ .Permalink }}" class="nav-next">{{ .Title }} &rarr;</a>{{ end }}
@@ -32,6 +43,8 @@
 
   {{ if $hasSidebar }}
     {{ partial "info-sidebar.html" . }}
+  {{ else if $hasToc }}
+    {{ partial "toc.html" . }}
   {{ end }}
 </article>
 {{ end }}

@@ -135,6 +135,18 @@ interface LookupEntry {
     title: string;
     /** Public URL path, e.g. "/world/thalorna/character/some-person/" */
     url: string;
+    /** Content type, e.g. "character", "region" */
+    type: ContentType;
+}
+
+/**
+ * A reference in the wikilink graph — minimal info needed to render
+ * a "Related" list item at the bottom of a page.
+ */
+interface RelatedRef {
+    title: string;
+    url: string;
+    type: ContentType;
 }
 
 // ── Front matter parsing ───────────────────────────────────────────
@@ -504,6 +516,7 @@ function buildLookupMap(entries: VaultEntry[]): Map<string, LookupEntry> {
         const lookupEntry: LookupEntry = {
             title: entry.title,
             url: entry.url,
+            type: entry.type,
         };
 
         if (entry.isIndex) {
@@ -553,6 +566,83 @@ function buildLookupMap(entries: VaultEntry[]): Map<string, LookupEntry> {
         }
     }
     return map;
+}
+
+// ── Wikilink graph ─────────────────────────────────────────────────
+
+/**
+ * Build a bidirectional wikilink graph across all entries.
+ *
+ * Returns two maps keyed by entry URL:
+ *   - backlinks: for each page, the list of OTHER pages that link to it
+ *   - mentions:  for each page, the list of OTHER pages it links to
+ *
+ * Image embeds (`![[...]]`) are excluded. Self-links are excluded.
+ * Each (source, target) pair is counted at most once per direction.
+ * Both lists are sorted alphabetically by title.
+ *
+ * The exporter injects these lists into frontmatter (`related.backlinks`
+ * and `related.mentions`) so layouts can render a "Related" section
+ * at the bottom of each page without re-parsing content.
+ */
+interface LinkGraph {
+    backlinks: Map<string, RelatedRef[]>;
+    mentions: Map<string, RelatedRef[]>;
+}
+
+function buildLinkGraph(
+    entries: VaultEntry[],
+    lookup: Map<string, LookupEntry>,
+): LinkGraph {
+    const backlinks = new Map<string, RelatedRef[]>();
+    const mentions = new Map<string, RelatedRef[]>();
+
+    // Match [[Target]] or [[Target|Display]] but NOT ![[image]] embeds.
+    // The negative lookbehind keeps the image-embed syntax out.
+    const wikilinkRe = /(?<!!)\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g;
+
+    for (const entry of entries) {
+        const sourceRef: RelatedRef = {
+            title: entry.title,
+            url: entry.url,
+            type: entry.type,
+        };
+        const seenTargets = new Set<string>();
+        let match: RegExpExecArray | null;
+        wikilinkRe.lastIndex = 0;
+        while ((match = wikilinkRe.exec(entry.body)) !== null) {
+            const rawTarget = match[1].trim();
+            const targetLookup = lookup.get(rawTarget);
+            if (!targetLookup) continue;
+            if (targetLookup.url === entry.url) continue;
+            if (seenTargets.has(targetLookup.url)) continue;
+            seenTargets.add(targetLookup.url);
+
+            const targetRef: RelatedRef = {
+                title: targetLookup.title,
+                url: targetLookup.url,
+                type: targetLookup.type,
+            };
+
+            // Forward: source mentions target
+            const fwd = mentions.get(entry.url) ?? [];
+            fwd.push(targetRef);
+            mentions.set(entry.url, fwd);
+
+            // Back: target is linked from source
+            const back = backlinks.get(targetLookup.url) ?? [];
+            back.push(sourceRef);
+            backlinks.set(targetLookup.url, back);
+        }
+    }
+
+    // Sort each list by title for stable output.
+    const byTitle = (a: RelatedRef, b: RelatedRef) =>
+        a.title.localeCompare(b.title);
+    for (const list of backlinks.values()) list.sort(byTitle);
+    for (const list of mentions.values()) list.sort(byTitle);
+
+    return { backlinks, mentions };
 }
 
 // ── Front matter transformation ────────────────────────────────────
@@ -1187,6 +1277,9 @@ function main(): void {
     console.log(`\nBuilding lookup map (${entries.length} entries)...`);
     const lookup = buildLookupMap(entries);
 
+    console.log("Building wikilink graph...");
+    const graph = buildLinkGraph(entries, lookup);
+
     let filesWritten = 0;
 
     console.log("\nExporting files...");
@@ -1197,6 +1290,17 @@ function main(): void {
 
         // Transform front matter
         const hugoFm = transformFrontMatter(entry.frontmatter);
+
+        // Inject related (backlinks + mentions) for layouts to render.
+        // Omit empty directions and the whole block if both are empty.
+        const backlinks = graph.backlinks.get(entry.url) ?? [];
+        const mentions = graph.mentions.get(entry.url) ?? [];
+        if (backlinks.length > 0 || mentions.length > 0) {
+            const rel: Record<string, RelatedRef[]> = {};
+            if (backlinks.length > 0) rel.backlinks = backlinks;
+            if (mentions.length > 0) rel.mentions = mentions;
+            hugoFm.related = rel;
+        }
 
         // Transform body
         const transformedBody = transformBody(

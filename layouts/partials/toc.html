@@ -1,0 +1,28 @@
+{{- /*
+  Table of Contents partial.
+
+  Renders a sticky right-rail TOC on pages that have more than 3 H2
+  headings. We detect the threshold by grepping the raw content source
+  (`.RawContent`) for lines starting with "## " — this is faster and
+  more reliable than parsing the rendered HTML, and catches authored
+  headings regardless of markdown extensions that Hugo might apply.
+
+  The caller is responsible for:
+    - wrapping the page in a CSS grid when this partial renders
+      (see `.single.single-with-toc` in style.css)
+    - gating invocation with `partialCached` if desired
+
+  This partial prints nothing when the H2 count is 3 or less, so it's
+  safe to include unconditionally.
+*/ -}}
+
+{{- $raw := .RawContent | default "" -}}
+{{- $h2Count := len (findRE `(?m)^##\s+\S` $raw) -}}
+{{- if gt $h2Count 3 -}}
+<aside class="toc" aria-label="Table of contents">
+  <div class="toc-inner">
+    <p class="toc-label">On this page</p>
+    {{ .TableOfContents }}
+  </div>
+</aside>
+{{- end -}}
