@@ -50,6 +50,7 @@ const VALID_TYPES = [
     "region",
     "settlement",
     "site",
+    "type-catalog",
     "world",
 ] as const;
 
@@ -81,6 +82,7 @@ interface BucketConfig {
 }
 
 const BUCKETS: BucketConfig[] = [
+    { vaultPrefix: "Types/",                         hugoPath: "types",           routing: "flat"    },
     { vaultPrefix: "Projects/Song_of_Heroic_Lands/", hugoPath: "project/sohl",    routing: "flat"    },
     { vaultPrefix: "Projects/HM3/",                  hugoPath: "project/hm3",     routing: "flat"    },
     { vaultPrefix: "Projects/Modules/",              hugoPath: "project/modules", routing: "flat"    },

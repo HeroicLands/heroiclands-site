@@ -6,24 +6,25 @@
   above the content.
 
   Banner image resolution order:
-    1. .Params.banner               — author-specified override (frontmatter)
-    2. /images/banners/{type}.webp  — type-specific default (if the file exists)
-    3. /images/banners/default.webp — fallback
+    1. .Params.banner                                          — author-specified override (frontmatter).
+                                                                 If it's a full URL, use as-is; otherwise
+                                                                 treat as a CDN fragment relative to
+                                                                 https://cdn.heroiclands.org/images/.
+    2. https://cdn.heroiclands.org/images/banners/{type}.webp  — type-specific default
+    3. https://cdn.heroiclands.org/images/banners/default.webp — fallback when the page has no type
 */ -}}
+{{- $cdn := "https://cdn.heroiclands.org/images" -}}
 {{- $banner := "" -}}
 {{- with .Params.banner -}}
-  {{- $banner = . -}}
-  {{- if not (hasPrefix $banner "/") -}}
-    {{- $banner = printf "/images/%s" $banner -}}
+  {{- $b := . -}}
+  {{- if or (hasPrefix $b "http://") (hasPrefix $b "https://") -}}
+    {{- $banner = $b -}}
+  {{- else -}}
+    {{- $banner = printf "%s/%s" $cdn (strings.TrimPrefix "/" $b) -}}
   {{- end -}}
 {{- else -}}
   {{- $type := .Params.type | default "default" -}}
-  {{- $typePath := printf "static/images/banners/%s.webp" $type -}}
-  {{- if fileExists $typePath -}}
-    {{- $banner = printf "/images/banners/%s.webp" $type -}}
-  {{- else -}}
-    {{- $banner = "/images/banners/default.webp" -}}
-  {{- end -}}
+  {{- $banner = printf "%s/banners/%s.webp" $cdn $type -}}
 {{- end -}}
 
 <section class="hero hero-with-image" style="background-image: url('{{ $banner }}');">

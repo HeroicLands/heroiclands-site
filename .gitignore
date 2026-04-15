@@ -29,3 +29,6 @@ Thumbs.db
 
 # Hugo lock
 .hugo_build.lock
+
+# Ignored Files
+nogit/
