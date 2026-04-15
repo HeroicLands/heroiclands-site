@@ -1,0 +1,27 @@
+{{- /*
+  Breadcrumbs partial.
+
+  Renders a breadcrumb trail from Home through the current page's section
+  ancestors. Ancestors without a backing _index.md file (synthesized
+  sections with no real content page) are silently skipped, so a path
+  like /world/thalorna/character/folki-vetrdomr/ renders as:
+
+    Home › The World of Thalorna › Fólki Vetrdómr
+
+  (the "character/" section is skipped because it has no _index.md).
+
+  Not rendered on the home page.
+*/ -}}
+{{- if not .IsHome -}}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    {{- range (collections.Reverse .Ancestors) -}}
+      {{- if and .File (not .IsHome) -}}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- end -}}
+    {{- end -}}
+    <li aria-current="page">{{ .Title }}</li>
+  </ol>
+</nav>
+{{- end -}}

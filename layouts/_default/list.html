@@ -1,8 +1,12 @@
 {{ define "main" }}
 {{ partial "hero-banner.html" . }}
+{{ partial "breadcrumbs.html" . }}
+
 <article class="single">
   <div class="single-content">
-    {{ .Content }}
+    <div class="single-body">
+      {{ .Content }}
+    </div>
   </div>
 </article>
 {{ end }}

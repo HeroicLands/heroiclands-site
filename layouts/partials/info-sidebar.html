@@ -1,0 +1,14 @@
+{{- /*
+  Info sidebar dispatcher.
+
+  Renders a type-specific structured-info sidebar alongside the page's
+  main content. Types without a sidebar partial render nothing; the
+  single.html layout detects this and skips reserving column space.
+
+  To add a new type: create layouts/partials/sidebars/{type}.html and
+  add a branch below.
+*/ -}}
+{{- $type := .Params.type | default "" -}}
+{{- if eq $type "character" -}}
+  {{- partial "sidebars/character.html" . -}}
+{{- end -}}

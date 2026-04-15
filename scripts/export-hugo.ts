@@ -576,6 +576,14 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
         const aliases = fm.aliases;
         return aliases && aliases.length > 0 ? aliases : undefined;
     },
+    // Nested structures passed through verbatim so layouts can read them
+    // directly (e.g. .Params.sohl.attributes.str, .Params.traits.height.m).
+    // serializeFrontMatter emits these as proper nested YAML.
+    name: (fm) => fm.name || undefined,
+    social: (fm) => fm.social || undefined,
+    thalorna: (fm) => fm.thalorna || undefined,
+    traits: (fm) => fm.traits || undefined,
+    sohl: (fm) => fm.sohl || undefined,
 };
 
 function transformFrontMatter(fm: Record<string, any>): Record<string, any> {
@@ -589,38 +597,135 @@ function transformFrontMatter(fm: Record<string, any>): Record<string, any> {
     return result;
 }
 
+/** Quote a scalar string for YAML when it contains special characters. */
+function yamlScalar(value: string): string {
+    if (
+        value === "" ||
+        value.includes(":") ||
+        value.includes('"') ||
+        value.includes("'") ||
+        value.includes("#") ||
+        value.startsWith(" ") ||
+        value.startsWith("[") ||
+        value.startsWith("{") ||
+        value.startsWith("-") ||
+        value.startsWith("*") ||
+        value.startsWith("&") ||
+        value.startsWith("!") ||
+        value.startsWith("|") ||
+        value.startsWith(">") ||
+        value.startsWith("@") ||
+        value.startsWith("`") ||
+        /^(true|false|null|yes|no|on|off)$/i.test(value) ||
+        /^-?\d+(\.\d+)?$/.test(value)
+    ) {
+        return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+    }
+    return value;
+}
+
+function scalarLine(value: any): string {
+    if (typeof value === "string") return yamlScalar(value);
+    if (typeof value === "boolean") return String(value);
+    if (typeof value === "number") return String(value);
+    return JSON.stringify(value);
+}
+
+function isScalar(value: any): boolean {
+    return (
+        value === null ||
+        value === undefined ||
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+    );
+}
+
+/** Emit lines for an array or object value at the given indent depth. */
+function emitBlock(value: any, indent: number): string[] {
+    const pad = "  ".repeat(indent);
+    if (Array.isArray(value)) {
+        if (value.length === 0) return [];
+        const lines: string[] = [];
+        for (const item of value) {
+            if (item === null || item === undefined) continue;
+            if (isScalar(item)) {
+                lines.push(`${pad}- ${scalarLine(item)}`);
+            } else if (Array.isArray(item)) {
+                lines.push(`${pad}-`);
+                lines.push(...emitBlock(item, indent + 1));
+            } else {
+                // object item — dash + first key inline; remaining keys indented
+                const entries = Object.entries(item).filter(
+                    ([, v]) => v !== undefined && v !== null,
+                );
+                if (entries.length === 0) {
+                    lines.push(`${pad}- {}`);
+                    continue;
+                }
+                const [firstKey, firstVal] = entries[0];
+                if (isScalar(firstVal)) {
+                    lines.push(`${pad}- ${firstKey}: ${scalarLine(firstVal)}`);
+                } else {
+                    lines.push(`${pad}- ${firstKey}:`);
+                    lines.push(...emitBlock(firstVal, indent + 1));
+                }
+                const childPad = "  ".repeat(indent + 1);
+                for (let i = 1; i < entries.length; i++) {
+                    const [k, v] = entries[i];
+                    if (isScalar(v)) {
+                        lines.push(`${childPad}${k}: ${scalarLine(v)}`);
+                    } else if (
+                        (Array.isArray(v) && v.length === 0) ||
+                        (typeof v === "object" && v !== null && Object.keys(v).length === 0)
+                    ) {
+                        // skip empty collections inside object items
+                        continue;
+                    } else {
+                        lines.push(`${childPad}${k}:`);
+                        lines.push(...emitBlock(v, indent + 2));
+                    }
+                }
+            }
+        }
+        return lines;
+    }
+    if (value !== null && typeof value === "object") {
+        const lines: string[] = [];
+        for (const [k, v] of Object.entries(value)) {
+            if (v === undefined || v === null) continue;
+            if (isScalar(v)) {
+                lines.push(`${pad}${k}: ${scalarLine(v)}`);
+            } else if (Array.isArray(v)) {
+                if (v.length === 0) continue;
+                lines.push(`${pad}${k}:`);
+                lines.push(...emitBlock(v, indent + 1));
+            } else {
+                if (Object.keys(v).length === 0) continue;
+                lines.push(`${pad}${k}:`);
+                lines.push(...emitBlock(v, indent + 1));
+            }
+        }
+        return lines;
+    }
+    // Shouldn't reach here — scalars handled by caller
+    return [`${pad}${scalarLine(value)}`];
+}
+
 function serializeFrontMatter(fm: Record<string, any>): string {
     const lines: string[] = ["---"];
     for (const [key, value] of Object.entries(fm)) {
         if (value === undefined || value === null) continue;
-        if (Array.isArray(value)) {
+        if (isScalar(value)) {
+            lines.push(`${key}: ${scalarLine(value)}`);
+        } else if (Array.isArray(value)) {
             if (value.length === 0) continue;
             lines.push(`${key}:`);
-            for (const item of value) {
-                lines.push(`  - "${item}"`);
-            }
-        } else if (typeof value === "string") {
-            // Quote strings that contain special characters
-            if (
-                value.includes(":") ||
-                value.includes('"') ||
-                value.includes("'") ||
-                value.includes("#") ||
-                value.startsWith(" ") ||
-                value.startsWith("[")
-            ) {
-                lines.push(
-                    `${key}: "${value.replace(/"/g, '\\"')}"`,
-                );
-            } else {
-                lines.push(`${key}: ${value}`);
-            }
-        } else if (typeof value === "boolean") {
-            lines.push(`${key}: ${value}`);
-        } else if (typeof value === "number") {
-            lines.push(`${key}: ${value}`);
+            lines.push(...emitBlock(value, 1));
         } else {
-            lines.push(`${key}: ${JSON.stringify(value)}`);
+            if (Object.keys(value).length === 0) continue;
+            lines.push(`${key}:`);
+            lines.push(...emitBlock(value, 1));
         }
     }
     lines.push("---");

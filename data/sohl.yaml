@@ -1,0 +1,107 @@
+# Display-name mappings for SOHL shortcodes used in character frontmatter.
+# Consumed by layouts/partials/sidebars/character.html
+
+attributes:
+  # Physique
+  str: Strength
+  end: Endurance
+  dex: Dexterity
+  agl: Agility
+  per: Perception
+  cml: Comeliness
+  voi: Voice
+  # Personality / Other
+  aur: Aura
+  wil: Will
+  rea: Reasoning
+  cre: Creativity
+  emp: Empathy
+  elo: Eloquence
+  mor: Morality
+
+# Ordered lists for the attributes block (left column, right column).
+attribute_columns:
+  left: [str, end, dex, agl, per, cml, voi]
+  right: [aur, wil, rea, cre, emp, elo, mor]
+
+skills:
+  # Languages & Scripts
+  common: Common
+  lang: Language
+  runic: Runic
+  script: Script
+  # Physical
+  acro: Acrobatics
+  awar: Awareness
+  clmb: Climbing
+  dnce: Dancing
+  jump: Jumping
+  lgdm: Legerdemain
+  ridg: Riding
+  stlth: Stealth
+  swim: Swimming
+  # Combat
+  dge: Dodge
+  init: Initiative
+  melee: Melee
+  archery: Archery
+  slng: Sling
+  shok: Shock
+  thro: Throwing
+  # Social
+  chrm: Charm
+  cmd: Command
+  dscr: Discourse
+  guil: Guile
+  intr: Intrigue
+  sing: Singing
+  thtcs: Theatrics
+  # Nature
+  agri: Agriculture
+  anmcft: Animalcraft
+  fish: Fishing
+  herb: Herblore
+  mnrl: Mineralogy
+  pilt: Piloting
+  smsh: Seamanship
+  srvl: Survival
+  timb: Timbercraft
+  trak: Tracking
+  # Lore
+  brew: Brewing
+  cook: Cookery
+  embl: Embalming
+  eng: Engineering
+  folklr: Folklore
+  hrld: Heraldry
+  law: Law
+  math: Mathematics
+  mrcn: Mercantilism
+  pfmy: Perfumery
+  pysn: Physician
+  shpw: Shipwright
+  # Craft
+  cmcs: Ceramics
+  draw: Drawing
+  fltch: Fletching
+  glas: Glassworking
+  hide: Hideworking
+  jewl: Jewelcraft
+  lock: Lockcraft
+  masn: Masonry
+  mtlc: Metalcraft
+  mill: Milling
+  musc: Musician
+  txtl: Textilecraft
+  wpnc: Weaponcraft
+  wood: Woodworking
+  # Esoteric
+  alch: Alchemy
+  astr: Astrology
+  Rune: Runecraft
+  summ: Summoning
+  tlnt: Talent
+  tarot: Tarotry
+  trnc: Trance
+  # Ritual
+  ritual: Ritual

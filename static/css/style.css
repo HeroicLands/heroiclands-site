@@ -819,3 +819,221 @@ a.tag:hover {
     text-align: center;
   }
 }
+
+/* ---- Breadcrumbs ---- */
+
+.breadcrumbs {
+  max-width: var(--content-narrow);
+  margin: 0 auto;
+  padding: 1rem 2rem 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.breadcrumbs ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.breadcrumbs li + li::before {
+  content: "›";
+  color: var(--text-dim);
+  font-size: 1em;
+}
+
+.breadcrumbs a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadcrumbs a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.breadcrumbs [aria-current="page"] {
+  color: var(--text);
+}
+
+/* ---- Single Meta (date + tags under breadcrumbs) ---- */
+
+.single-meta {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.single-meta .single-date {
+  margin-top: 0;
+}
+
+.single-meta .single-tags {
+  margin-top: 0.5rem;
+}
+
+/* ---- Single Page with Sidebar (two-column layout) ---- */
+
+.single.single-with-sidebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 3rem;
+  align-items: start;
+  padding-top: 2rem;
+}
+
+.single.single-with-sidebar .single-content {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .single.single-with-sidebar {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ---- Info Sidebar ---- */
+
+.info-sidebar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.5rem 1.5rem 1.75rem;
+  align-self: start;
+  position: sticky;
+  top: 2rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.info-sidebar-header {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.info-sidebar-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.info-sidebar-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem 1rem;
+  align-items: baseline;
+}
+
+.info-sidebar-list dt {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding-top: 0.15rem;
+}
+
+.info-sidebar-list dd {
+  color: var(--text);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.info-faith-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.info-faith-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.info-faith-name {
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.info-faith-pantheon {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* ---- Info sidebar: sectioned layout ---- */
+
+.info-sidebar-section + .info-sidebar-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.info-sidebar-heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Two-column grid of per-attribute dl blocks */
+.info-attrs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.5rem;
+}
+
+.info-attrs-col {
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0;
+}
+
+.info-attrs-col dt {
+  padding-top: 0.1rem;
+}
+
+.info-attrs-col dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.info-missing {
+  color: var(--text-muted);
+}
+
+/* Skills list can get long on detailed characters */
+.info-skills-list {
+  gap: 0.4rem 1rem;
+}
+
+.info-skills-list dd {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 960px) {
+  .info-sidebar {
+    position: static;
+  }
+}

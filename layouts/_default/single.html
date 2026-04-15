@@ -1,26 +1,36 @@
 {{ define "main" }}
 {{ partial "hero-banner.html" . }}
-<article class="single">
-  {{ if or .Params.date .Params.tags }}
-  <header class="single-meta">
-    {{ if .Params.date }}
-    <time class="single-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-    {{ end }}
-    {{ with .Params.tags }}
-    <div class="single-tags">
-      {{ range . }}<a href="/tags/{{ . | urlize }}/" class="tag">{{ . }}</a>{{ end }}
+{{ partial "breadcrumbs.html" . }}
+
+{{- $hasSidebar := eq (.Params.type | default "") "character" -}}
+
+<article class="single {{ if $hasSidebar }}single-with-sidebar{{ end }}">
+  <div class="single-content">
+    {{ if or .Params.date .Params.tags }}
+    <div class="single-meta">
+      {{ if .Params.date }}
+      <time class="single-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      {{ end }}
+      {{ with .Params.tags }}
+      <div class="single-tags">
+        {{ range . }}<a href="/tags/{{ . | urlize }}/" class="tag">{{ . }}</a>{{ end }}
+      </div>
+      {{ end }}
     </div>
     {{ end }}
-  </header>
-  {{ end }}
 
-  <div class="single-content">
-    {{ .Content }}
+    <div class="single-body">
+      {{ .Content }}
+    </div>
+
+    <nav class="single-nav">
+      {{ with .PrevInSection }}<a href="{{ .Permalink }}" class="nav-prev">&larr; {{ .Title }}</a>{{ end }}
+      {{ with .NextInSection }}<a href="{{ .Permalink }}" class="nav-next">{{ .Title }} &rarr;</a>{{ end }}
+    </nav>
   </div>
 
-  <nav class="single-nav">
-    {{ with .PrevInSection }}<a href="{{ .Permalink }}" class="nav-prev">&larr; {{ .Title }}</a>{{ end }}
-    {{ with .NextInSection }}<a href="{{ .Permalink }}" class="nav-next">{{ .Title }} &rarr;</a>{{ end }}
-  </nav>
+  {{ if $hasSidebar }}
+    {{ partial "info-sidebar.html" . }}
+  {{ end }}
 </article>
 {{ end }}
