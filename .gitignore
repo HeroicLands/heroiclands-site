@@ -2,15 +2,11 @@
 public/
 resources/_gen/
 
-# Exported content (generated from Obsidian vault by export-hugo.ts).
-# Each of these bucket trees is fully managed by the export pipeline.
-content/world/
-content/project/
-content/blog/
-
-# Legacy path from the pre-bucket pipeline; kept here in case old builds
-# have written output to it. The clean script also removes it.
-content/worldbuilding/
+# Exported content. Everything under content/ is generated from the
+# Obsidian vault by scripts/export-hugo.ts. The vault is the single
+# source of truth for all content — nothing in this directory should
+# ever be committed or hand-edited.
+content/
 
 # Node
 node_modules/
@@ -32,3 +28,4 @@ Thumbs.db
 
 # Ignored Files
 nogit/
+CLAUDE.md
