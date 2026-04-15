@@ -11,9 +11,10 @@ script that converts the Obsidian vault into Hugo-ready markdown) and **Hugo**
 (the static-site generator itself). Both must be installed and on `PATH` before
 running any of the npm scripts.
 
-The pinned-in-CI Hugo version is **0.147.0 extended**
-(see `.github/workflows/deploy.yml`). Any reasonably recent 0.147+ extended build
-should work locally. Install it whichever way fits your OS:
+The pinned-in-CI Hugo version is **0.160.1 extended**
+(see `.github/workflows/deploy.yml`). The minimum supported version is **0.156.0**
+— layouts use the `hugo.Data` API that was introduced in 0.156. Install it
+whichever way fits your OS:
 
 | OS | Install command |
 |---|---|
