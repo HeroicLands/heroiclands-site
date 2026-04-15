@@ -42,7 +42,8 @@ title = "Heroic Lands"
 [outputs]
   home = ["HTML"]
   section = ["HTML"]
-  taxonomy = []
-  term = []
+  taxonomy = ["HTML"]
+  term = ["HTML"]
 
 [taxonomies]
+  tag = "tags"

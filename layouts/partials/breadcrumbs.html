@@ -2,23 +2,37 @@
   Breadcrumbs partial.
 
   Renders a breadcrumb trail from Home through the current page's section
-  ancestors. Ancestors without a backing _index.md file (synthesized
-  sections with no real content page) are silently skipped, so a path
-  like /world/thalorna/character/folki-vetrdomr/ renders as:
+  ancestors. An ancestor shows up in the trail when either:
+    1. it has its own _index.md (its Title is used), or
+    2. its directory name is listed in data/section_titles.yaml
+       (the mapped plural label is used, and the auto-generated section
+       list page is linked).
 
-    Home › The World of Thalorna › Fólki Vetrdómr
+  Ancestors that match neither rule are silently skipped. This keeps
+  noise parents like "world" or catch-all buckets like "page" out of
+  the trail while still showing meaningful type sections like
+  "Characters" or "Regions".
 
-  (the "character/" section is skipped because it has no _index.md).
+  Example: /world/thalorna/character/folki-vetrdomr/ renders as
+    Home › The World of Thalorna › Characters › Fólki Vetrdómr
 
   Not rendered on the home page.
 */ -}}
+{{- $sectionTitles := site.Data.section_titles -}}
 {{- if not .IsHome -}}
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol>
     <li><a href="/">Home</a></li>
     {{- range (collections.Reverse .Ancestors) -}}
-      {{- if and .File (not .IsHome) -}}
+      {{- if .IsHome -}}{{- continue -}}{{- end -}}
+      {{- if .File -}}
         <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- else -}}
+        {{- $url := .RelPermalink -}}
+        {{- $key := path.Base (strings.TrimSuffix "/" $url) -}}
+        {{- with index $sectionTitles $key -}}
+        <li><a href="{{ $url }}">{{ . }}</a></li>
+        {{- end -}}
       {{- end -}}
     {{- end -}}
     <li aria-current="page">{{ .Title }}</li>
