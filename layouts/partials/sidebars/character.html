@@ -14,7 +14,7 @@
   Display-name and category mappings live in data/sohl.yaml.
   Every section is guarded so missing data silently disappears.
 */ -}}
-{{- $sohl       := site.Data.sohl -}}
+{{- $sohl       := hugo.Data.sohl -}}
 {{- $attrNames  := $sohl.attributes -}}
 {{- $attrCols   := $sohl.attribute_columns -}}
 {{- $skillNames := $sohl.skills -}}

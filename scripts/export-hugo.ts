@@ -574,6 +574,9 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     lineage: (fm) => fm.traits?.lineage || undefined,
     gender: (fm) => fm.traits?.gender || undefined,
     occupation: (fm) => fm.social?.occupation || undefined,
+    // Page-level banner override. Accepts either a full URL or a CDN-relative
+    // fragment like "banners/character.webp"; hero-banner.html resolves both.
+    banner: (fm) => fm.banner || undefined,
     aliases: (fm) => {
         const aliases = fm.aliases;
         return aliases && aliases.length > 0 ? aliases : undefined;
