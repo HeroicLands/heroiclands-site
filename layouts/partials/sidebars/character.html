@@ -30,11 +30,17 @@
 
   {{- /* ---- Portrait ---- */ -}}
   {{- with .Params.slug }}
-  <img class="info-portrait"
-       src="https://cdn.heroiclands.org/images/{{ . }}.webp"
-       alt="Portrait of {{ $.Title }}"
-       width="280" height="366"
-       loading="lazy">
+  {{- $imgURL := printf "https://cdn.heroiclands.org/images/%s.webp" . }}
+  <a class="info-portrait-link"
+     href="{{ $imgURL }}"
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="Open full-size portrait of {{ $.Title }} in a new tab">
+    <img class="info-portrait"
+         src="{{ $imgURL }}"
+         alt="Portrait of {{ $.Title }}"
+         loading="lazy">
+  </a>
   {{- end }}
 
   <header class="info-sidebar-title">
