@@ -27,6 +27,15 @@
 
 <aside class="info-sidebar">
 
+  {{- /* ---- Portrait ---- */ -}}
+  {{- with .Params.slug }}
+  <img class="info-portrait"
+       src="https://cdn.heroiclands.org/images/{{ . }}.webp"
+       alt="Portrait of {{ $.Title }}"
+       width="280" height="366"
+       loading="lazy">
+  {{- end }}
+
   {{- /* ---- Attributes ---- */ -}}
   <section class="info-sidebar-section">
     <h2 class="info-sidebar-heading">Attributes</h2>

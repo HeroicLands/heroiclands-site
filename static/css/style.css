@@ -1038,6 +1038,23 @@ a.tag:hover {
   }
 }
 
+/* ---- Character portrait (fills the top of the info sidebar) ---- */
+
+.info-portrait {
+  display: block;
+  width: calc(100% + 3rem);
+  /* Negative margins cancel the aside's 1.5rem padding on top/left/right
+     so the portrait bleeds edge-to-edge with the card. */
+  margin: -1.5rem -1.5rem 1.25rem;
+  aspect-ratio: 13 / 17;
+  height: auto;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
 /* ---- Auto-listing (taxonomy, term, and auto-section index pages) ---- */
 
 .page-list {
