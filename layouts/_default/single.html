@@ -2,7 +2,8 @@
 {{ partial "hero-banner.html" . }}
 {{ partial "breadcrumbs.html" . }}
 
-{{- $hasSidebar := eq (.Params.type | default "") "character" -}}
+{{- $type := .Params.type | default "" -}}
+{{- $hasSidebar := or (eq $type "character") (eq $type "creature") -}}
 
 <article class="single {{ if $hasSidebar }}single-with-sidebar{{ end }}">
   <div class="single-content">

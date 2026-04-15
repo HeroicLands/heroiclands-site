@@ -11,4 +11,6 @@
 {{- $type := .Params.type | default "" -}}
 {{- if eq $type "character" -}}
   {{- partial "sidebars/character.html" . -}}
+{{- else if eq $type "creature" -}}
+  {{- partial "sidebars/creature.html" . -}}
 {{- end -}}

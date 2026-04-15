@@ -1,0 +1,139 @@
+{{- /*
+  Creature info sidebar — profile-card style.
+
+  Layout:
+    1. Creature image          (https://cdn.heroiclands.org/images/{slug}.webp)
+    2. "Creature Profile"      header
+    3. Profile header dl       (name / lineage)
+    4. Attributes              auto-fit grid of label+value pairs
+                                (only attributes the creature actually has are
+                                 rendered; creature stat blocks are typically
+                                 sparser than character ones)
+    5. Skills                  one paragraph per category, small-caps inline list
+
+  Display-name and category mappings live in data/sohl.yaml and are shared
+  with the character sidebar. Every section is guarded so missing data
+  silently disappears.
+*/ -}}
+{{- $sohl       := site.Data.sohl -}}
+{{- $attrNames  := $sohl.attributes -}}
+{{- $attrCols   := $sohl.attribute_columns -}}
+{{- $skillNames := $sohl.skills -}}
+{{- $categories := $sohl.skill_categories -}}
+{{- $attrs      := dict -}}{{- with .Params.sohl }}{{- with .attributes }}{{ $attrs = . }}{{ end }}{{ end -}}
+{{- $cSkills    := dict -}}{{- with .Params.sohl }}{{- with .skills    }}{{ $cSkills = . }}{{ end }}{{ end -}}
+{{- $lineage    := "" -}}{{- with .Params.traits }}{{- with .lineage }}{{ $lineage = . }}{{ end }}{{ end -}}
+
+<aside class="info-sidebar">
+
+  {{- /* ---- Creature image ---- */ -}}
+  {{- with .Params.slug }}
+  <img class="info-portrait"
+       src="https://cdn.heroiclands.org/images/{{ . }}.webp"
+       alt="Image of {{ $.Title }}"
+       width="280" height="366"
+       loading="lazy">
+  {{- end }}
+
+  <header class="info-sidebar-title">
+    <h2>Creature Profile</h2>
+  </header>
+
+  {{- /* ---- Profile header (name, lineage) ---- */ -}}
+  <dl class="info-profile-grid">
+    {{- with .Params.name }}{{- with .full }}
+    <dt>Name</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}{{- end }}
+
+    {{- with $lineage }}
+    <dt>Lineage</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+  </dl>
+
+  {{- /* ---- Attributes ---- */ -}}
+  {{- $attrOrder := slice -}}
+  {{- range $attrCols.left  }}{{ $attrOrder = $attrOrder | append . }}{{ end -}}
+  {{- range $attrCols.right }}{{ $attrOrder = $attrOrder | append . }}{{ end -}}
+  {{- $hasAnyAttr := false -}}
+  {{- with $attrs }}{{ $hasAnyAttr = gt (len .) 0 }}{{ end -}}
+  {{- if $hasAnyAttr }}
+  <section class="info-section">
+    <h3 class="info-section-title">Attributes</h3>
+    <div class="info-attrs-grid">
+      {{- range $code := $attrOrder }}
+        {{- $score := "" -}}
+        {{- with $attrs }}{{ $score = index . $code }}{{ end -}}
+        {{- with $score }}
+        {{- $label := index $attrNames $code | default (upper $code) }}
+        <div class="info-attr" title="{{ $label }}">
+          <span class="attr-label">{{ upper $code }}</span>
+          <span class="attr-value">{{ . }}</span>
+        </div>
+        {{- end -}}
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+
+  {{- /* ---- Skills (grouped by category) ---- */ -}}
+  {{- $hasAnySkill := false -}}
+  {{- with $cSkills }}{{ $hasAnySkill = gt (len .) 0 }}{{ end -}}
+  {{- if $hasAnySkill }}
+  <section class="info-section">
+    <h3 class="info-section-title">Skills</h3>
+    {{- /* Build a set of categorized codes so we can detect uncategorized leftovers. */ -}}
+    {{- $categorized := dict -}}
+    {{- range $categories -}}
+      {{- range .skills -}}{{ $categorized = merge $categorized (dict . true) }}{{- end -}}
+    {{- end -}}
+
+    {{- range $categories }}
+      {{- $catLabel := .label -}}
+      {{- $entries := slice -}}
+      {{- range $code := .skills -}}
+        {{- $score := "" -}}
+        {{- with $cSkills }}{{ $score = index . $code }}{{ end -}}
+        {{- with $score -}}
+          {{- $name := index $skillNames $code | default $code -}}
+          {{- $entries = $entries | append (dict "name" $name "score" .) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if gt (len $entries) 0 }}
+      <p class="info-skill-line">
+        <span class="skill-cat">{{ $catLabel }}:</span>
+        <span class="skill-entries">
+          {{- range $i, $e := $entries -}}
+            {{- if $i -}}, {{ end -}}
+            <span class="skill-entry">{{ $e.name }}&nbsp;<em>{{ $e.score }}</em></span>
+          {{- end -}}
+        </span>
+      </p>
+      {{- end }}
+    {{- end }}
+
+    {{- /* Catch any skills the creature has that aren't in any category. */ -}}
+    {{- $other := slice -}}
+    {{- range $code, $score := $cSkills -}}
+      {{- if not (index $categorized $code) -}}
+        {{- $name := index $skillNames $code | default $code -}}
+        {{- $other = $other | append (dict "name" $name "score" $score) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt (len $other) 0 -}}
+      {{- $other = sort $other "name" }}
+      <p class="info-skill-line">
+        <span class="skill-cat">Other:</span>
+        <span class="skill-entries">
+          {{- range $i, $e := $other -}}
+            {{- if $i -}}, {{ end -}}
+            <span class="skill-entry">{{ $e.name }}&nbsp;<em>{{ $e.score }}</em></span>
+          {{- end -}}
+        </span>
+      </p>
+    {{- end }}
+  </section>
+  {{- end }}
+
+</aside>
