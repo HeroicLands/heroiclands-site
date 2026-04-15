@@ -1,15 +1,6 @@
 {{ define "main" }}
+{{ partial "hero-banner.html" . }}
 <article class="single">
-  <header class="single-header">
-    <h1>{{ .Title }}</h1>
-    {{ with .Params.description }}<p class="single-description">{{ . }}</p>{{ end }}
-    {{ with .Params.tags }}
-    <div class="single-tags">
-      {{ range . }}<a href="/tags/{{ . | urlize }}/" class="tag">{{ . }}</a>{{ end }}
-    </div>
-    {{ end }}
-  </header>
-
   <div class="single-content">
     {{ .Content }}
   </div>

@@ -30,7 +30,7 @@ title = "Heroic Lands"
     weight = 3
   [[menu.main]]
     name = "Foundry VTT Systems & Modules"
-    url = "/projects/"
+    url = "/project/"
     weight = 4
     identifier = "fvtt"
 

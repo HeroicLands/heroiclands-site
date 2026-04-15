@@ -1,0 +1,36 @@
+{{- /*
+  Hero banner partial.
+
+  Displays a full-width banner band (using the same .hero.hero-with-image
+  classes as the homepage) with a centered page title and description
+  above the content.
+
+  Banner image resolution order:
+    1. .Params.banner               — author-specified override (frontmatter)
+    2. /images/banners/{type}.webp  — type-specific default (if the file exists)
+    3. /images/banners/default.webp — fallback
+*/ -}}
+{{- $banner := "" -}}
+{{- with .Params.banner -}}
+  {{- $banner = . -}}
+  {{- if not (hasPrefix $banner "/") -}}
+    {{- $banner = printf "/images/%s" $banner -}}
+  {{- end -}}
+{{- else -}}
+  {{- $type := .Params.type | default "default" -}}
+  {{- $typePath := printf "static/images/banners/%s.webp" $type -}}
+  {{- if fileExists $typePath -}}
+    {{- $banner = printf "/images/banners/%s.webp" $type -}}
+  {{- else -}}
+    {{- $banner = "/images/banners/default.webp" -}}
+  {{- end -}}
+{{- end -}}
+
+<section class="hero hero-with-image" style="background-image: url('{{ $banner }}');">
+  <div class="hero-inner">
+    <h1>{{ .Title }}</h1>
+    {{- with .Params.description }}
+    <p class="hero-tagline">{{ . }}</p>
+    {{- end }}
+  </div>
+</section>
