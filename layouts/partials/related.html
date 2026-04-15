@@ -1,9 +1,9 @@
 {{- /*
   Related partial.
 
-  Renders a "Related" block at the bottom of a single page using the
-  backlinks and mentions lists injected into frontmatter by the Hugo
-  exporter (scripts/export-hugo.ts).
+  Renders a compact "Related" block at the bottom of a single page
+  using the backlinks and mentions lists injected into frontmatter
+  by the Hugo exporter (scripts/export-hugo.ts).
 
   Structure in frontmatter:
     related:
@@ -11,13 +11,12 @@
       mentions:  [{ title, url, type }, ...]   # pages this page links to
 
   Rendering strategy:
-    - Each direction is grouped by the linked page's `type`, then
-      rendered with a type-specific, direction-aware section label
-      (e.g. "People in this region" on a region page, "Places
-      mentioned" in a character's biography).
-    - If both directions reference the same page, it only appears
-      under "Mentions" (explicit link wins over inferred backlink).
-    - Emits nothing if there's no data in either direction.
+    - Merge both directions into a single deduped pool (direction
+      doesn't matter to a reader — a connection is a connection).
+    - Group by the referenced page's `type`.
+    - Emit one line per type: "Label: link • link • link".
+    - The whole block is wrapped in a bordered, tinted card so it
+      visually sets off the end of the article.
 */ -}}
 
 {{- $rel := .Params.related -}}
@@ -30,101 +29,79 @@
   {{- return -}}
 {{- end -}}
 
-{{- /* Dedupe: if a page appears in both directions, keep it in mentions. */ -}}
-{{- $mentionUrls := slice -}}
+{{- /* Merge both directions, deduped by URL. `union` can't hash
+       slices of maps, so we walk the two lists in order and dedupe
+       by URL manually. Mentions come first so explicit author
+       choices win when a page appears in both directions. */ -}}
+{{- $seen := slice -}}
+{{- $merged := slice -}}
 {{- range $mentions -}}
-  {{- $mentionUrls = $mentionUrls | append .url -}}
+  {{- if not (in $seen .url) -}}
+    {{- $seen = $seen | append .url -}}
+    {{- $merged = $merged | append . -}}
+  {{- end -}}
 {{- end -}}
-{{- $filteredBacklinks := slice -}}
 {{- range $backlinks -}}
-  {{- if not (in $mentionUrls .url) -}}
-    {{- $filteredBacklinks = $filteredBacklinks | append . -}}
+  {{- if not (in $seen .url) -}}
+    {{- $seen = $seen | append .url -}}
+    {{- $merged = $merged | append . -}}
   {{- end -}}
 {{- end -}}
 
-{{- /* Mentions labels: the current page links OUT to something of this type. */ -}}
-{{- $mentionLabels := dict
-  "region"       "Places mentioned"
-  "polity"       "Polities mentioned"
-  "settlement"   "Settlements mentioned"
-  "site"         "Sites mentioned"
-  "continent"    "Continents mentioned"
-  "character"    "People mentioned"
-  "people"       "Peoples mentioned"
-  "creature"     "Creatures mentioned"
-  "organization" "Organizations mentioned"
-  "pantheon"     "Pantheons mentioned"
-  "faith"        "Faiths mentioned"
-  "religion"     "Religions mentioned"
-  "language"     "Languages mentioned"
-  "lore"         "Lore referenced"
-  "blog-post"    "Posts referenced"
-  "project-page" "Projects referenced"
-  "page"         "Pages referenced"
+{{- /* Plural, human-readable label for each type. Falls back to
+       `humanize` for any type not listed here. */ -}}
+{{- $labels := dict
+  "blog-post"    "Posts"
+  "character"    "People"
+  "continent"    "Continents"
+  "creature"     "Creatures"
+  "faith"        "Faiths"
+  "language"     "Languages"
+  "lore"         "Lore"
+  "organization" "Organizations"
+  "page"         "Pages"
+  "pantheon"     "Pantheons"
+  "people"       "Peoples"
+  "polity"       "Polities"
+  "project-page" "Projects"
+  "region"       "Regions"
+  "religion"     "Religions"
+  "settlement"   "Settlements"
+  "site"         "Places"
+  "world"        "Worlds"
 -}}
 
-{{- /* Generic backlinks labels: something of this type links IN. */ -}}
-{{- $backlinkLabels := dict
-  "character"    "People connected here"
-  "creature"     "Creatures connected here"
-  "region"       "Regions that reference this"
-  "polity"       "Polities that reference this"
-  "settlement"   "Settlements that reference this"
-  "site"         "Sites that reference this"
-  "continent"    "Continents that reference this"
-  "organization" "Organizations that reference this"
-  "people"       "Peoples that reference this"
-  "pantheon"     "Pantheons that reference this"
-  "faith"        "Faiths that reference this"
-  "religion"     "Religions that reference this"
-  "language"     "Languages that reference this"
-  "lore"         "Lore that references this"
-  "blog-post"    "Posts that reference this"
-  "project-page" "Projects that reference this"
-  "page"         "Pages that reference this"
--}}
-
-{{- /* Group refs by type, preserving alphabetical order within a group
-       (input is already sorted by the exporter). */ -}}
-{{- $groupMentions := dict -}}
-{{- range $mentions -}}
+{{- /* Group refs by type, preserving alphabetical order within a
+       group (input is already sorted by the exporter). */ -}}
+{{- $groups := dict -}}
+{{- range $merged -}}
   {{- $t := .type | default "page" -}}
-  {{- $existing := index $groupMentions $t | default slice -}}
-  {{- $groupMentions = merge $groupMentions (dict $t ($existing | append .)) -}}
+  {{- $existing := index $groups $t | default slice -}}
+  {{- $groups = merge $groups (dict $t ($existing | append .)) -}}
 {{- end -}}
 
-{{- $groupBacklinks := dict -}}
-{{- range $filteredBacklinks -}}
-  {{- $t := .type | default "page" -}}
-  {{- $existing := index $groupBacklinks $t | default slice -}}
-  {{- $groupBacklinks = merge $groupBacklinks (dict $t ($existing | append .)) -}}
+{{- /* Sort the group keys alphabetically by their rendered label
+       so the list reads A → Z regardless of insertion order. */ -}}
+{{- $rows := slice -}}
+{{- range $type, $refs := $groups -}}
+  {{- $label := index $labels $type | default (humanize $type) -}}
+  {{- $rows = $rows | append (dict "label" $label "type" $type "refs" $refs) -}}
 {{- end -}}
-
-{{- /* On a place page, character backlinks read better as
-       "People in this region" etc. */ -}}
-{{- $pageType := .Params.type | default "" -}}
+{{- $rows = sort $rows "label" "asc" -}}
 
 <section class="related" aria-labelledby="related-heading">
   <h2 id="related-heading" class="related-heading">Related</h2>
-
-  {{- /* Mentions first — explicit author choices. */ -}}
-  {{- range $type, $refs := $groupMentions -}}
-    {{- $label := index $mentionLabels $type | default (printf "%s mentioned" (humanize $type)) -}}
-    {{- partial "related-group.html" (dict "refs" $refs "label" $label) -}}
-  {{- end }}
-
-  {{- /* Then backlinks — pages that link here. */ -}}
-  {{- range $type, $refs := $groupBacklinks -}}
-    {{- $label := index $backlinkLabels $type | default (printf "%s that reference this" (humanize $type)) -}}
-    {{- if eq $type "character" -}}
-      {{- if eq $pageType "region"     -}}{{- $label = "People in this region" -}}{{- end -}}
-      {{- if eq $pageType "polity"     -}}{{- $label = "People in this polity" -}}{{- end -}}
-      {{- if eq $pageType "settlement" -}}{{- $label = "People in this settlement" -}}{{- end -}}
-      {{- if eq $pageType "site"       -}}{{- $label = "People connected to this site" -}}{{- end -}}
-      {{- if eq $pageType "continent"  -}}{{- $label = "People in this land" -}}{{- end -}}
-      {{- if eq $pageType "organization" -}}{{- $label = "Members and associates" -}}{{- end -}}
-      {{- if eq $pageType "people"     -}}{{- $label = "Notable members" -}}{{- end -}}
-    {{- end -}}
-    {{- partial "related-group.html" (dict "refs" $refs "label" $label) -}}
-  {{- end }}
+  <dl class="related-rows">
+    {{- range $rows }}
+    <div class="related-row">
+      <dt class="related-row-label">{{ .label }}</dt>
+      <dd class="related-row-links">
+        {{- range $i, $ref := .refs -}}
+          {{- if $i -}}<span class="related-sep" aria-hidden="true"> • </span>{{- end -}}
+          <a href="{{ $ref.url }}">{{ $ref.title }}</a>
+        {{- end -}}
+      </dd>
+    </div>
+    {{- end }}
+  </dl>
 </section>
