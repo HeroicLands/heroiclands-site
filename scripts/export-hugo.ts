@@ -13,11 +13,12 @@
  *   1. Scans the Obsidian vault for files with publish.website: true
  *   2. Builds a lookup map of all publishable files (filename → type, title, slug)
  *   3. Transforms front matter (strips game-mechanical fields, maps to Hugo fields)
- *   4. Rewrites Obsidian wikilinks and image embeds to Hugo-compatible Markdown
+ *   4. Rewrites Obsidian wikilinks and image embeds to Hugo-compatible Markdown.
+ *      Image embeds are rewritten to CDN URLs (https://cdn.heroiclands.org/images/...);
+ *      the actual image files live on the CDN and are not bundled with the site.
  *   5. Writes transformed files to bucket-specific output paths
  *      (e.g. content/world/thalorna/{type}/{slug}.md,
  *      content/project/{bucket}/{slug}.md, content/blog/YYYY/MM/{slug}.md)
- *   6. Copies referenced images to static/images/
  */
 
 import * as fs from "fs";
@@ -30,7 +31,9 @@ const VAULT_ROOT = process.env.VAULT_ROOT
 const HUGO_ROOT = process.env.HUGO_ROOT
     || path.resolve(__dirname, "..");
 const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
-const HUGO_IMAGES = path.join(HUGO_ROOT, "static/images");
+// Base URL for image references emitted into rendered markdown.
+// All site images live on the CDN — nothing is bundled into static/.
+const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
     "blog-post",
@@ -1037,17 +1040,15 @@ function transformBody(
     entries: VaultEntry[],
     lookup: Map<string, LookupEntry>,
     verbose: boolean,
-): { content: string; referencedImages: string[] } {
-    const referencedImages: string[] = [];
-
+): string {
     // Resolve dataview queries first (before wikilink rewriting)
     let result = resolveDataviewQueries(body, entries, lookup, verbose);
 
-    // Rewrite image embeds: ![[foo.webp]] → ![foo](/images/foo.webp)
+    // Rewrite image embeds: ![[foo.webp]] → ![foo](https://cdn.heroiclands.org/images/foo.webp)
+    // The actual files live on the CDN; the export pipeline doesn't bundle them.
     result = result.replace(/!\[\[([^\]]+)\]\]/g, (_match, filename: string) => {
         const basename = path.parse(filename).name;
-        referencedImages.push(filename);
-        return `![${basename}](/images/${filename})`;
+        return `![${basename}](${IMAGE_CDN_BASE}/${filename})`;
     });
 
     // Rewrite wikilinks with display text: [[Target|Display]] → [Display](/url/)
@@ -1082,7 +1083,7 @@ function transformBody(
         },
     );
 
-    return { content: result, referencedImages };
+    return result;
 }
 
 // ── File output ────────────────────────────────────────────────────
@@ -1110,71 +1111,6 @@ function writeHugoFile(
     const content = serializeFrontMatter(hugoFm) + "\n" + transformedBody;
     fs.writeFileSync(outPath, content, "utf-8");
     return outPath;
-}
-
-/**
- * Search for an image file in the vault.
- * Obsidian stores attachments in per-directory `assets/` folders
- * (attachmentFolderPath: "./assets"), so we search recursively.
- */
-function findImageInVault(filename: string): string | null {
-    function search(dir: string): string | null {
-        try {
-            const entries = fs.readdirSync(dir, { withFileTypes: true });
-            for (const entry of entries) {
-                if (entry.name.startsWith(".")) continue;
-                const fullPath = path.join(dir, entry.name);
-                if (entry.isDirectory()) {
-                    const found = search(fullPath);
-                    if (found) return found;
-                } else if (entry.name === filename) {
-                    return fullPath;
-                }
-            }
-        } catch { /* skip unreadable dirs */ }
-        return null;
-    }
-    return search(VAULT_ROOT);
-}
-
-function copyImage(
-    filename: string,
-    dryRun: boolean,
-    verbose: boolean,
-): void {
-    const src = findImageInVault(filename);
-    const dest = path.join(HUGO_IMAGES, filename);
-
-    if (!src) {
-        if (verbose) {
-            console.warn(`  Image not found in vault: ${filename}`);
-        }
-        return;
-    }
-
-    if (dryRun) {
-        console.log(`  Would copy image: ${filename}`);
-        return;
-    }
-
-    ensureDir(HUGO_IMAGES);
-
-    // Only copy if source is newer or dest doesn't exist
-    if (fs.existsSync(dest)) {
-        const srcStat = fs.statSync(src);
-        const destStat = fs.statSync(dest);
-        if (srcStat.mtimeMs <= destStat.mtimeMs) {
-            if (verbose) {
-                console.log(`  Image up to date: ${filename}`);
-            }
-            return;
-        }
-    }
-
-    fs.copyFileSync(src, dest);
-    if (verbose) {
-        console.log(`  Copied image: ${filename}`);
-    }
 }
 
 // ── Clean stale files ──────────────────────────────────────────────
@@ -1251,7 +1187,6 @@ function main(): void {
     console.log(`\nBuilding lookup map (${entries.length} entries)...`);
     const lookup = buildLookupMap(entries);
 
-    const allImages: string[] = [];
     let filesWritten = 0;
 
     console.log("\nExporting files...");
@@ -1264,25 +1199,16 @@ function main(): void {
         const hugoFm = transformFrontMatter(entry.frontmatter);
 
         // Transform body
-        const { content: transformedBody, referencedImages } = transformBody(
+        const transformedBody = transformBody(
             entry.body,
             entries,
             lookup,
             verbose,
         );
 
-        allImages.push(...referencedImages);
-
         // Write Hugo file
         writeHugoFile(entry, hugoFm, transformedBody, dryRun);
         filesWritten++;
-    }
-
-    // Copy referenced images
-    const uniqueImages = [...new Set(allImages)];
-    console.log(`\nCopying ${uniqueImages.length} images...`);
-    for (const img of uniqueImages) {
-        copyImage(img, dryRun, verbose);
     }
 
     // Clean stale files
@@ -1290,9 +1216,6 @@ function main(): void {
     cleanStaleFiles(entries, dryRun, verbose);
 
     console.log(`\n✓ Done. ${filesWritten} files exported.`);
-    if (uniqueImages.length > 0) {
-        console.log(`✓ ${uniqueImages.length} images copied.`);
-    }
 }
 
 main();
