@@ -105,3 +105,39 @@ skills:
   trnc: Trance
   # Ritual
   ritual: Ritual
+
+# Ordered groupings used by the character sidebar to render skills by category.
+# Each entry: id (internal), label (display), skills (ordered list of shortcodes).
+# Skills not listed in any category fall through to an "Other" bucket so nothing
+# silently disappears if a new shortcode is added without updating this list.
+skill_categories:
+  - id: language
+    label: Languages
+    skills: [common, lang]
+  - id: script
+    label: Scripts
+    skills: [runic, script]
+  - id: physical
+    label: Physical
+    skills: [acro, awar, clmb, dnce, jump, lgdm, ridg, stlth, swim]
+  - id: combat
+    label: Combat
+    skills: [archery, dge, init, melee, slng, shok, thro]
+  - id: social
+    label: Social
+    skills: [chrm, cmd, dscr, guil, intr, sing, thtcs]
+  - id: nature
+    label: Nature
+    skills: [agri, anmcft, fish, herb, mnrl, pilt, smsh, srvl, timb, trak]
+  - id: lore
+    label: Lore
+    skills: [brew, cook, embl, eng, folklr, hrld, law, math, mrcn, pfmy, pysn, shpw]
+  - id: craft
+    label: Craft
+    skills: [cmcs, draw, fltch, glas, hide, jewl, lock, masn, mtlc, mill, musc, txtl, wpnc, wood]
+  - id: esoteric
+    label: Esoteric
+    skills: [alch, astr, Rune, summ, tlnt, tarot, trnc]
+  - id: ritual
+    label: Ritual
+    skills: [ritual]

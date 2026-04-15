@@ -1,29 +1,30 @@
 {{- /*
-  Character info sidebar.
+  Character info sidebar — profile-card style.
 
-  Renders four sections: Attributes (2-column grid of the 14 SOHL attributes),
-  Social, Traits, and Skills. All fields are optional; sections with no
-  available data are skipped entirely. Attribute rows render "—" for any
-  missing score so the two columns stay aligned.
+  Layout:
+    1. Portrait                (https://cdn.heroiclands.org/images/{slug}.webp)
+    2. "Character Profile"     header
+    3. Profile header dl       (name / lineage / gender / born / occupation /
+                                class / realm / faith)
+    4. Appearance              one-line composed sentence built from
+                                age, height, weight, frame, eye/hair/skin colors
+    5. Attributes              auto-fit grid of label+value pairs
+    6. Skills                  one paragraph per category, small-caps inline list
 
-  Source fields:
-    - sohl.attributes.{str,end,dex,agl,per,cml,voi,aur,wil,rea,cre,emp,elo,mor}
-    - sohl.skills.{shortcode}: score  (mapping)
-    - social.occupation, social.class
-    - thalorna.realm, thalorna.faith  (faith entries are "Pantheon:Name")
-    - traits.lineage, traits.gender, traits.age, traits.birthday
-    - traits.height.m  (converted to feet/inches)
-    - traits.weight.kg (converted to pounds)
-    - traits.build.frame
-
-  Display-name mappings for attribute/skill shortcodes live in
-  data/sohl.yaml (site.Data.sohl.attributes / .skills).
+  Display-name and category mappings live in data/sohl.yaml.
+  Every section is guarded so missing data silently disappears.
 */ -}}
 {{- $sohl       := site.Data.sohl -}}
 {{- $attrNames  := $sohl.attributes -}}
 {{- $attrCols   := $sohl.attribute_columns -}}
 {{- $skillNames := $sohl.skills -}}
+{{- $categories := $sohl.skill_categories -}}
 {{- $attrs      := .Params.sohl.attributes -}}
+{{- $charSkills := .Params.sohl.skills -}}
+{{- $traits     := .Params.traits -}}
+{{- $appearance := "" -}}
+{{- $birthsign  := "" -}}
+{{- with .Params.sohl }}{{ $birthsign = .birthsign }}{{ end -}}
 
 <aside class="info-sidebar">
 
@@ -36,156 +37,176 @@
        loading="lazy">
   {{- end }}
 
-  {{- /* ---- Attributes ---- */ -}}
-  <section class="info-sidebar-section">
-    <h2 class="info-sidebar-heading">Attributes</h2>
-    <div class="info-attrs">
-      {{- range $column := slice $attrCols.left $attrCols.right }}
-      <dl class="info-sidebar-list info-attrs-col">
-        {{- range $code := $column }}
-        {{- $label := index $attrNames $code | default (upper $code) }}
-        {{- $score := "" }}
-        {{- with $attrs }}{{ $score = index . $code }}{{ end }}
-        <dt title="{{ $label }}">{{ upper $code }}</dt>
-        <dd>{{ with $score }}{{ . }}{{ else }}<span class="info-missing">&mdash;</span>{{ end }}</dd>
+  <header class="info-sidebar-title">
+    <h2>Character Profile</h2>
+  </header>
+
+  {{- /* ---- Profile header (name, lineage, gender, born, occupation, ...) ---- */ -}}
+  {{- $birthday := "" -}}{{- with $traits.birthday }}{{ $birthday = . }}{{ end -}}
+  {{- $hasFaith := false -}}
+  {{- with .Params.thalorna }}{{- with .faith }}{{- if gt (len .) 0 }}{{ $hasFaith = true }}{{ end }}{{ end }}{{ end -}}
+  <dl class="info-profile-grid">
+    {{- with .Params.name }}{{- with .full }}
+    <dt>Name</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}{{- end }}
+
+    {{- with $traits.lineage }}
+    <dt>Lineage</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+
+    {{- with $traits.gender }}
+    <dt>Gender</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+
+    {{- if or $birthday $birthsign }}
+    <dt>Born</dt>
+    <dd>{{ $birthday }}{{ if and $birthday $birthsign }} {{ end }}{{ with $birthsign }}<span class="info-sub">(Sunsign: {{ . }})</span>{{ end }}</dd>
+    {{- end }}
+
+    {{- with .Params.social.occupation }}
+    <dt>Occupation</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+
+    {{- with .Params.social.class }}
+    <dt>Class</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+
+    {{- with .Params.thalorna.realm }}
+    <dt>Realm</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- if $hasFaith }}
+    <dt>Faith</dt>
+    <dd class="info-faith-list">
+      {{- range .Params.thalorna.faith -}}
+        {{- $parts := split . ":" -}}
+        {{- if eq (len $parts) 2 }}
+        <div class="info-faith-item">
+          <span class="info-faith-name">{{ index $parts 1 }}</span>
+          <span class="info-faith-pantheon">{{ index $parts 0 }}</span>
+        </div>
+        {{- else }}
+        <div class="info-faith-item">
+          <span class="info-faith-name">{{ . }}</span>
+        </div>
         {{- end }}
-      </dl>
+      {{- end }}
+    </dd>
+    {{- end }}
+  </dl>
+
+  {{- /* ---- Appearance (composed sentence) ---- */ -}}
+  {{- $parts := slice -}}
+  {{- with $traits.age }}{{ $parts = $parts | append (printf "Age %v" .) }}{{ end -}}
+  {{- with $traits.height }}{{- with .m -}}
+    {{- $totalInches := math.Round (mul . 39.3701) -}}
+    {{- $feet   := int (math.Floor (div $totalInches 12)) -}}
+    {{- $inches := int (sub $totalInches (mul $feet 12)) -}}
+    {{- if eq $inches 12 }}{{ $feet = add $feet 1 }}{{ $inches = 0 }}{{ end -}}
+    {{- $parts = $parts | append (printf "%d&prime;&nbsp;%d&Prime;" $feet $inches) -}}
+  {{- end }}{{- end -}}
+  {{- with $traits.weight }}{{- with .kg -}}
+    {{- $lbs := int (math.Round (mul . 2.20462)) -}}
+    {{- $parts = $parts | append (printf "%d lbs" $lbs) -}}
+  {{- end }}{{- end -}}
+  {{- with $traits.build }}{{- with .frame }}{{ $parts = $parts | append (printf "%s frame" .) }}{{ end }}{{ end -}}
+  {{- with $traits.appearance -}}
+    {{- with .eye_color }}{{ $parts = $parts | append (printf "%s eyes" .) }}{{ end -}}
+    {{- with .hair_color }}{{ $parts = $parts | append (printf "%s hair" .) }}{{ end -}}
+    {{- with .skin_color }}{{ $parts = $parts | append (printf "%s skin" .) }}{{ end -}}
+  {{- end -}}
+  {{- if gt (len $parts) 0 }}
+  <p class="info-appearance">
+    <span class="info-label">Appearance:</span>
+    {{ delimit $parts ", " | safeHTML }}
+  </p>
+  {{- end }}
+
+  {{- /* ---- Attributes ---- */ -}}
+  {{- $attrOrder := slice -}}
+  {{- range $attrCols.left  }}{{ $attrOrder = $attrOrder | append . }}{{ end -}}
+  {{- range $attrCols.right }}{{ $attrOrder = $attrOrder | append . }}{{ end -}}
+  {{- $hasAnyAttr := false -}}
+  {{- with $attrs }}{{ $hasAnyAttr = gt (len .) 0 }}{{ end -}}
+  {{- if $hasAnyAttr }}
+  <section class="info-section">
+    <h3 class="info-section-title">Attributes</h3>
+    <div class="info-attrs-grid">
+      {{- range $code := $attrOrder }}
+      {{- $score := "" }}{{ with $attrs }}{{ $score = index . $code }}{{ end }}
+      {{- $label := index $attrNames $code | default (upper $code) }}
+      <div class="info-attr" title="{{ $label }}">
+        <span class="attr-label">{{ upper $code }}</span>
+        <span class="attr-value">{{ with $score }}{{ . }}{{ else }}<span class="info-missing">&mdash;</span>{{ end }}</span>
+      </div>
       {{- end }}
     </div>
   </section>
-
-  {{- /* ---- Social ---- */ -}}
-  {{- $hasFaith := false -}}
-  {{- with .Params.thalorna }}{{- with .faith }}{{- if gt (len .) 0 }}{{ $hasFaith = true }}{{ end }}{{ end }}{{ end -}}
-  {{- $hasSocial := or
-    .Params.social.occupation
-    .Params.social.class
-    .Params.thalorna.realm
-    $hasFaith
-  -}}
-  {{- if $hasSocial }}
-  <section class="info-sidebar-section">
-    <h2 class="info-sidebar-heading">Social</h2>
-    <dl class="info-sidebar-list">
-      {{- with .Params.social.occupation }}
-      <dt>Occupation</dt>
-      <dd>{{ . | humanize | title }}</dd>
-      {{- end }}
-
-      {{- with .Params.social.class }}
-      <dt>Class</dt>
-      <dd>{{ . | humanize | title }}</dd>
-      {{- end }}
-
-      {{- with .Params.thalorna.realm }}
-      <dt>Realm</dt>
-      <dd>{{ . }}</dd>
-      {{- end }}
-
-      {{- if $hasFaith }}
-      <dt>Faith</dt>
-      <dd class="info-faith-list">
-        {{- range .Params.thalorna.faith -}}
-          {{- $parts := split . ":" -}}
-          {{- if eq (len $parts) 2 }}
-          <div class="info-faith-item">
-            <span class="info-faith-name">{{ index $parts 1 }}</span>
-            <span class="info-faith-pantheon">{{ index $parts 0 }}</span>
-          </div>
-          {{- else }}
-          <div class="info-faith-item">
-            <span class="info-faith-name">{{ . }}</span>
-          </div>
-          {{- end }}
-        {{- end }}
-      </dd>
-      {{- end }}
-    </dl>
-  </section>
   {{- end }}
 
-  {{- /* ---- Traits ---- */ -}}
-  {{- $heightM := "" -}}
-  {{- with .Params.traits }}{{- with .height }}{{ $heightM = .m }}{{ end }}{{ end -}}
-  {{- $weightKg := "" -}}
-  {{- with .Params.traits }}{{- with .weight }}{{ $weightKg = .kg }}{{ end }}{{ end -}}
-  {{- $frame := "" -}}
-  {{- with .Params.traits }}{{- with .build }}{{ $frame = .frame }}{{ end }}{{ end -}}
-  {{- $hasTraits := or
-    .Params.traits.lineage
-    .Params.traits.gender
-    .Params.traits.age
-    .Params.traits.birthday
-    $heightM
-    $weightKg
-    $frame
-  -}}
-  {{- if $hasTraits }}
-  <section class="info-sidebar-section">
-    <h2 class="info-sidebar-heading">Traits</h2>
-    <dl class="info-sidebar-list">
-      {{- with .Params.traits.lineage }}
-      <dt>Lineage</dt>
-      <dd>{{ . | humanize | title }}</dd>
-      {{- end }}
+  {{- /* ---- Skills (grouped by category) ---- */ -}}
+  {{- $hasAnySkill := false -}}
+  {{- with $charSkills }}{{ $hasAnySkill = gt (len .) 0 }}{{ end -}}
+  {{- if $hasAnySkill }}
+  <section class="info-section">
+    <h3 class="info-section-title">Skills</h3>
+    {{- /* Build a set of categorized codes so we can detect uncategorized leftovers. */ -}}
+    {{- $categorized := dict -}}
+    {{- range $categories -}}
+      {{- range .skills -}}{{ $categorized = merge $categorized (dict . true) }}{{- end -}}
+    {{- end -}}
 
-      {{- with .Params.traits.gender }}
-      <dt>Gender</dt>
-      <dd>{{ . | humanize | title }}</dd>
+    {{- range $categories }}
+      {{- $catLabel := .label -}}
+      {{- $entries := slice -}}
+      {{- range $code := .skills -}}
+        {{- $score := "" -}}
+        {{- with $charSkills }}{{ $score = index . $code }}{{ end -}}
+        {{- with $score -}}
+          {{- $name := index $skillNames $code | default $code -}}
+          {{- $entries = $entries | append (dict "name" $name "score" .) -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if gt (len $entries) 0 }}
+      <p class="info-skill-line">
+        <span class="skill-cat">{{ $catLabel }}:</span>
+        <span class="skill-entries">
+          {{- range $i, $e := $entries -}}
+            {{- if $i -}}, {{ end -}}
+            <span class="skill-entry">{{ $e.name }}&nbsp;<em>{{ $e.score }}</em></span>
+          {{- end -}}
+        </span>
+      </p>
       {{- end }}
+    {{- end }}
 
-      {{- with .Params.traits.age }}
-      <dt>Age</dt>
-      <dd>{{ . }}</dd>
-      {{- end }}
-
-      {{- with .Params.traits.birthday }}
-      <dt>Birthday</dt>
-      <dd>{{ . }}</dd>
-      {{- end }}
-
-      {{- with $heightM }}
-      {{- $totalInches := math.Round (mul . 39.3701) -}}
-      {{- $feet   := int (math.Floor (div $totalInches 12)) -}}
-      {{- $inches := int (sub $totalInches (mul $feet 12)) -}}
-      {{- if eq $inches 12 }}{{ $feet = add $feet 1 }}{{ $inches = 0 }}{{ end -}}
-      <dt>Height</dt>
-      <dd>{{ printf "%d&prime;&nbsp;%d&Prime;" $feet $inches | safeHTML }}</dd>
-      {{- end }}
-
-      {{- with $weightKg }}
-      {{- $lbs := int (math.Round (mul . 2.20462)) -}}
-      <dt>Weight</dt>
-      <dd>{{ $lbs }} lbs</dd>
-      {{- end }}
-
-      {{- with $frame }}
-      <dt>Frame</dt>
-      <dd>{{ . | humanize | title }}</dd>
-      {{- end }}
-    </dl>
+    {{- /* Catch any skills the character has that aren't in any category. */ -}}
+    {{- $other := slice -}}
+    {{- range $code, $score := $charSkills -}}
+      {{- if not (index $categorized $code) -}}
+        {{- $name := index $skillNames $code | default $code -}}
+        {{- $other = $other | append (dict "name" $name "score" $score) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt (len $other) 0 -}}
+      {{- $other = sort $other "name" }}
+      <p class="info-skill-line">
+        <span class="skill-cat">Other:</span>
+        <span class="skill-entries">
+          {{- range $i, $e := $other -}}
+            {{- if $i -}}, {{ end -}}
+            <span class="skill-entry">{{ $e.name }}&nbsp;<em>{{ $e.score }}</em></span>
+          {{- end -}}
+        </span>
+      </p>
+    {{- end }}
   </section>
-  {{- end }}
-
-  {{- /* ---- Skills ---- */ -}}
-  {{- with .Params.sohl.skills }}
-  {{- $list := slice -}}
-  {{- range $code, $score := . -}}
-    {{- $label := index $skillNames $code | default $code -}}
-    {{- $list = $list | append (dict "name" $label "score" $score) -}}
-  {{- end -}}
-  {{- if gt (len $list) 0 }}
-  {{- $list = sort $list "name" -}}
-  <section class="info-sidebar-section">
-    <h2 class="info-sidebar-heading">Skills</h2>
-    <dl class="info-sidebar-list info-skills-list">
-      {{- range $list }}
-      <dt>{{ .name }}</dt>
-      <dd>{{ .score }}</dd>
-      {{- end }}
-    </dl>
-  </section>
-  {{- end }}
   {{- end }}
 
 </aside>
