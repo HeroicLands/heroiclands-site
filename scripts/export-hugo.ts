@@ -652,6 +652,11 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     title: (fm) => fm.name?.full || fm.title || "",
     slug: (fm) => fm.slug || undefined,
     description: (fm) => {
+        // An author-supplied description always wins.
+        if (typeof fm.description === "string" && fm.description.trim()) {
+            return fm.description;
+        }
+        // Otherwise derive one from character-like social/thalorna fields.
         const type = fm.type || "";
         const realm = fm.thalorna?.realm || "";
         const occupation = fm.social?.occupation || "";
@@ -663,6 +668,10 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     },
     type: (fm) => fm.type?.toLowerCase(),
     tags: (fm) => fm.tags || [],
+    // Blog-post specific fields. Passed through verbatim so Hugo's
+    // .Params.date / .Params.series (and date-based sort) work.
+    date: (fm) => fm.date || undefined,
+    series: (fm) => fm.series || undefined,
     realm: (fm) => fm.thalorna?.realm || undefined,
     lineage: (fm) => fm.traits?.lineage || undefined,
     gender: (fm) => fm.traits?.gender || undefined,

@@ -1,0 +1,41 @@
+{{ define "main" }}
+{{ partial "hero-banner.html" . }}
+{{ partial "breadcrumbs.html" . }}
+
+{{- /* Blog posts use the same content chrome as other pages but with
+       a blog-specific meta line (series + date) and no right-rail
+       sidebar or auto-generated TOC. If a post grows long enough to
+       warrant a TOC, we can opt it in via a frontmatter flag later. */ -}}
+
+<article class="single">
+  <div class="single-content">
+    <div class="single-meta blog-meta">
+      {{ with .Params.series }}
+      <div class="blog-series">
+        <span class="blog-series-label">Series</span>
+        <span class="blog-series-name">{{ . }}</span>
+      </div>
+      {{ end }}
+      {{ if .Params.date }}
+      <time class="single-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
+      {{ end }}
+      {{ with .Params.tags }}
+      <div class="single-tags">
+        {{ range . }}<a href="/tags/{{ . | urlize }}/" class="tag">{{ . }}</a>{{ end }}
+      </div>
+      {{ end }}
+    </div>
+
+    <div class="single-body">
+      {{ .Content }}
+    </div>
+
+    {{ partial "related.html" . }}
+
+    <nav class="single-nav">
+      {{ with .PrevInSection }}<a href="{{ .Permalink }}" class="nav-prev">&larr; {{ .Title }}</a>{{ end }}
+      {{ with .NextInSection }}<a href="{{ .Permalink }}" class="nav-next">{{ .Title }} &rarr;</a>{{ end }}
+    </nav>
+  </div>
+</article>
+{{ end }}

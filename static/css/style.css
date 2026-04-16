@@ -505,6 +505,44 @@ a.tag:hover {
   gap: 0.4rem;
 }
 
+/* ---- Blog meta ---- */
+
+.blog-meta {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.blog-series {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--accent-dim);
+  border-radius: 2px;
+  background: var(--bg-card);
+}
+
+.blog-series-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.blog-series-name {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.blog-meta .single-date {
+  margin-top: 0.5rem;
+}
+
 /* ---- Article Content ---- */
 
 .single-content {
