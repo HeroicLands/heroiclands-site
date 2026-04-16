@@ -20,15 +20,11 @@ This license applies to the Heroic Lands materials published on this site. It do
 
 If you use or adapt material from this site, please include an attribution along these lines:
 
-```
-This work includes material from Heroic Lands (https://www.heroiclands.org/) by Tom Rodriguez, licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
-```
+> "This work includes material from Heroic Lands (https://www.heroiclands.org/) by Tom Rodriguez, licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)."
 
 If you have modified the material, indicate that as well:
 
-```
-This work is adapted from material in Heroic Lands (https://www.heroiclands.org/) by Tom Rodriguez, licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
-```
+> "This work is adapted from material in Heroic Lands (https://www.heroiclands.org/) by Tom Rodriguez, licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)."
 
 ## Copyright
 
