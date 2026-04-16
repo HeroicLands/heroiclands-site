@@ -642,22 +642,6 @@ a.tag:hover {
   box-shadow: 0 0 0 3px var(--bg);
 }
 
-/* ---- Typography: drop cap on opening paragraph ---- */
-
-/* The first paragraph of article body copy gets a large serif
-   drop cap. Scoped to direct children of .single-body so it only
-   affects the opening paragraph — not paragraphs inside blockquotes,
-   asides, or the related/TOC blocks. */
-.single-body > p:first-of-type::first-letter {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 3.6em;
-  line-height: 0.9;
-  float: left;
-  padding: 0.2rem 0.65rem 0 0;
-  margin-top: 0.25rem;
-  color: var(--gold);
-}
 
 /* ---- External URL shortcode ---- */
 
