@@ -24,18 +24,27 @@
     <ul class="blog-list">
       {{- range . }}
       <li class="blog-list-item">
-        <div class="blog-list-meta">
-          {{ if .Date }}
-          <time class="blog-list-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
-          {{ end }}
-          {{ with .Params.series }}
-          <span class="blog-list-series">{{ . }}</span>
-          {{ end }}
-        </div>
-        <a class="blog-list-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
-        {{ with .Description }}
-        <p class="blog-list-desc">{{ . }}</p>
+        {{ if .Date }}
+        <time class="blog-list-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time>
         {{ end }}
+        <a class="blog-list-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{- /* Auto-generate a ~100-word preview from the rendered body.
+               `.Plain` strips HTML tags. `htmlUnescape` then decodes
+               entities so smart quotes Goldmark emitted as `&rsquo;`
+               etc. become real characters (otherwise the browser
+               displays them literally after Hugo re-escapes the `&`).
+               Collapse paragraph-break whitespace into single spaces,
+               and append an ellipsis only if we actually truncated. */ -}}
+        {{- $plain := .Plain | htmlUnescape -}}
+        {{- $collapsed := trim (replaceRE `\s+` " " $plain) " " -}}
+        {{- $words := split $collapsed " " -}}
+        {{- $preview := $collapsed -}}
+        {{- if gt (len $words) 100 -}}
+          {{- $preview = printf "%s…" (delimit (first 100 $words) " ") -}}
+        {{- end -}}
+        {{- with $preview }}
+        <p class="blog-list-desc">{{ . }}</p>
+        {{- end }}
       </li>
       {{- end }}
     </ul>
