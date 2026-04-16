@@ -33,6 +33,10 @@ title = "Heroic Lands"
     url = "/project/"
     weight = 4
     identifier = "fvtt"
+  [[menu.main]]
+    name = "License"
+    url = "/license/"
+    weight = 5
 
 # Section pages (_index.md) render to HTML so hand-crafted landing pages
 # like /projects/_index.md work. To prevent auto-generated directory
@@ -47,3 +51,31 @@ title = "Heroic Lands"
 
 [taxonomies]
   tag = "tags"
+
+# Mount both the generated content tree AND a hand-authored pages/
+# directory. The exporter writes to content/; pages/ holds static
+# pages (license, about, etc.) that live in the repo itself rather
+# than the vault. clean.ts wipes content/ but leaves pages/ alone.
+[module]
+  [[module.mounts]]
+    source = "content"
+    target = "content"
+  [[module.mounts]]
+    source = "pages"
+    target = "content"
+  # Hugo requires explicit static mount once module.mounts is used.
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
+  [[module.mounts]]
+    source = "data"
+    target = "data"
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+  [[module.mounts]]
+    source = "archetypes"
+    target = "archetypes"
