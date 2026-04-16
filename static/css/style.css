@@ -851,42 +851,47 @@ a.tag:hover {
 
 .site-footer {
   margin-top: auto;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-light);
   background: var(--bg-deeper);
 }
 
 .footer-inner {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 2rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .footer-text {
-  color: var(--text-dim);
-  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
 .footer-text a {
-  color: var(--text-muted);
+  color: var(--text);
+}
+
+.footer-text a:hover {
+  color: var(--accent);
 }
 
 .footer-links {
   display: flex;
-  gap: 1.25rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
 .footer-links a {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .footer-links a:hover {
@@ -894,7 +899,7 @@ a.tag:hover {
 }
 
 .cc-badge {
-  height: 1.2rem;
+  height: 1.75rem;
   display: inline-block;
   vertical-align: middle;
 }
