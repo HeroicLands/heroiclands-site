@@ -896,6 +896,153 @@ function getNestedValue(obj: Record<string, any>, dotPath: string): any {
     return current;
 }
 
+/**
+ * Look up a field value for Dataview WHERE/SORT evaluation.
+ *
+ * Handles Dataview's `file.*` special fields (name, link, path, tags) and
+ * falls back to dot-path lookup on the frontmatter for everything else.
+ * `file.tags` returns the frontmatter tags prefixed with "#", matching
+ * Dataview's own convention so that queries like
+ * `contains(file.tags, "#heroes-and-knaves")` work as authored.
+ */
+function getDataviewField(entry: VaultEntry, field: string): any {
+    switch (field) {
+        case "file.name":
+        case "file.link":
+            return entry.stem;
+        case "file.path":
+            return entry.filepath;
+        case "file.tags": {
+            const tags = entry.frontmatter.tags;
+            if (!Array.isArray(tags)) return [];
+            return tags.map((t) => `#${String(t).replace(/^#/, "")}`);
+        }
+        default:
+            return getNestedValue(entry.frontmatter, field);
+    }
+}
+
+/**
+ * Evaluate a single Dataview atomic predicate against an entry.
+ * Returns true/false, or null if the predicate couldn't be parsed.
+ */
+function evaluateAtom(atom: string, entry: VaultEntry): boolean | null {
+    const trimmed = atom.trim();
+
+    // contains(field, "value")
+    const containsMatch = trimmed.match(
+        /^contains\(\s*(\S+?)\s*,\s*"([^"]*)"\s*\)$/i,
+    );
+    if (containsMatch) {
+        const [, field, value] = containsMatch;
+        const fv = getDataviewField(entry, field);
+        const needle = value.toLowerCase();
+        if (Array.isArray(fv)) {
+            return fv.some((v) =>
+                String(v).toLowerCase().includes(needle),
+            );
+        }
+        return String(fv ?? "").toLowerCase().includes(needle);
+    }
+
+    // field (= | == | !=) "value"
+    const cmpMatch = trimmed.match(
+        /^(\S+?)\s*(!=|==|=)\s*"([^"]*)"$/,
+    );
+    if (cmpMatch) {
+        const [, field, op, value] = cmpMatch;
+        const fv = getDataviewField(entry, field);
+        const a = String(fv ?? "").toLowerCase();
+        const b = value.toLowerCase();
+        return op === "!=" ? a !== b : a === b;
+    }
+
+    return null;
+}
+
+/**
+ * Split a WHERE expression on a boolean operator (`and` | `or`) at the top
+ * level, respecting double-quoted strings so operators inside string
+ * literals don't split.
+ */
+function splitOnBoolean(
+    expr: string,
+    op: "and" | "or",
+): string[] {
+    const parts: string[] = [];
+    const re = new RegExp(`\\s+${op}\\s+`, "i");
+    let buf = "";
+    let inQuote = false;
+    let i = 0;
+    while (i < expr.length) {
+        const ch = expr[i];
+        if (ch === '"') {
+            inQuote = !inQuote;
+            buf += ch;
+            i++;
+            continue;
+        }
+        if (!inQuote) {
+            // Try to match the operator starting here (with required
+            // whitespace on both sides).
+            const rest = expr.slice(i);
+            const m = rest.match(re);
+            if (m && m.index === 0) {
+                parts.push(buf);
+                buf = "";
+                i += m[0].length;
+                continue;
+            }
+        }
+        buf += ch;
+        i++;
+    }
+    parts.push(buf);
+    return parts;
+}
+
+/**
+ * Evaluate a compound Dataview WHERE expression against an entry.
+ *
+ * Grammar (effectively):
+ *   expr     := or-expr
+ *   or-expr  := and-expr ( OR and-expr )*
+ *   and-expr := atom ( AND atom )*
+ *   atom     := contains(field, "value") | field (= | == | !=) "value"
+ *
+ * Unparseable predicates return false (match nothing) so authors notice a
+ * broken query instead of getting a table full of unrelated content.
+ */
+function evaluateWhere(
+    whereClause: string,
+    entry: VaultEntry,
+    verbose: boolean,
+): boolean {
+    const orParts = splitOnBoolean(whereClause, "or");
+    for (const orPart of orParts) {
+        const andParts = splitOnBoolean(orPart, "and");
+        let allTrue = true;
+        for (const atom of andParts) {
+            const result = evaluateAtom(atom, entry);
+            if (result === null) {
+                if (verbose) {
+                    console.warn(
+                        `    Unparseable WHERE predicate: ${atom.trim()}`,
+                    );
+                }
+                allTrue = false;
+                break;
+            }
+            if (!result) {
+                allTrue = false;
+                break;
+            }
+        }
+        if (allTrue) return true;
+    }
+    return false;
+}
+
 // ── Dataview query resolution ──────────────────────────────────────
 
 /**
@@ -1004,46 +1151,36 @@ function resolveDataviewQueries(
                 }
             }
 
-            // WHERE (simple support: field = "value" or contains(field, "value"))
+            // WHERE clause evaluation.
+            //
+            // Supports a useful subset of Dataview's expression language:
+            //   - Atomic predicates:
+            //       field = "value"          (case-insensitive equality)
+            //       field != "value"         (negated equality)
+            //       contains(field, "value") (substring on strings,
+            //                                 element-substring on arrays)
+            //   - Compound expressions joined by `and` / `or`, left-to-right
+            //     with standard precedence (AND binds tighter than OR).
+            //   - Special fields: `file.name` (stem), `file.link` (stem),
+            //     `file.path` (absolute path), `file.tags` (array of tags
+            //     with "#" prefix, matching Dataview convention).
+            //
+            // Parenthesized groups and negation (`!`) are not yet supported;
+            // none of the vault's current queries use them. An unparseable
+            // clause logs a warning (when verbose) and is treated as "match
+            // nothing" — safer than silently returning the whole vault.
             if (whereClause) {
-                const eqMatch = whereClause.match(
-                    /^(\S+)\s*=\s*"([^"]+)"$/,
+                filtered = filtered.filter((e) =>
+                    evaluateWhere(whereClause, e, verbose),
                 );
-                const containsMatch = whereClause.match(
-                    /^contains\((\S+),\s*"([^"]+)"\)$/i,
-                );
-
-                if (eqMatch) {
-                    const [, field, value] = eqMatch;
-                    filtered = filtered.filter(
-                        (e) =>
-                            String(
-                                getNestedValue(e.frontmatter, field) ?? "",
-                            ).toLowerCase() === value.toLowerCase(),
-                    );
-                } else if (containsMatch) {
-                    const [, field, value] = containsMatch;
-                    filtered = filtered.filter((e) => {
-                        const fv = getNestedValue(e.frontmatter, field);
-                        if (Array.isArray(fv))
-                            return fv.some(
-                                (v: string) =>
-                                    String(v)
-                                        .toLowerCase()
-                                        .includes(value.toLowerCase()),
-                            );
-                        return String(fv ?? "")
-                            .toLowerCase()
-                            .includes(value.toLowerCase());
-                    });
-                }
             }
 
-            // Multi-field sort
+            // Multi-field sort. Reuses the same field resolver as WHERE so
+            // `file.name`, `file.link`, `file.path`, and `file.tags` all
+            // behave consistently across clauses.
             const fieldValueForSort = (e: VaultEntry, field: string): string => {
-                if (field === "file.name") return e.stem.toLowerCase();
-                if (field === "file.link") return e.stem.toLowerCase();
-                const v = getNestedValue(e.frontmatter, field);
+                const v = getDataviewField(e, field);
+                if (Array.isArray(v)) return v.join(",").toLowerCase();
                 return String(v ?? "").toLowerCase();
             };
             filtered.sort((a, b) => {
