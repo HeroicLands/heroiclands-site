@@ -1,12 +1,12 @@
-baseURL = "https://heroiclands.org/"
+baseURL = "https://www.heroiclands.org/"
 languageCode = "en-us"
 title = "Heroic Lands"
 
 # We're using layouts directly, no external theme
 
 [params]
-  description = "The Lands of Thalorna — worldbuilding, game systems, and adventure"
-  author = "Tom"
+  description = "Heroic Lands — World of Thalorna and Foundry VTT Game Systems and Modules"
+  author = "Tom Rodriguez"
 
 [markup]
   [markup.goldmark]
@@ -22,15 +22,15 @@ title = "Heroic Lands"
     weight = 1
   [[menu.main]]
     name = "Thalorna"
-    url = "/world/thalorna/"
+    url = "/world/thalorna/thalorna/"
     weight = 2
   [[menu.main]]
     name = "Blog"
-    url = "/blog/"
+    url = "/blog/blog/"
     weight = 3
   [[menu.main]]
-    name = "Foundry VTT Systems & Modules"
-    url = "/project/"
+    name = "Systems & Modules"
+    url = "/project/project/"
     weight = 4
     identifier = "fvtt"
   [[menu.main]]
