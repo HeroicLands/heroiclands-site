@@ -22,7 +22,7 @@ title = "Heroic Lands"
     weight = 1
   [[menu.main]]
     name = "Thalorna"
-    url = "/world/thalorna/world/thalorna/"
+    url = "/cosmos/world/thalorna/"
     weight = 2
   [[menu.main]]
     name = "Blog"

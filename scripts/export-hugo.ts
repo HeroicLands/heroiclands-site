@@ -36,24 +36,36 @@ const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
+    "affliction",
+    "armorgear",
     "blog-post",
     "character",
+    "concoctiongear",
+    "containergear",
     "continent",
     "creature",
+    "domain",
     "faith",
     "religion",
     "language",
     "lore",
+    "miscgear",
+    "mystery",
+    "mysticalability",
     "organization",
     "page",
     "pantheon",
     "people",
     "polity",
     "project-page",
+    "projectilegear",
     "region",
     "settlement",
     "site",
+    "skill",
+    "trait",
     "type-catalog",
+    "weapongear",
     "world",
 ] as const;
 
@@ -85,13 +97,16 @@ interface BucketConfig {
 }
 
 const BUCKETS: BucketConfig[] = [
-    { vaultPrefix: "Types/",                         hugoPath: "types",           routing: "flat"    },
-    { vaultPrefix: "Projects/Song_of_Heroic_Lands/", hugoPath: "project/sohl",    routing: "flat"    },
-    { vaultPrefix: "Projects/HM3/",                  hugoPath: "project/hm3",     routing: "flat"    },
-    { vaultPrefix: "Projects/Modules/",              hugoPath: "project/modules", routing: "flat"    },
-    { vaultPrefix: "Projects/",                      hugoPath: "project",         routing: "flat"    },
-    { vaultPrefix: "Worlds/Thalorna/",               hugoPath: "world/thalorna",  routing: "by-type" },
-    { vaultPrefix: "Blog/",                          hugoPath: "blog",            routing: "by-date" },
+    { vaultPrefix: "Types/",                              hugoPath: "types",                routing: "flat"    },
+    { vaultPrefix: "Projects/Song_of_Heroic_Lands/",      hugoPath: "project/sohl",         routing: "flat"    },
+    { vaultPrefix: "Projects/HM3/",                       hugoPath: "project/hm3",          routing: "flat"    },
+    { vaultPrefix: "Projects/Modules/",                   hugoPath: "project/modules",      routing: "flat"    },
+    { vaultPrefix: "Projects/Systems/Characteristics/",   hugoPath: "project/characteristics", routing: "by-type" },
+    { vaultPrefix: "Projects/Systems/Domains/",           hugoPath: "project/domain",       routing: "flat"    },
+    { vaultPrefix: "Projects/Systems/Possessions/",       hugoPath: "project/possessions",  routing: "by-type" },
+    { vaultPrefix: "Projects/",                           hugoPath: "project",              routing: "flat"    },
+    { vaultPrefix: "Worlds/Thalorna/",                    hugoPath: "cosmos",               routing: "by-type" },
+    { vaultPrefix: "Blog/",                               hugoPath: "blog",                 routing: "by-date" },
 ];
 
 function resolveBucket(filepath: string): BucketConfig | null {
@@ -590,6 +605,30 @@ interface LinkGraph {
     mentions: Map<string, RelatedRef[]>;
 }
 
+/**
+ * Resolve a wikilink target against the lookup map.
+ *
+ * Tries the full target first; if that misses and the target contains path
+ * separators, falls back to the last path segment (its basename). This
+ * mirrors Obsidian's own behavior, which accepts path-form targets like
+ * `[[Worlds/Thalorna/Creatures/Creatures]]` and resolves them by filename.
+ *
+ * Used by both the wikilink-rewriter and the backlink-graph builder so they
+ * agree on what resolves.
+ */
+function resolveWikilinkTarget(
+    target: string,
+    lookup: Map<string, LookupEntry>,
+): LookupEntry | undefined {
+    const trimmed = target.trim();
+    const direct = lookup.get(trimmed);
+    if (direct) return direct;
+    const slashIdx = trimmed.lastIndexOf("/");
+    if (slashIdx === -1) return undefined;
+    const basename = trimmed.slice(slashIdx + 1);
+    return basename ? lookup.get(basename) : undefined;
+}
+
 function buildLinkGraph(
     entries: VaultEntry[],
     lookup: Map<string, LookupEntry>,
@@ -612,7 +651,7 @@ function buildLinkGraph(
         wikilinkRe.lastIndex = 0;
         while ((match = wikilinkRe.exec(entry.body)) !== null) {
             const rawTarget = match[1].trim();
-            const targetLookup = lookup.get(rawTarget);
+            const targetLookup = resolveWikilinkTarget(rawTarget, lookup);
             if (!targetLookup) continue;
             if (targetLookup.url === entry.url) continue;
             if (seenTargets.has(targetLookup.url)) continue;
@@ -1154,7 +1193,7 @@ function transformBody(
     result = result.replace(
         /\[\[([^\]|]+)\|([^\]]+)\]\]/g,
         (_match, target: string, display: string) => {
-            const entry = lookup.get(target.trim());
+            const entry = resolveWikilinkTarget(target, lookup);
             if (entry) {
                 return `[${display.trim()}](${entry.url})`;
             }
@@ -1170,7 +1209,7 @@ function transformBody(
     result = result.replace(
         /\[\[([^\]|]+)\]\]/g,
         (_match, target: string) => {
-            const entry = lookup.get(target.trim());
+            const entry = resolveWikilinkTarget(target, lookup);
             if (entry) {
                 return `[${entry.title}](${entry.url})`;
             }
