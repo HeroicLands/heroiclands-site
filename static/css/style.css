@@ -1330,6 +1330,103 @@ a.tag:hover {
   border-bottom-style: solid;
 }
 
+/* ---- Gear sidebar: armor protection B/E/P/F tiles, locations, traits,
+       weapon strike-mode blocks ---- */
+
+.info-protection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr));
+  gap: 0.4rem;
+}
+
+.info-prot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.25rem;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  border-radius: 0.25rem;
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.02));
+}
+
+.prot-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.prot-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1.2;
+  margin-top: 0.15rem;
+}
+
+.info-loc-list,
+.info-trait-list,
+.info-impact {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.info-trait-list {
+  font-variant: small-caps;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.info-impact {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.info-strike-mode {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.1));
+  border-radius: 0.25rem;
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.02));
+}
+
+.info-strike-mode:last-child {
+  margin-bottom: 0;
+}
+
+.strike-mode-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.strike-mode-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.1rem 0.6rem;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.strike-mode-grid dt {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.strike-mode-grid dd {
+  margin: 0;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 960px) {
   .info-sidebar {
     position: static;

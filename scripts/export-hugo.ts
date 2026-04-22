@@ -866,6 +866,18 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     thalorna: (fm) => fm.thalorna || undefined,
     traits: (fm) => fm.traits || undefined,
     sohl: (fm) => transformSohl(fm.sohl),
+
+    // ── Gear-specific top-level fields ─────────────────────────────
+    // These live at the top level of gear frontmatter (mirroring the
+    // Foundry system's Item document shape). Passed through so the gear
+    // sidebar can render weapon stats, armor stats, strike-modes, etc.
+    // Other content types don't set these and will silently emit undefined.
+    weaponType: (fm) => fm.weaponType || undefined,
+    length: (fm) => (typeof fm.length === "number" ? fm.length : undefined),
+    strikeModes: (fm) => fm.strikeModes || undefined,
+    armorType: (fm) => fm.armorType || undefined,
+    detailMaterial: (fm) => fm.detailMaterial || undefined,
+    material: (fm) => fm.material || undefined,
 };
 
 /**

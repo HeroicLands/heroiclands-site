@@ -3,7 +3,8 @@
 {{ partial "breadcrumbs.html" . }}
 
 {{- $type := .Params.type | default "" -}}
-{{- $hasSidebar := or (eq $type "character") (eq $type "creature") -}}
+{{- $gearTypes := slice "weapongear" "armorgear" "miscgear" "containergear" "projectilegear" "concoctiongear" -}}
+{{- $hasSidebar := or (eq $type "character") (eq $type "creature") (in $gearTypes $type) -}}
 
 {{- /* The TOC partial only emits markup when the page has more than
        3 H2 headings. To avoid laying the page out as a two-column

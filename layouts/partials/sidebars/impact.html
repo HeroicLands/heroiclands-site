@@ -1,0 +1,18 @@
+{{- /*
+  Format a SOHL impact dict as a compact die string.
+
+  Input: a dict like { die: 8, modifier: 5, aspect: "edged" }.
+  Output: "1d{die}{±modifier}{aspect[0] lowercased}" — e.g.
+    { 8,  5, edged    } → "1d8+5e"
+    { 12, -1, piercing } → "1d12-1p"
+    { 4,  0, blunt    } → "1d4+0b"
+
+  Used by sidebars/gear.html for weapon strike-mode impacts and
+  projectile impacts.
+*/ -}}
+{{- $die := .die      | default 0 -}}
+{{- $mod := .modifier | default 0 -}}
+{{- $asp := .aspect   | default "" -}}
+{{- $letter := "" -}}
+{{- with $asp }}{{ $letter = substr . 0 1 | lower }}{{ end -}}
+{{- printf "1d%d%+d%s" (int $die) (int $mod) $letter -}}

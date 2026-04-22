@@ -9,8 +9,11 @@
   add a branch below.
 */ -}}
 {{- $type := .Params.type | default "" -}}
+{{- $gearTypes := slice "weapongear" "armorgear" "miscgear" "containergear" "projectilegear" "concoctiongear" -}}
 {{- if eq $type "character" -}}
   {{- partial "sidebars/character.html" . -}}
 {{- else if eq $type "creature" -}}
   {{- partial "sidebars/creature.html" . -}}
+{{- else if in $gearTypes $type -}}
+  {{- partial "sidebars/gear.html" . -}}
 {{- end -}}

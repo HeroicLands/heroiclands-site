@@ -1,0 +1,238 @@
+{{- /*
+  Gear info sidebar — profile card for every gear type:
+  weapongear, armorgear, miscgear, containergear, projectilegear,
+  concoctiongear.
+
+  Layout:
+    1. Title header        ("Weapon Profile", "Armor Profile", etc.)
+    2. Common profile dl   (Name, Price, Weight, Durability + type-specific
+                            core fields like Material, Weapon Type, Subtype,
+                            Potency, Max Capacity, Encumbrance, Perception
+                            Penalty, Heft, Length)
+    3. Armor-only sections (Protection B/E/P/F, Flexible Locations,
+                            Rigid Locations)
+    4. Weapon-only sections (Traits, Strike Modes — skill, impact, and
+                             ranged stats where applicable)
+    5. Projectile-only sections (Impact, Traits)
+
+  Each section is guarded so missing data silently disappears.
+*/ -}}
+{{- $type  := .Params.type -}}
+{{- $sohl  := .Params.sohl | default dict -}}
+
+{{- $titleByType := dict
+    "weapongear"     "Weapon Profile"
+    "armorgear"      "Armor Profile"
+    "miscgear"       "Item Profile"
+    "containergear"  "Container Profile"
+    "projectilegear" "Projectile Profile"
+    "concoctiongear" "Concoction Profile" -}}
+{{- $cardTitle := index $titleByType $type | default "Item Profile" -}}
+
+<aside class="info-sidebar">
+
+  <header class="info-sidebar-title">
+    <h2>{{ $cardTitle }}</h2>
+  </header>
+
+  {{- /* ---- Common profile (Name + type-specific core fields) ---- */ -}}
+  <dl class="info-profile-grid">
+    {{- with .Params.name }}{{- with .full }}
+    <dt>Name</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}{{- end }}
+
+    {{- /* Price — integer pence, "d" suffix */ -}}
+    {{- $value := $sohl.value -}}
+    {{- if ne $value nil }}
+    <dt>Price</dt>
+    <dd>{{ printf "%vd" $value }}</dd>
+    {{- end }}
+
+    {{- /* Weight — pounds */ -}}
+    {{- $weight := $sohl.weight -}}
+    {{- if ne $weight nil }}
+    <dt>Weight</dt>
+    <dd>{{ printf "%v lbs" $weight }}</dd>
+    {{- end }}
+
+    {{- /* Durability */ -}}
+    {{- with $sohl.durability }}
+    <dt>Durability</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- /* ---- Container-only ---- */ -}}
+    {{- if eq $type "containergear" }}
+      {{- with $sohl.maxCapacity }}
+      <dt>Max Capacity</dt>
+      <dd>{{ . }} lbs</dd>
+      {{- end }}
+    {{- end }}
+
+    {{- /* ---- Concoction-only ---- */ -}}
+    {{- if eq $type "concoctiongear" }}
+      {{- $sub := $sohl.subType -}}
+      {{- with $sub }}
+      <dt>Subtype</dt>
+      <dd>{{ . | humanize | title }}</dd>
+      {{- end }}
+      {{- if and $sub (ne $sub "elixir") }}
+        {{- with $sohl.potency }}
+        <dt>Potency</dt>
+        <dd>{{ . | humanize | title }}</dd>
+        {{- end }}
+      {{- end }}
+    {{- end }}
+
+    {{- /* ---- Armor-only ---- */ -}}
+    {{- if eq $type "armorgear" }}
+      {{- with .Params.material }}
+      <dt>Material</dt>
+      <dd>{{ . }}</dd>
+      {{- end }}
+      {{- $enc := $sohl.encumbrance -}}
+      {{- if ne $enc nil }}
+      <dt>Encumbrance</dt>
+      <dd>{{ $enc }}</dd>
+      {{- end }}
+      {{- $per := $sohl.perception -}}
+      {{- if ne $per nil }}
+      <dt>Perception Penalty</dt>
+      <dd>{{ $per }}</dd>
+      {{- end }}
+    {{- end }}
+
+    {{- /* ---- Weapon-only ---- */ -}}
+    {{- if eq $type "weapongear" }}
+      {{- with .Params.weaponType }}
+      <dt>Weapon Type</dt>
+      <dd>{{ . }}</dd>
+      {{- end }}
+      {{- with $sohl.heft }}
+      <dt>Heft</dt>
+      <dd>{{ . }}</dd>
+      {{- end }}
+      {{- with .Params.length }}
+      <dt>Length</dt>
+      <dd>{{ . }} ft</dd>
+      {{- end }}
+    {{- end }}
+  </dl>
+
+  {{- /* ---- Armor: Protection (B/E/P/F) ---- */ -}}
+  {{- if eq $type "armorgear" }}
+    {{- with $sohl.protection }}
+    <section class="info-section">
+      <h3 class="info-section-title">Protection</h3>
+      <div class="info-protection-grid">
+        <div class="info-prot" title="Blunt"><span class="prot-label">B</span><span class="prot-value">{{ .blunt    | default 0 }}</span></div>
+        <div class="info-prot" title="Edged"><span class="prot-label">E</span><span class="prot-value">{{ .edged    | default 0 }}</span></div>
+        <div class="info-prot" title="Piercing"><span class="prot-label">P</span><span class="prot-value">{{ .piercing | default 0 }}</span></div>
+        <div class="info-prot" title="Fire"><span class="prot-label">F</span><span class="prot-value">{{ .fire     | default 0 }}</span></div>
+      </div>
+    </section>
+    {{- end }}
+
+    {{- with $sohl.flexloc }}{{- if gt (len .) 0 }}
+    <section class="info-section">
+      <h3 class="info-section-title">Flexible Locations</h3>
+      <p class="info-loc-list">{{ delimit . ", " }}</p>
+    </section>
+    {{- end }}{{- end }}
+
+    {{- with $sohl.rigidloc }}{{- if gt (len .) 0 }}
+    <section class="info-section">
+      <h3 class="info-section-title">Rigid Locations</h3>
+      <p class="info-loc-list">{{ delimit . ", " }}</p>
+    </section>
+    {{- end }}{{- end }}
+  {{- end }}
+
+  {{- /* ---- Weapon: Traits (weapon-level boolean flags) ---- */ -}}
+  {{- if eq $type "weapongear" }}
+    {{- $traits := slice -}}
+    {{- range $k, $v := $sohl.traits -}}
+      {{- if $v -}}
+        {{- if or (eq $v true) (eq $v false) -}}
+          {{- $traits = $traits | append (humanize $k) -}}
+        {{- else -}}
+          {{- $traits = $traits | append (printf "%s: %v" (humanize $k) $v) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt (len $traits) 0 }}
+    <section class="info-section">
+      <h3 class="info-section-title">Traits</h3>
+      <p class="info-trait-list">{{ delimit $traits ", " }}</p>
+    </section>
+    {{- end }}
+  {{- end }}
+
+  {{- /* ---- Weapon: Strike Modes ---- */ -}}
+  {{- if eq $type "weapongear" }}
+    {{- with .Params.strikeModes }}
+    <section class="info-section">
+      <h3 class="info-section-title">Strike Modes</h3>
+      {{- range $modeKey, $mode := . }}
+      <div class="info-strike-mode">
+        <h4 class="strike-mode-title">{{ $mode.subDesc | default ($modeKey | humanize | title) }}</h4>
+        <dl class="strike-mode-grid">
+          {{- with $mode.assocSkill }}
+          <dt>Skill</dt>
+          <dd>{{ . }}</dd>
+          {{- end }}
+          {{- with $mode.attack }}
+          <dt>Acc</dt>
+          <dd>{{ .accuracy | default 0 }}</dd>
+          {{- end }}
+          {{- with $mode.impact }}
+          <dt>Impact</dt>
+          <dd>{{ partial "sidebars/impact.html" . }}</dd>
+          {{- end }}
+          {{- with $mode.ranged -}}
+            {{- $br := .baseRange | default 0 -}}
+            {{- if gt $br 0 }}
+            <dt>Base Range</dt>
+            <dd>{{ $br }}</dd>
+            <dt>Draw</dt>
+            <dd>{{ .draw | default 0 }}</dd>
+            <dt>Max VM</dt>
+            <dd>{{ .maxVM | default 0 }}</dd>
+            {{- end }}
+          {{- end }}
+        </dl>
+      </div>
+      {{- end }}
+    </section>
+    {{- end }}
+  {{- end }}
+
+  {{- /* ---- Projectile: Impact + Traits ---- */ -}}
+  {{- if eq $type "projectilegear" }}
+    {{- with $sohl.impact }}
+    <section class="info-section">
+      <h3 class="info-section-title">Impact</h3>
+      <p class="info-impact">{{ partial "sidebars/impact.html" . }}</p>
+    </section>
+    {{- end }}
+
+    {{- $traits := slice -}}
+    {{- range $k, $v := $sohl.traits -}}
+      {{- if $v -}}
+        {{- if or (eq $v true) (eq $v false) -}}
+          {{- $traits = $traits | append (humanize $k) -}}
+        {{- else -}}
+          {{- $traits = $traits | append (printf "%s: %v" (humanize $k) $v) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if gt (len $traits) 0 }}
+    <section class="info-section">
+      <h3 class="info-section-title">Traits</h3>
+      <p class="info-trait-list">{{ delimit $traits ", " }}</p>
+    </section>
+    {{- end }}
+  {{- end }}
+
+</aside>
