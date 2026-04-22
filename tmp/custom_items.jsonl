@@ -1,0 +1,912 @@
+{"file": "Heroes_and_Knaves/Afzandah_Parnazar.md", "idx": 36, "type": "miscgear", "name": "Metalcraft tools (chisels, files, engraving burins)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Afzandah_Parnazar.md", "idx": 37, "type": "miscgear", "name": "Decorative gemstones (assorted)", "system": {"quantity": 20, "value": 50}}
+{"file": "Heroes_and_Knaves/Afzandah_Parnazar.md", "idx": 38, "type": "miscgear", "name": "Leather apron for workshop", "system": null}
+{"file": "Heroes_and_Knaves/Agapeia_Varzanes.md", "idx": 39, "type": "miscgear", "name": "Miner's pickaxe (spare)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Agapeia_Varzanes.md", "idx": 40, "type": "miscgear", "name": "Safety rope", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Agapeia_Varzanes.md", "idx": 41, "type": "miscgear", "name": "Oil lantern with lamp oil", "system": null}
+{"file": "Heroes_and_Knaves/Agapeia_Varzanes.md", "idx": 42, "type": "miscgear", "name": "Mining assessment tools (loupe, hardness tester)", "system": null}
+{"file": "Heroes_and_Knaves/Agapeia_Varzanes.md", "idx": 45, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 34, "type": "miscgear", "name": "Quill set (goose and reed)", "system": {"quantity": 12}}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 35, "type": "miscgear", "name": "Inkwell with premium black ink", "system": {"value": 2, "weight": 0.3}}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 36, "type": "miscgear", "name": "Parchment (premium sheets)", "system": {"quantity": 25}}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 37, "type": "miscgear", "name": "Sealing wax (assorted colors)", "system": {"quantity": 3, "value": 1}}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 38, "type": "miscgear", "name": "Seal stamps (personal and guild)", "system": {"quantity": 2, "value": 3}}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 39, "type": "miscgear", "name": "Blotting sand", "system": null}
+{"file": "Heroes_and_Knaves/Ailema_Keriamyes.md", "idx": 41, "type": "miscgear", "name": "Ruler and straightedge (brass)", "system": null}
+{"file": "Heroes_and_Knaves/Akakios_Polytimos.md", "idx": 36, "type": "miscgear", "name": "Sailor’s rope (coiled)", "system": {"weight": 2, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Akakios_Polytimos.md", "idx": 37, "type": "miscgear", "name": "Navigation tools (compass, astrolabe)", "system": {"weight": 0.5, "value": 8}}
+{"file": "Heroes_and_Knaves/Akakios_Polytimos.md", "idx": 38, "type": "miscgear", "name": "Fishing hooks and line", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Akakios_Polytimos.md", "idx": 39, "type": "miscgear", "name": "Net (small)", "system": null}
+{"file": "Heroes_and_Knaves/Akakios_Polytimos.md", "idx": 42, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 38, "type": "miscgear", "name": "Training whistle (bone)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 39, "type": "miscgear", "name": "Animal treats and feed", "system": {"weight": 1, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 40, "type": "miscgear", "name": "Leather leashes and ropes (assorted)", "system": {"weight": 1.5, "quantity": 3}}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 41, "type": "miscgear", "name": "Animal grooming tools (brush, comb, scraper)", "system": null}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 42, "type": "miscgear", "name": "Healing salve for animal wounds", "system": {"value": 1}}
+{"file": "Heroes_and_Knaves/Akhrem_Reenfre.md", "idx": 45, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Alykos_Sampsion.md", "idx": 37, "type": "miscgear", "name": "Medical text (comprehensive anatomy treatise)", "system": {"weight": 1, "value": 20}}
+{"file": "Heroes_and_Knaves/Alykos_Sampsion.md", "idx": 39, "type": "miscgear", "name": "Herbal remedies (assorted tinctures)", "system": {"quantity": 8, "value": 12}}
+{"file": "Heroes_and_Knaves/Alykos_Sampsion.md", "idx": 40, "type": "miscgear", "name": "Surgical instruments (scalpels, lancets, forceps)", "system": {"weight": 0.5, "value": 8}}
+{"file": "Heroes_and_Knaves/Alykos_Sampsion.md", "idx": 41, "type": "miscgear", "name": "Healing poultices (prepared)", "system": {"quantity": 4, "value": 2}}
+{"file": "Heroes_and_Knaves/Alykos_Sampsion.md", "idx": 43, "type": "miscgear", "name": "Herbal reference guide (personal notes)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Alykos_Theotokis.md", "idx": 37, "type": "miscgear", "name": "Carpenter's toolbox (chisel set, hammer, handsaw, plane)", "system": {"weight": 2, "value": 8}}
+{"file": "Heroes_and_Knaves/Alykos_Theotokis.md", "idx": 39, "type": "miscgear", "name": "Wooden dowels and pegs (assorted)", "system": {"quantity": 20}}
+{"file": "Heroes_and_Knaves/Alykos_Theotokis.md", "idx": 40, "type": "miscgear", "name": "Work apron (heavy canvas)", "system": null}
+{"file": "Heroes_and_Knaves/Alykos_Theotokis.md", "idx": 43, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 36, "type": "miscgear", "name": "Wooden carving tools (knife, chisel, burins)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 37, "type": "miscgear", "name": "Plant-based dyes (assorted colors)", "system": {"quantity": 6, "value": 3}}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 38, "type": "miscgear", "name": "Straw and fiber for stuffing", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 39, "type": "miscgear", "name": "Fine cloth scraps (linen, wool)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 40, "type": "miscgear", "name": "Natural glue and adhesive", "system": null}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 41, "type": "miscgear", "name": "Paintbrushes and fine tools", "system": {"quantity": 8}}
+{"file": "Heroes_and_Knaves/Alyra_Kalmereth.md", "idx": 43, "type": "miscgear", "name": "Burlap sack", "system": null}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 36, "type": "miscgear", "name": "Glass bottles (assorted sizes, decorated)", "system": {"quantity": 12, "value": 6}}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 37, "type": "miscgear", "name": "Blending tools (glass rods, scales, pipettes)", "system": {"weight": 0.5, "value": 5}}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 38, "type": "miscgear", "name": "Scent samples (rare botanicals)", "system": {"quantity": 15, "value": 20}}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 39, "type": "miscgear", "name": "Herbal and animal essences (oils, resins)", "system": {"quantity": 8, "value": 15}}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 40, "type": "miscgear", "name": "Perfumer's notebook (formula records)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Angelides_Kantakouzenos.md", "idx": 42, "type": "miscgear", "name": "Waterskin (ceramic)", "system": null}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 35, "type": "miscgear", "name": "Herbal poultices (healing preparations)", "system": {"quantity": 6, "value": 5}}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 36, "type": "miscgear", "name": "Ritual components (chalk, salt, rare herbs)", "system": {"weight": 0.5, "value": 4}}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 37, "type": "miscgear", "name": "Enchanted stones (amulet set)", "system": {"quantity": 4, "value": 8}}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 38, "type": "miscgear", "name": "Tarot cards (worn but well-cared)", "system": {"value": 3}}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 39, "type": "miscgear", "name": "Grimoire (personal magical notes)", "system": {"weight": 1, "value": 5}}
+{"file": "Heroes_and_Knaves/Angelides_Patrikios.md", "idx": 41, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 36, "type": "miscgear", "name": "Lockpicks and specialized tools", "system": {"weight": 0.3, "value": 5}}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 37, "type": "miscgear", "name": "Poisons (assorted compounds)", "system": {"quantity": 4, "value": 10}}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 38, "type": "miscgear", "name": "Grappling hook and silk rope", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 39, "type": "miscgear", "name": "Climbing gloves (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 40, "type": "miscgear", "name": "Garotte wire (concealed)", "system": null}
+{"file": "Heroes_and_Knaves/Anuraja_Harsadevambujakar.md", "idx": 42, "type": "miscgear", "name": "Waterskin (small)", "system": null}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 38, "type": "miscgear", "name": "Geological survey tools (hammer, chisel, loupe)", "system": {"weight": 1, "value": 6}}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 39, "type": "miscgear", "name": "Safety rope and carabiners", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 40, "type": "miscgear", "name": "Oil lantern with lamp oil", "system": null}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 41, "type": "miscgear", "name": "Geological maps and survey notes", "system": {"weight": 0.5, "value": 3}}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 42, "type": "miscgear", "name": "Mineral sample collection (assorted ore)", "system": {"weight": 1.5, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Arevyn_Llydar.md", "idx": 45, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Arkadios_Philomedis.md", "idx": 39, "type": "miscgear", "name": "Healing poultices (field dressings)", "system": {"quantity": 6, "value": 4}}
+{"file": "Heroes_and_Knaves/Arkadios_Philomedis.md", "idx": 40, "type": "miscgear", "name": "Bedroll (heavy)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Arkadios_Philomedis.md", "idx": 43, "type": "miscgear", "name": "Waterskin (large)", "system": null}
+{"file": "Heroes_and_Knaves/Arkadios_Philomedis.md", "idx": 45, "type": "miscgear", "name": "Personal seal and insignia", "system": {"value": 2}}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 34, "type": "miscgear", "name": "Worn shawl (layered for warmth)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 35, "type": "miscgear", "name": "Old blanket (tattered but functional)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 36, "type": "miscgear", "name": "Walking stick (reinforced wood)", "system": null}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 37, "type": "miscgear", "name": "Ceramic begging bowl", "system": null}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 38, "type": "miscgear", "name": "Herbal remedies for street folk", "system": {"quantity": 3, "value": 1}}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 39, "type": "miscgear", "name": "String instrument (lute, well-maintained despite appearance)", "system": {"value": 5}}
+{"file": "Heroes_and_Knaves/Arkhea_Kourkasios.md", "idx": 40, "type": "miscgear", "name": "Waterskin (leather, patched)", "system": null}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 38, "type": "miscgear", "name": "Quiver (leather, desert-crafted)", "system": null}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 39, "type": "miscgear", "name": "Herbal remedies (desert plants)", "system": {"quantity": 4, "value": 3}}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 40, "type": "miscgear", "name": "Tracking tools (bone markers)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 41, "type": "miscgear", "name": "Waterskin (large, decorated)", "system": null}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 42, "type": "miscgear", "name": "Desert rations (dried meat and dates)", "system": {"quantity": 1, "weight": 1}}
+{"file": "Heroes_and_Knaves/Atenheru.md", "idx": 44, "type": "miscgear", "name": "Spiritual amulet (bone and leather)", "system": null}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 36, "type": "miscgear", "name": "Tribal necklace (bone and silver, leadership insignia)", "system": {"value": 10}}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 37, "type": "miscgear", "name": "Hunting knife (bone handle)", "system": null}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 38, "type": "miscgear", "name": "Territorial maps and survey notes", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 39, "type": "miscgear", "name": "Herbal remedies (wound treatment)", "system": {"quantity": 3, "value": 2}}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 40, "type": "miscgear", "name": "Leadership seal (carved bone)", "system": {"value": 5}}
+{"file": "Heroes_and_Knaves/Athalwa_Vithrund.md", "idx": 42, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Athenagoras_Katakalos.md", "idx": 39, "type": "miscgear", "name": "Bedroll (military standard)", "system": null}
+{"file": "Heroes_and_Knaves/Athenagoras_Katakalos.md", "idx": 40, "type": "miscgear", "name": "Military insignia and documents", "system": {"value": 2}}
+{"file": "Heroes_and_Knaves/Athenagoras_Katakalos.md", "idx": 41, "type": "miscgear", "name": "Letters from home (family)", "system": {"weight": 0.1}}
+{"file": "Heroes_and_Knaves/Athenagoras_Katakalos.md", "idx": 43, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 37, "type": "miscgear", "name": "Wicker basket with fresh herbs", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 38, "type": "miscgear", "name": "Herbal remedies (prepared tinctures)", "system": {"quantity": 8, "value": 8}}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 39, "type": "miscgear", "name": "Alchemical laboratory tools (mortar, pestle, scales)", "system": {"weight": 1, "value": 5}}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 40, "type": "miscgear", "name": "Glass bottles (assorted sizes)", "system": {"quantity": 6, "value": 2}}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 41, "type": "miscgear", "name": "Herbal reference texts (personal notes)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 42, "type": "miscgear", "name": "Ritual mourning mark (ear scar, spiritual significance)", "system": null}
+{"file": "Heroes_and_Knaves/Banut_Jaut.md", "idx": 44, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 36, "type": "miscgear", "name": "Leather harnesses and leads (assorted)", "system": {"weight": 2, "quantity": 4}}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 37, "type": "miscgear", "name": "Rope (braided leather and hemp)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 38, "type": "miscgear", "name": "Animal feed (grain and dried fodder)", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 39, "type": "miscgear", "name": "Herbal remedies for animal wounds", "system": {"quantity": 4, "value": 3}}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 40, "type": "miscgear", "name": "Training whistle and animal calls", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Bazudar_Shahrun.md", "idx": 42, "type": "miscgear", "name": "Waterskin (leather, large)", "system": null}
+{"file": "Heroes_and_Knaves/Bjalfi_Hrafnsvald.md", "idx": 35, "type": "miscgear", "name": "Hunting knife (well-maintained)", "system": null}
+{"file": "Heroes_and_Knaves/Bjalfi_Hrafnsvald.md", "idx": 36, "type": "miscgear", "name": "Bedroll (military style)", "system": null}
+{"file": "Heroes_and_Knaves/Bjalfi_Hrafnsvald.md", "idx": 40, "type": "miscgear", "name": "Military documents and insignia", "system": {"value": 2}}
+{"file": "Heroes_and_Knaves/Bjalfi_Hrafnsvald.md", "idx": 42, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 32, "type": "miscgear", "name": "Worn lute (well-maintained despite appearance)", "system": {"value": 8}}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 33, "type": "miscgear", "name": "Tin cup (dented but functional)", "system": null}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 34, "type": "miscgear", "name": "Simple necklace (keepsake from parents)", "system": {"value": 2}}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 35, "type": "miscgear", "name": "Wool shawl (extra layer for warmth)", "system": null}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 36, "type": "miscgear", "name": "Herbal throat remedies (for singing)", "system": {"quantity": 2, "value": 1}}
+{"file": "Heroes_and_Knaves/Bjorg_Drekanott.md", "idx": 38, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Bjorn_Vetrdomr.md", "idx": 34, "type": "miscgear", "name": "Wooden cask (for ale storage and service)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Bjorn_Vetrdomr.md", "idx": 35, "type": "miscgear", "name": "Cooking and brewing supplies", "system": {"weight": 1.5, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Bjorn_Vetrdomr.md", "idx": 36, "type": "miscgear", "name": "Innkeeper's ledger (guest records)", "system": {"weight": 0.5, "value": 2}}
+{"file": "Heroes_and_Knaves/Bjorn_Vetrdomr.md", "idx": 37, "type": "miscgear", "name": "Measuring vessels and cups", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Bjorn_Vetrdomr.md", "idx": 39, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Bothvarr_Solvargr.md", "idx": 40, "type": "miscgear", "name": "Bedroll (military style)", "system": null}
+{"file": "Heroes_and_Knaves/Bothvarr_Solvargr.md", "idx": 42, "type": "miscgear", "name": "Military insignia and documents", "system": {"value": 2}}
+{"file": "Heroes_and_Knaves/Bothvarr_Solvargr.md", "idx": 44, "type": "miscgear", "name": "Waterskin (large)", "system": null}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 38, "type": "miscgear", "name": "Kiln maintenance tools (shovel, rake, poker)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 39, "type": "miscgear", "name": "Leather gloves (heavy work)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 40, "type": "miscgear", "name": "Charcoal samples (assorted grades)", "system": {"weight": 1, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 41, "type": "miscgear", "name": "Firewood bundle", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 42, "type": "miscgear", "name": "Wooden markers and measuring tools", "system": null}
+{"file": "Heroes_and_Knaves/Branakis_Kaseranis.md", "idx": 45, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 37, "type": "miscgear", "name": "Sailor’s rope (braided, coiled)", "system": {"weight": 2, "quantity": 1}}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 38, "type": "miscgear", "name": "Navigation tools (compass, astrolabe)", "system": {"weight": 0.5, "value": 8}}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 39, "type": "miscgear", "name": "Fishing hooks and line", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 40, "type": "miscgear", "name": "Net (small, for fishing)", "system": null}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 43, "type": "miscgear", "name": "Waterskin (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Branalenis_Barkalas.md", "idx": 44, "type": "miscgear", "name": "Personal journal (sailing records)", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Candrathar_Acharyamukhyesvara.md", "idx": 38, "type": "miscgear", "name": "Leather satchel with herbal samples", "system": null}
+{"file": "Heroes_and_Knaves/Candrathar_Acharyamukhyesvara.md", "idx": 39, "type": "miscgear", "name": "Mortar and pestle", "system": null}
+{"file": "Heroes_and_Knaves/Candrathar_Acharyamukhyesvara.md", "idx": 40, "type": "miscgear", "name": "Glass vials for potions", "system": {"quantity": 12}}
+{"file": "Heroes_and_Knaves/Candrathar_Acharyamukhyesvara.md", "idx": 41, "type": "miscgear", "name": "Herbal manuscripts", "system": null}
+{"file": "Heroes_and_Knaves/Carenna_Graveth.md", "idx": 35, "type": "miscgear", "name": "Leather satchel for official documents", "system": null}
+{"file": "Heroes_and_Knaves/Carenna_Graveth.md", "idx": 36, "type": "miscgear", "name": "Scrolls of royal announcements", "system": null}
+{"file": "Heroes_and_Knaves/Carenna_Graveth.md", "idx": 37, "type": "miscgear", "name": "Family seal (House Gráveth)", "system": null}
+{"file": "Heroes_and_Knaves/Carenna_Graveth.md", "idx": 38, "type": "miscgear", "name": "Silver writing pen", "system": null}
+{"file": "Heroes_and_Knaves/Carenna_Graveth.md", "idx": 40, "type": "miscgear", "name": "Ink bottle and parchment sheaf", "system": null}
+{"file": "Heroes_and_Knaves/Chandrakirtisundari_Jayavalli.md", "idx": 36, "type": "miscgear", "name": "Small pouch for personal items", "system": null}
+{"file": "Heroes_and_Knaves/Chandrakirtisundari_Jayavalli.md", "idx": 37, "type": "miscgear", "name": "Cosmetics and makeup", "system": null}
+{"file": "Heroes_and_Knaves/Chandrakirtisundari_Jayavalli.md", "idx": 38, "type": "miscgear", "name": "Herbal scents and oils", "system": null}
+{"file": "Heroes_and_Knaves/Chandrakirtisundari_Jayavalli.md", "idx": 39, "type": "miscgear", "name": "Guild communication tokens", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Chandrakirtisundari_Jayavalli.md", "idx": 40, "type": "miscgear", "name": "Encrypted notes from the Thieves' Guild", "system": null}
+{"file": "Heroes_and_Knaves/Chrysantos_Kavadaris.md", "idx": 39, "type": "miscgear", "name": "Leather briefcase for trade documents", "system": null}
+{"file": "Heroes_and_Knaves/Chrysantos_Kavadaris.md", "idx": 40, "type": "miscgear", "name": "Samples of goods (spices, textiles)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Chrysantos_Kavadaris.md", "idx": 41, "type": "miscgear", "name": "Trade agreements and contracts", "system": null}
+{"file": "Heroes_and_Knaves/Chrysantos_Kavadaris.md", "idx": 42, "type": "miscgear", "name": "Personal merchant ledger", "system": null}
+{"file": "Heroes_and_Knaves/Chrysantos_Kavadaris.md", "idx": 44, "type": "miscgear", "name": "Ink and writing quills", "system": null}
+{"file": "Heroes_and_Knaves/Dagmar_the_Wanderer.md", "idx": 37, "type": "miscgear", "name": "Lute (well-maintained traveler's instrument)", "system": null}
+{"file": "Heroes_and_Knaves/Dagmar_the_Wanderer.md", "idx": 38, "type": "miscgear", "name": "Traveling bedroll", "system": null}
+{"file": "Heroes_and_Knaves/Dagmar_the_Wanderer.md", "idx": 45, "type": "miscgear", "name": "Wax tablets for composing songs", "system": null}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 39, "type": "miscgear", "name": "Leather map case", "system": null}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 40, "type": "miscgear", "name": "Brass surveyor's compass", "system": null}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 41, "type": "miscgear", "name": "Cartographer's measuring tools", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 42, "type": "miscgear", "name": "Charcoal sticks (bundle)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 43, "type": "miscgear", "name": "Parchment (sheaf)", "system": {"quantity": 10}}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 44, "type": "miscgear", "name": "Inkwell and quills", "system": null}
+{"file": "Heroes_and_Knaves/Damaklios_Sampsion.md", "idx": 45, "type": "miscgear", "name": "Silver crescent-moon amulet (Flórania cult token)", "system": null}
+{"file": "Heroes_and_Knaves/Daryash_Shavan.md", "idx": 36, "type": "miscgear", "name": "Leather tool apron", "system": null}
+{"file": "Heroes_and_Knaves/Daryash_Shavan.md", "idx": 37, "type": "miscgear", "name": "Set of carving and woodworking tools", "system": null}
+{"file": "Heroes_and_Knaves/Daryash_Shavan.md", "idx": 38, "type": "miscgear", "name": "Wood stains and dyes", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Daryash_Shavan.md", "idx": 39, "type": "miscgear", "name": "Varnish and finishing compounds", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Dek_Vetrdomr.md", "idx": 37, "type": "miscgear", "name": "Thatching knife and combs", "system": null}
+{"file": "Heroes_and_Knaves/Dek_Vetrdomr.md", "idx": 38, "type": "miscgear", "name": "Set of specialized thatching tools", "system": null}
+{"file": "Heroes_and_Knaves/Dek_Vetrdomr.md", "idx": 39, "type": "miscgear", "name": "Rope and binding twine", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Dek_Vetrdomr.md", "idx": 40, "type": "miscgear", "name": "Bundles of straw and reeds", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Dharmapala_Vimuktana.md", "idx": 39, "type": "miscgear", "name": "First aid kit with bandages and salves", "system": null}
+{"file": "Heroes_and_Knaves/Dharmapala_Vimuktana.md", "idx": 44, "type": "miscgear", "name": "Rope and grappling gear", "system": null}
+{"file": "Heroes_and_Knaves/Dometh_Graveth.md", "idx": 43, "type": "miscgear", "name": "Wooden toolbox with specialized shipbuilding tools", "system": null}
+{"file": "Heroes_and_Knaves/Dometh_Graveth.md", "idx": 44, "type": "miscgear", "name": "Tar and pitch for caulking", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Dometh_Graveth.md", "idx": 45, "type": "miscgear", "name": "Rope and cordage (various weights)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Dometh_Graveth.md", "idx": 46, "type": "miscgear", "name": "Nautical charts and ship designs", "system": null}
+{"file": "Heroes_and_Knaves/Dometh_Graveth.md", "idx": 47, "type": "miscgear", "name": "Chalk and measuring implements", "system": null}
+{"file": "Heroes_and_Knaves/Domrithas_Vishardas.md", "idx": 35, "type": "miscgear", "name": "Leather satchel with alchemical vials", "system": null}
+{"file": "Heroes_and_Knaves/Domrithas_Vishardas.md", "idx": 36, "type": "miscgear", "name": "Mortar and pestle", "system": null}
+{"file": "Heroes_and_Knaves/Domrithas_Vishardas.md", "idx": 37, "type": "miscgear", "name": "Collection of glass vials and bottles", "system": {"quantity": 20}}
+{"file": "Heroes_and_Knaves/Domrithas_Vishardas.md", "idx": 38, "type": "miscgear", "name": "Alchemical texts and formulas", "system": null}
+{"file": "Heroes_and_Knaves/Domrithas_Vishardas.md", "idx": 39, "type": "miscgear", "name": "Mineral samples and reagents", "system": null}
+{"file": "Heroes_and_Knaves/Drakonis_Dalassenos.md", "idx": 37, "type": "miscgear", "name": "Snares and hunting traps", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Drakonis_Dalassenos.md", "idx": 38, "type": "miscgear", "name": "Dried meat and provisions", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Drakonis_Dalassenos.md", "idx": 39, "type": "miscgear", "name": "Flint and striker", "system": null}
+{"file": "Heroes_and_Knaves/Drakonis_Dalassenos.md", "idx": 40, "type": "miscgear", "name": "Rope and cord", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 34, "type": "miscgear", "name": "Formal servant's uniform (jacket and waistcoat)", "system": null}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 35, "type": "miscgear", "name": "Leather pouch for gratuities", "system": null}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 36, "type": "miscgear", "name": "Silver serving tray", "system": null}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 37, "type": "miscgear", "name": "White gloves (formal service)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 38, "type": "miscgear", "name": "Pocket watch", "system": null}
+{"file": "Heroes_and_Knaves/Drksarana_Manrsti.md", "idx": 41, "type": "miscgear", "name": "Handkerchief (linen)", "system": null}
+{"file": "Heroes_and_Knaves/Eldrid_Firehair.md", "idx": 37, "type": "miscgear", "name": "Shipwright's leather tool belt", "system": null}
+{"file": "Heroes_and_Knaves/Eldrid_Firehair.md", "idx": 38, "type": "miscgear", "name": "Specialized shipbuilding tools", "system": null}
+{"file": "Heroes_and_Knaves/Eldrid_Firehair.md", "idx": 39, "type": "miscgear", "name": "Measuring scales and marking tools", "system": null}
+{"file": "Heroes_and_Knaves/Eldrid_Firehair.md", "idx": 40, "type": "miscgear", "name": "Rope and cordage", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Ermelina_Drekanott.md", "idx": 34, "type": "miscgear", "name": "Innkeeper's ledger and records", "system": null}
+{"file": "Heroes_and_Knaves/Ermelina_Drekanott.md", "idx": 35, "type": "miscgear", "name": "Cooking implements and utensils", "system": null}
+{"file": "Heroes_and_Knaves/Ermelina_Drekanott.md", "idx": 36, "type": "miscgear", "name": "Herbal remedies and tinctures", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Ermelina_Drekanott.md", "idx": 37, "type": "miscgear", "name": "Provisions (dried herbs, spices)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Ermelina_Drekanott.md", "idx": 39, "type": "miscgear", "name": "Parchment and writing supplies", "system": null}
+{"file": "Heroes_and_Knaves/Erython_Uselindas.md", "idx": 39, "type": "miscgear", "name": "Quiver (leather, well-maintained)", "system": null}
+{"file": "Heroes_and_Knaves/Erython_Uselindas.md", "idx": 42, "type": "miscgear", "name": "Arrow straightener and maintenance tools", "system": null}
+{"file": "Heroes_and_Knaves/Eshe_wa_Magara.md", "idx": 37, "type": "miscgear", "name": "Spirit Blade (legendary curved sword with ethereal properties)", "system": null}
+{"file": "Heroes_and_Knaves/Eshe_wa_Magara.md", "idx": 38, "type": "miscgear", "name": "Leather bracers with spiritual symbols", "system": null}
+{"file": "Heroes_and_Knaves/Eshe_wa_Magara.md", "idx": 39, "type": "miscgear", "name": "Tribal markings and body wrappings", "system": null}
+{"file": "Heroes_and_Knaves/Eshe_wa_Magara.md", "idx": 40, "type": "miscgear", "name": "Bone talismans and spirit tokens", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Eshe_wa_Magara.md", "idx": 41, "type": "miscgear", "name": "Meditation herbs and ritual supplies", "system": null}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 40, "type": "miscgear", "name": "Worn leather travel bag", "system": null}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 41, "type": "miscgear", "name": "Astronomical almanac and star charts", "system": null}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 42, "type": "miscgear", "name": "Simple brass telescope", "system": null}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 43, "type": "miscgear", "name": "Wooden constellation carvings", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 44, "type": "miscgear", "name": "Tarot cards and divination tools", "system": null}
+{"file": "Heroes_and_Knaves/Fakhrad_Tamaran.md", "idx": 45, "type": "miscgear", "name": "Writing supplies and observation notes", "system": null}
+{"file": "Heroes_and_Knaves/Faradun_Afrun.md", "idx": 39, "type": "miscgear", "name": "Wagon repair tools and spare parts", "system": null}
+{"file": "Heroes_and_Knaves/Faradun_Afrun.md", "idx": 40, "type": "miscgear", "name": "Rope and heavy cord", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Faradun_Afrun.md", "idx": 41, "type": "miscgear", "name": "Animal feed (grain)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Faradun_Afrun.md", "idx": 42, "type": "miscgear", "name": "Leather harnesses and tack", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 32, "type": "miscgear", "name": "Ceremonial priestly robes (white with silver embroidery)", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 33, "type": "miscgear", "name": "Jánusian holy symbol (staff-topped amulet)", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 34, "type": "miscgear", "name": "Holy scripture and theological texts", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 35, "type": "miscgear", "name": "Prayer beads and ritual items", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 36, "type": "miscgear", "name": "Blessed oils and incense", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 37, "type": "miscgear", "name": "Red sash (symbol of priesthood)", "system": null}
+{"file": "Heroes_and_Knaves/Father_Izteban_Alkassar.md", "idx": 39, "type": "miscgear", "name": "Parchment and writing supplies", "system": null}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 36, "type": "miscgear", "name": "Leather pouch with sacred shamanic herbs", "system": null}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 37, "type": "miscgear", "name": "Bone charms and talismans", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 38, "type": "miscgear", "name": "Ritual artifacts and ceremonial items", "system": null}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 39, "type": "miscgear", "name": "Healing poultices and medicine bundles", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 40, "type": "miscgear", "name": "Drum or ceremonial percussion instrument", "system": null}
+{"file": "Heroes_and_Knaves/Firavad_Paresak.md", "idx": 41, "type": "miscgear", "name": "Dream stones and meditation aids", "system": null}
+{"file": "Heroes_and_Knaves/Gahiji_wa_Fenjara.md", "idx": 39, "type": "miscgear", "name": "Quiver (leather, reinforced for heavy use)", "system": null}
+{"file": "Heroes_and_Knaves/Gahiji_wa_Fenjara.md", "idx": 41, "type": "miscgear", "name": "Tracking tools and marking materials", "system": null}
+{"file": "Heroes_and_Knaves/Gahiji_wa_Fenjara.md", "idx": 42, "type": "miscgear", "name": "Animal snares and traps", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Gahiji_wa_Fenjara.md", "idx": 43, "type": "miscgear", "name": "Dried meat and travel provisions", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 36, "type": "miscgear", "name": "Leather worker's knives and tools", "system": null}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 37, "type": "miscgear", "name": "Tanning supplies (lime, alum, salts)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 38, "type": "miscgear", "name": "Dyes and stains", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 39, "type": "miscgear", "name": "Stitching tools (needles, thread, waxed cord)", "system": null}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 40, "type": "miscgear", "name": "Scrapers and finishing tools", "system": null}
+{"file": "Heroes_and_Knaves/Garlen_Dharel.md", "idx": 41, "type": "miscgear", "name": "Oil and conditioning compounds", "system": null}
+{"file": "Heroes_and_Knaves/Gavrilos_Niktariotes.md", "idx": 35, "type": "miscgear", "name": "Leather weapon case (for primary blade)", "system": null}
+{"file": "Heroes_and_Knaves/Gavrilos_Niktariotes.md", "idx": 36, "type": "miscgear", "name": "Practice swords (wooden, for training)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Gavrilos_Niktariotes.md", "idx": 38, "type": "miscgear", "name": "Instructional scrolls on sword technique", "system": null}
+{"file": "Heroes_and_Knaves/Gavrilos_Niktariotes.md", "idx": 39, "type": "miscgear", "name": "Oil and leather conditioner for blades", "system": null}
+{"file": "Heroes_and_Knaves/Gavrilos_Niktariotes.md", "idx": 40, "type": "miscgear", "name": "Cloth for cleaning and maintenance", "system": null}
+{"file": "Heroes_and_Knaves/Goremadanis_Herendanis.md", "idx": 37, "type": "miscgear", "name": "Rope coil (50 feet)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Goremadanis_Herendanis.md", "idx": 38, "type": "miscgear", "name": "Fishing line and hooks (bundle)", "system": null}
+{"file": "Heroes_and_Knaves/Goremadanis_Herendanis.md", "idx": 39, "type": "miscgear", "name": "Navigation slate for star-reading", "system": null}
+{"file": "Heroes_and_Knaves/Gregoras_Ephthymiopoulos.md", "idx": 44, "type": "miscgear", "name": "Canvas tool bag with saws, chisels, planes", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Gregoras_Ephthymiopoulos.md", "idx": 45, "type": "miscgear", "name": "Blueprints and plans case (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Gregoras_Ephthymiopoulos.md", "idx": 46, "type": "miscgear", "name": "Measuring rope and chalk", "system": null}
+{"file": "Heroes_and_Knaves/Gregoras_Ephthymiopoulos.md", "idx": 47, "type": "miscgear", "name": "Caulking tools and pitch", "system": null}
+{"file": "Heroes_and_Knaves/Gregoras_Ephthymiopoulos.md", "idx": 48, "type": "miscgear", "name": "Timber grain samples (reference collection)", "system": null}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 34, "type": "miscgear", "name": "Bone runes for divination (carved set)", "system": null}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 35, "type": "miscgear", "name": "Ritual bells and charms", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 36, "type": "miscgear", "name": "Herbal bundle for smoke-calling", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 37, "type": "miscgear", "name": "Offering bowl (pewter)", "system": null}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 38, "type": "miscgear", "name": "Leather journal of visions and omens", "system": null}
+{"file": "Heroes_and_Knaves/Groa_the_Seidr_of_Norgaad.md", "idx": 39, "type": "miscgear", "name": "Crow feathers (collected tokens)", "system": {"quantity": 7}}
+{"file": "Heroes_and_Knaves/Gulranah_Gazvan.md", "idx": 37, "type": "miscgear", "name": "Leather charcoal sacks (reinforced, qty 3)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Gulranah_Gazvan.md", "idx": 38, "type": "miscgear", "name": "Kiln master's tools (rakes, tongs, measuring scales)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Gulranah_Gazvan.md", "idx": 39, "type": "miscgear", "name": "Herbal bundle (curative plants)", "system": null}
+{"file": "Heroes_and_Knaves/Gulranah_Gazvan.md", "idx": 40, "type": "miscgear", "name": "Fire-starter flint and striker", "system": null}
+{"file": "Heroes_and_Knaves/Gunnsteinn_Vornheim.md", "idx": 42, "type": "miscgear", "name": "Healer's poultice kit", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Gunnvor_Hafringr.md", "idx": 37, "type": "miscgear", "name": "Canvas delivery manifest satchel", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Gunnvor_Hafringr.md", "idx": 38, "type": "miscgear", "name": "Wagon repair tools (hammers, nails, rope)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Gunnvor_Hafringr.md", "idx": 39, "type": "miscgear", "name": "Horse grooming kit and bridle care supplies", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Gunnvor_Hafringr.md", "idx": 40, "type": "miscgear", "name": "Route maps and schedule ledgers", "system": null}
+{"file": "Heroes_and_Knaves/Guthrun_Solvargr.md", "idx": 41, "type": "miscgear", "name": "Trap-making materials (wire, springs, snares)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Guthrun_Solvargr.md", "idx": 42, "type": "miscgear", "name": "Herbal remedy bundle (healing salves)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Guthrun_Solvargr.md", "idx": 43, "type": "miscgear", "name": "Bone knife for field dressing", "system": null}
+{"file": "Heroes_and_Knaves/Guthrun_Solvargr.md", "idx": 44, "type": "miscgear", "name": "Fletching kit for arrow maintenance", "system": null}
+{"file": "Heroes_and_Knaves/Guthrun_Solvargr.md", "idx": 47, "type": "containergear", "name": "Quiver (leather)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 37, "type": "miscgear", "name": "Official leather satchel for documents", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 38, "type": "miscgear", "name": "Bureaucratic ledger and record book", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 39, "type": "miscgear", "name": "Writing quills (supply of 12)", "system": {"quantity": 12}}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 40, "type": "miscgear", "name": "Sealing wax and official seal ring", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 41, "type": "miscgear", "name": "Ink bottle (ceremonial black)", "system": null}
+{"file": "Heroes_and_Knaves/Halrikos_Branthira.md", "idx": 42, "type": "miscgear", "name": "Reading spectacles with case", "system": null}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 38, "type": "miscgear", "name": "Belt pouch with vials and phials", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 39, "type": "miscgear", "name": "Poison samples (locked, labeled)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 40, "type": "miscgear", "name": "Antidote recipes (hidden manuscript)", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 41, "type": "miscgear", "name": "Medical toolkit (lancets, herbs, bandages)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 42, "type": "miscgear", "name": "Mortar and pestle (bronze)", "system": null}
+{"file": "Heroes_and_Knaves/Harkhis_Baremydes.md", "idx": 43, "type": "miscgear", "name": "Alchemist's measuring scale", "system": null}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 39, "type": "miscgear", "name": "Golden scales of Má'át (ritual artifact)", "system": {"weight": 0.5, "value": 40}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 40, "type": "miscgear", "name": "Ostrich-feather token of the goddess", "system": {"weight": 0.05, "value": 15}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 41, "type": "miscgear", "name": "Consecrated chalk and ritual powder", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 42, "type": "miscgear", "name": "Libation vessels (bronze)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 43, "type": "miscgear", "name": "Oracle bones (inherited, ancient divination set)", "system": {"weight": 0.4, "value": 50}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 44, "type": "miscgear", "name": "Judicial correspondence and alliance ledgers", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 45, "type": "miscgear", "name": "Gold pectoral collar of office", "system": {"value": 60}}
+{"file": "Heroes_and_Knaves/Hathura_Isefre.md", "idx": 48, "type": "miscgear", "name": "Incense for temple use", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 36, "type": "miscgear", "name": "Small pouch for ritual offerings", "system": null}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 37, "type": "miscgear", "name": "Herbal bundle for ritual work (lavender, rose, cinnamon)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 38, "type": "miscgear", "name": "Sacred temple texts and prayer scrolls", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 39, "type": "miscgear", "name": "Healing salves and herbal remedies", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 40, "type": "miscgear", "name": "Decorative hair cord and flower braid tokens", "system": null}
+{"file": "Heroes_and_Knaves/Helenaia_Mystakes.md", "idx": 41, "type": "miscgear", "name": "Bronze mirror for ritual reflection", "system": null}
+{"file": "Heroes_and_Knaves/Herjulf_Vetrdomr.md", "idx": 38, "type": "miscgear", "name": "Woodcutter's saw (folding, high-quality steel)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Herjulf_Vetrdomr.md", "idx": 39, "type": "miscgear", "name": "Rope coil (braided hemp, 60 feet)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Herjulf_Vetrdomr.md", "idx": 40, "type": "miscgear", "name": "Sharpening stone and honing oils", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Herjulf_Vetrdomr.md", "idx": 41, "type": "miscgear", "name": "Timber samples for reference", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Herjulf_Vetrdomr.md", "idx": 42, "type": "miscgear", "name": "Woodworking tools (chisels, wedges, measuring)", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 41, "type": "miscgear", "name": "Large command chest for documents and seals", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 42, "type": "miscgear", "name": "Military campaign maps (leather case)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 43, "type": "miscgear", "name": "Battle standard (folded, ceremonial)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 44, "type": "miscgear", "name": "Gold-headed mace (symbol of command authority)", "system": {"value": 35}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 45, "type": "miscgear", "name": "Gold pectoral collar of rank (rank insignia)", "system": {"value": 50}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 46, "type": "miscgear", "name": "Bronze and gold ceremonial khopesh (court occasions)", "system": {"value": 25}}
+{"file": "Heroes_and_Knaves/Hersais_SaAnut.md", "idx": 49, "type": "containergear", "name": "Quiver (leather, reinforced military grade)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 39, "type": "miscgear", "name": "Potter's tool bag (chisels, modeling tools, wire cutters)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 40, "type": "miscgear", "name": "Pottery wheel (portable, collapsible design)", "system": {"weight": 4, "value": 15}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 41, "type": "miscgear", "name": "Kiln-firing tools and temperature gauges", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 42, "type": "miscgear", "name": "Assorted ceramic glazes (sealed vials)", "system": {"weight": 1, "value": 10}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 43, "type": "miscgear", "name": "Clay samples and test pieces (reference set)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 44, "type": "miscgear", "name": "Ash samples from various kiln fires", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Hildr_Steinblot.md", "idx": 47, "type": "containergear", "name": "Quiver (leather)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Hotep_Anu.md", "idx": 41, "type": "miscgear", "name": "Concealed ritual implements of Má'át (bronze scales, feather token, consecrated chalk)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Hotep_Anu.md", "idx": 45, "type": "miscgear", "name": "Metalworking tools (hammer, tongs, small anvil)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Hotep_Anu.md", "idx": 46, "type": "miscgear", "name": "Scrolls and notes on theological doctrine", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Hrafnkell_Hrafnsvald.md", "idx": 40, "type": "miscgear", "name": "Wooden chest for storing fabric and supplies", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Hrafnkell_Hrafnsvald.md", "idx": 41, "type": "miscgear", "name": "Sewing tools (needles, thread spools, scissors)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Hrafnkell_Hrafnsvald.md", "idx": 42, "type": "miscgear", "name": "Canvas rolls (sample materials)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Hrafnkell_Hrafnsvald.md", "idx": 43, "type": "miscgear", "name": "Leather thimbles and hand protectors", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Hrafnkell_Hrafnsvald.md", "idx": 45, "type": "miscgear", "name": "Measuring tape and marking chalk", "system": null}
+{"file": "Heroes_and_Knaves/Idrise_Korisvar.md", "idx": 39, "type": "miscgear", "name": "First aid kit (salves, poultices, bandages)", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Idrise_Korisvar.md", "idx": 40, "type": "miscgear", "name": "Survival kit (rope, grappling tools, climbing gear)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Ingrithr_Skyrekkr.md", "idx": 34, "type": "miscgear", "name": "Wicker basket for carrying household items", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Ingrithr_Skyrekkr.md", "idx": 35, "type": "miscgear", "name": "Cleaning rags and work cloths (bundle)", "system": {"quantity": 8}}
+{"file": "Heroes_and_Knaves/Ingrithr_Skyrekkr.md", "idx": 36, "type": "miscgear", "name": "Wooden hairbrush (well-worn, cherished)", "system": null}
+{"file": "Heroes_and_Knaves/Ingrithr_Skyrekkr.md", "idx": 37, "type": "miscgear", "name": "Small keepsake from her home (carved wooden token)", "system": {"weight": 0.1, "value": 0}}
+{"file": "Heroes_and_Knaves/Ingrithr_Skyrekkr.md", "idx": 38, "type": "miscgear", "name": "Herbal remedies and healing salves", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 37, "type": "miscgear", "name": "Wicker basket for supplies and deliveries", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 38, "type": "miscgear", "name": "Cooking utensils (ladle, tongs, knives)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 39, "type": "miscgear", "name": "Fine linen for bedding (sample bolts)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 40, "type": "miscgear", "name": "Ledger for reservations and records", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 41, "type": "miscgear", "name": "Recipe collection (personal notes)", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Isidora_Melissenos.md", "idx": 42, "type": "miscgear", "name": "Wine tasting cups (glass, decorative)", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 37, "type": "miscgear", "name": "Small satchel for research notes and manuscripts", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 38, "type": "miscgear", "name": "Herb sample collection (sealed containers)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 39, "type": "miscgear", "name": "Laboratory equipment (mortar, pestle, vials, scales)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 40, "type": "miscgear", "name": "Reference books on medicine and natural philosophy", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 41, "type": "miscgear", "name": "Drawing supplies for anatomical sketches", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Juthara_Jamithon.md", "idx": 42, "type": "miscgear", "name": "Healing tinctures and remedies (personal stock)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 37, "type": "miscgear", "name": "Potter's wheel (portable, artist-grade)", "system": {"weight": 3, "value": 12}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 38, "type": "miscgear", "name": "Kiln-firing tools and temperature gauges", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 39, "type": "miscgear", "name": "Assorted ceramic glazes (sealed containers)", "system": {"weight": 1.5, "value": 20}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 40, "type": "miscgear", "name": "Selection of brushes and carving tools", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 41, "type": "miscgear", "name": "Sketchbook and drawing materials", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Kalida_Kourkasios.md", "idx": 42, "type": "miscgear", "name": "Clay samples (various sources)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 39, "type": "miscgear", "name": "Waterproof map case (leather-bound)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 40, "type": "miscgear", "name": "Surveying tools (compass, quadrant, measuring chains)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 41, "type": "miscgear", "name": "Magnifying glass for detailed work", "system": null}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 42, "type": "miscgear", "name": "Brass compass (precision navigational)", "system": {"value": 8}}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 43, "type": "miscgear", "name": "Ink bottles and drawing implements", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Kallinikos_Zygomalas.md", "idx": 44, "type": "miscgear", "name": "Parchment and paper (sketching stock)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Kallistratos_Exarchides.md", "idx": 44, "type": "miscgear", "name": "Pyréthos focus (fire-opal set in bronze, worn at the throat)", "system": {"weight": 0.2, "value": 25}}
+{"file": "Heroes_and_Knaves/Kallistratos_Exarchides.md", "idx": 45, "type": "miscgear", "name": "Ordo Arcanis sigil ring (Adeptus rank)", "system": {"value": 8}}
+{"file": "Heroes_and_Knaves/Kallistratos_Exarchides.md", "idx": 46, "type": "miscgear", "name": "Arcane journal (research notes on pre-Ordo techniques)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Kallistratos_Exarchides.md", "idx": 47, "type": "miscgear", "name": "Writing implements (ink, quills, arcane notation tools)", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Kallistratos_Exarchides.md", "idx": 48, "type": "miscgear", "name": "Herbal cooking ingredients and spice kit", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Kallixenos_Paraklavos.md", "idx": 37, "type": "miscgear", "name": "Leather briefcase for documents", "system": null}
+{"file": "Heroes_and_Knaves/Kallixenos_Paraklavos.md", "idx": 38, "type": "miscgear", "name": "Legal reference scrolls", "system": null}
+{"file": "Heroes_and_Knaves/Kallixenos_Paraklavos.md", "idx": 39, "type": "miscgear", "name": "Writing materials (ink, quill, parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Kallixenos_Paraklavos.md", "idx": 40, "type": "miscgear", "name": "Trade agreement copies", "system": null}
+{"file": "Heroes_and_Knaves/Kamid_Khavandar.md", "idx": 33, "type": "miscgear", "name": "Carved wooden phoenix charm", "system": null}
+{"file": "Heroes_and_Knaves/Karr_Iseldr.md", "idx": 41, "type": "miscgear", "name": "Leather sewing kit with needles and thread", "system": null}
+{"file": "Heroes_and_Knaves/Karr_Iseldr.md", "idx": 42, "type": "miscgear", "name": "Fine fabric swatches (silk, linen, wool)", "system": null}
+{"file": "Heroes_and_Knaves/Karr_Iseldr.md", "idx": 43, "type": "miscgear", "name": "Measuring tape and calipers", "system": null}
+{"file": "Heroes_and_Knaves/Karr_Iseldr.md", "idx": 44, "type": "miscgear", "name": "Charcoal sticks for pattern marking", "system": null}
+{"file": "Heroes_and_Knaves/Kassandria_Bessarion.md", "idx": 37, "type": "miscgear", "name": "Leather-bound spellbook (personal grimoire)", "system": null}
+{"file": "Heroes_and_Knaves/Kassandria_Bessarion.md", "idx": 38, "type": "miscgear", "name": "Collection of rare arcane texts", "system": null}
+{"file": "Heroes_and_Knaves/Kassandria_Bessarion.md", "idx": 39, "type": "miscgear", "name": "Arcane ink (multiple colors) and quills", "system": null}
+{"file": "Heroes_and_Knaves/Kassandria_Bessarion.md", "idx": 40, "type": "miscgear", "name": "Silver amulet inscribed with protective runes", "system": null}
+{"file": "Heroes_and_Knaves/Kassandria_Bessarion.md", "idx": 41, "type": "miscgear", "name": "Parchment (sheaf for notes and research)", "system": null}
+{"file": "Heroes_and_Knaves/Kayvonad_Zarid.md", "idx": 38, "type": "miscgear", "name": "Laboratory notes and formulae (extensive)", "system": null}
+{"file": "Heroes_and_Knaves/Kayvonad_Zarid.md", "idx": 39, "type": "miscgear", "name": "Rare mineral samples (lead, silver, precious compounds)", "system": null}
+{"file": "Heroes_and_Knaves/Kayvonad_Zarid.md", "idx": 40, "type": "miscgear", "name": "Alchemical apparatus tools", "system": null}
+{"file": "Heroes_and_Knaves/Kayvonad_Zarid.md", "idx": 41, "type": "miscgear", "name": "Measuring scales and weights", "system": null}
+{"file": "Heroes_and_Knaves/Kayvonad_Zarid.md", "idx": 42, "type": "miscgear", "name": "Crucibles and distillation vessels (small)", "system": null}
+{"file": "Heroes_and_Knaves/Kelena_Stylgon.md", "idx": 36, "type": "miscgear", "name": "Silver flask (fine work, engraved)", "system": null}
+{"file": "Heroes_and_Knaves/Kelena_Stylgon.md", "idx": 37, "type": "miscgear", "name": "Theatrical mask (leather, decorated)", "system": null}
+{"file": "Heroes_and_Knaves/Kelena_Stylgon.md", "idx": 38, "type": "miscgear", "name": "Velvet coin purse", "system": null}
+{"file": "Heroes_and_Knaves/Kharanah_Khafur.md", "idx": 36, "type": "miscgear", "name": "Perfumery tools (pestles, mortars, blending rods)", "system": null}
+{"file": "Heroes_and_Knaves/Kharanah_Khafur.md", "idx": 37, "type": "miscgear", "name": "Glass bottles for fragrance storage (decorative, 12)", "system": null}
+{"file": "Heroes_and_Knaves/Kharanah_Khafur.md", "idx": 38, "type": "miscgear", "name": "Rare botanical essences (oils, extracts)", "system": null}
+{"file": "Heroes_and_Knaves/Kharanah_Khafur.md", "idx": 39, "type": "miscgear", "name": "Measuring scales for precise blending", "system": null}
+{"file": "Heroes_and_Knaves/Kharanah_Khafur.md", "idx": 40, "type": "miscgear", "name": "Parchment for fragrance formulas", "system": null}
+{"file": "Heroes_and_Knaves/Khatah_Meykhari.md", "idx": 39, "type": "miscgear", "name": "Leather quiver (crafted, well-made)", "system": null}
+{"file": "Heroes_and_Knaves/Khatah_Meykhari.md", "idx": 40, "type": "miscgear", "name": "Local area map (hand-drawn by her people)", "system": null}
+{"file": "Heroes_and_Knaves/Kiroba_of_the_Shokuma.md", "idx": 33, "type": "miscgear", "name": "Bone pendant (carved, ritual significance)", "system": null}
+{"file": "Heroes_and_Knaves/Kiroba_of_the_Shokuma.md", "idx": 34, "type": "miscgear", "name": "Spirit charms and talismans", "system": null}
+{"file": "Heroes_and_Knaves/Kiroba_of_the_Shokuma.md", "idx": 35, "type": "miscgear", "name": "Ritual herbs and sacred offerings", "system": null}
+{"file": "Heroes_and_Knaves/Kiroba_of_the_Shokuma.md", "idx": 36, "type": "miscgear", "name": "Shamanic medicine pouch", "system": null}
+{"file": "Heroes_and_Knaves/Kjorvan_Gjarlen.md", "idx": 37, "type": "miscgear", "name": "Equine grooming tools (brushes, curry comb, hoof pick)", "system": null}
+{"file": "Heroes_and_Knaves/Kjorvan_Gjarlen.md", "idx": 38, "type": "miscgear", "name": "Veterinary supplies for horse care", "system": null}
+{"file": "Heroes_and_Knaves/Kjorvan_Gjarlen.md", "idx": 39, "type": "miscgear", "name": "Horse feed bags (canvas, multiple)", "system": null}
+{"file": "Heroes_and_Knaves/Kjorvan_Gjarlen.md", "idx": 40, "type": "miscgear", "name": "First aid kit for equine injuries", "system": null}
+{"file": "Heroes_and_Knaves/Konstantinos_Polytimos.md", "idx": 35, "type": "miscgear", "name": "Cast-iron cookware (multiple pots and pans)", "system": null}
+{"file": "Heroes_and_Knaves/Konstantinos_Polytimos.md", "idx": 36, "type": "miscgear", "name": "Wooden cutting boards and utensils", "system": null}
+{"file": "Heroes_and_Knaves/Konstantinos_Polytimos.md", "idx": 37, "type": "miscgear", "name": "Leather gloves for handling hot vessels", "system": null}
+{"file": "Heroes_and_Knaves/Konstantinos_Polytimos.md", "idx": 38, "type": "miscgear", "name": "Assorted dried herbs and spices", "system": null}
+{"file": "Heroes_and_Knaves/Konstantinos_Polytimos.md", "idx": 39, "type": "miscgear", "name": "Ceramic storage vessels", "system": null}
+{"file": "Heroes_and_Knaves/Koremdanis_Barkratys.md", "idx": 35, "type": "miscgear", "name": "Wooden weapon case (sturdy construction)", "system": null}
+{"file": "Heroes_and_Knaves/Koremdanis_Barkratys.md", "idx": 36, "type": "miscgear", "name": "Practice foils (padded, 3)", "system": null}
+{"file": "Heroes_and_Knaves/Koremdanis_Barkratys.md", "idx": 37, "type": "miscgear", "name": "Leather fencing mask", "system": null}
+{"file": "Heroes_and_Knaves/Koremdanis_Barkratys.md", "idx": 38, "type": "miscgear", "name": "Instructional manuals on the Path of Breath", "system": null}
+{"file": "Heroes_and_Knaves/Kyriakos_Patrikios.md", "idx": 39, "type": "miscgear", "name": "Leather sword scabbard (well-worn, serviceable)", "system": null}
+{"file": "Heroes_and_Knaves/Kyriakos_Patrikios.md", "idx": 41, "type": "miscgear", "name": "Wooden practice swords (trainer set, 2)", "system": null}
+{"file": "Heroes_and_Knaves/Kyriakos_Patrikios.md", "idx": 42, "type": "miscgear", "name": "Leather eye patch", "system": null}
+{"file": "Heroes_and_Knaves/Layla_Marut.md", "idx": 34, "type": "miscgear", "name": "Merchant's ledger (personal business records)", "system": null}
+{"file": "Heroes_and_Knaves/Layla_Marut.md", "idx": 35, "type": "miscgear", "name": "Trade route map (hand-annotated)", "system": null}
+{"file": "Heroes_and_Knaves/Layla_Marut.md", "idx": 36, "type": "miscgear", "name": "Writing materials (ink, quills, parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Layla_Marut.md", "idx": 37, "type": "miscgear", "name": "Merchant family credentials", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 36, "type": "miscgear", "name": "Sacred robes of fire-resistant linen (ceremonial)", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 37, "type": "miscgear", "name": "Leather satchel for ritual items", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 38, "type": "miscgear", "name": "Sacred texts of Flórania (fire aspect)", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 39, "type": "miscgear", "name": "Incense and ritual offerings (various)", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 40, "type": "miscgear", "name": "Ceremonial firestarter (blessed)", "system": null}
+{"file": "Heroes_and_Knaves/Leonantos_Strategopoulos.md", "idx": 43, "type": "miscgear", "name": "Fire-blessed ceremonial oil", "system": null}
+{"file": "Heroes_and_Knaves/Lord_Aemilon_Visbari.md", "idx": 37, "type": "miscgear", "name": "Walking stick (blackthorn, well-worn)", "system": null}
+{"file": "Heroes_and_Knaves/Lord_Aemilon_Visbari.md", "idx": 38, "type": "miscgear", "name": "Cipher documents (encoded intelligence)", "system": null}
+{"file": "Heroes_and_Knaves/Lord_Aemilon_Visbari.md", "idx": 39, "type": "miscgear", "name": "Vylarian family seal ring", "system": null}
+{"file": "Heroes_and_Knaves/Lysandros_Chrysanthopoulos.md", "idx": 37, "type": "miscgear", "name": "Saw (crosscut, well-maintained)", "system": null}
+{"file": "Heroes_and_Knaves/Lysandros_Chrysanthopoulos.md", "idx": 38, "type": "miscgear", "name": "Measuring rope and timber gauges", "system": null}
+{"file": "Heroes_and_Knaves/Lysandros_Chrysanthopoulos.md", "idx": 39, "type": "miscgear", "name": "Woodcarving knives (set of 5, various sizes)", "system": null}
+{"file": "Heroes_and_Knaves/Lysandros_Chrysanthopoulos.md", "idx": 41, "type": "miscgear", "name": "Chalk for timber marking", "system": null}
+{"file": "Heroes_and_Knaves/Madhurava_Rudrata.md", "idx": 38, "type": "miscgear", "name": "Leather satchel for scrolls (professional quality)", "system": null}
+{"file": "Heroes_and_Knaves/Madhurava_Rudrata.md", "idx": 39, "type": "miscgear", "name": "Scrolls of royal decrees and precedents", "system": null}
+{"file": "Heroes_and_Knaves/Madhurava_Rudrata.md", "idx": 40, "type": "miscgear", "name": "Genealogical records (personal copies)", "system": null}
+{"file": "Heroes_and_Knaves/Madhurava_Rudrata.md", "idx": 41, "type": "miscgear", "name": "Writing kit (ink, quills, parchment, wax seal)", "system": null}
+{"file": "Heroes_and_Knaves/Madhurava_Rudrata.md", "idx": 42, "type": "miscgear", "name": "Family crest medallion (brass, suspended)", "system": null}
+{"file": "Heroes_and_Knaves/Makithos_Vanardis.md", "idx": 32, "type": "miscgear", "name": "Leather-bound notebook (script drafts and notes)", "system": null}
+{"file": "Heroes_and_Knaves/Makithos_Vanardis.md", "idx": 33, "type": "miscgear", "name": "Writing kit (quill, inks, parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Makithos_Vanardis.md", "idx": 34, "type": "miscgear", "name": "Collection of dramatic scripts (personal works)", "system": null}
+{"file": "Heroes_and_Knaves/Makithos_Vanardis.md", "idx": 35, "type": "miscgear", "name": "Theatrical props (small, personal collection)", "system": null}
+{"file": "Heroes_and_Knaves/Makithos_Vanardis.md", "idx": 36, "type": "miscgear", "name": "Mask (theatrical, personal)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 39, "type": "miscgear", "name": "Navigator's logbook (personal records)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 40, "type": "miscgear", "name": "Collection of rutters (navigation charts)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 41, "type": "miscgear", "name": "Compass (brass, well-maintained)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 42, "type": "miscgear", "name": "Astrolabe (brass, personal)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 43, "type": "miscgear", "name": "Measuring instruments (sextant, scale)", "system": null}
+{"file": "Heroes_and_Knaves/Mehrad_Azardan.md", "idx": 44, "type": "miscgear", "name": "Rope and line (navigation quality)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 36, "type": "miscgear", "name": "Leather document case (professional quality)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 37, "type": "miscgear", "name": "Abacus (personal, well-used)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 38, "type": "miscgear", "name": "Ledgers (audit copies, key records)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 39, "type": "miscgear", "name": "Wax seal (official Treasury mark)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 40, "type": "miscgear", "name": "Writing kit (ink, quills, parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Meneti_Shapkher.md", "idx": 41, "type": "miscgear", "name": "Letter opener (metal, functional)", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 37, "type": "miscgear", "name": "Star charts (personal collection, extensive)", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 38, "type": "miscgear", "name": "Astrological instruments (astrolabe, quadrant)", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 39, "type": "miscgear", "name": "Sacred texts of Thóth (god of wisdom)", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 40, "type": "miscgear", "name": "Parchment and writing materials", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 41, "type": "miscgear", "name": "Ritual components (incense, offerings)", "system": null}
+{"file": "Heroes_and_Knaves/Meret-Sebek_Hekaamun.md", "idx": 42, "type": "miscgear", "name": "Prophecy scrolls (copies of readings)", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 36, "type": "miscgear", "name": "Household keys (iron, extensive set)", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 37, "type": "miscgear", "name": "Cleaning tools and implements", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 38, "type": "miscgear", "name": "Aprons (linen, multiple)", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 39, "type": "miscgear", "name": "Cloth bag for supplies", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 40, "type": "miscgear", "name": "Inventory ledger (personal household records)", "system": null}
+{"file": "Heroes_and_Knaves/Mertep_AnkhKhes.md", "idx": 41, "type": "miscgear", "name": "Wax seal (household mark)", "system": null}
+{"file": "Heroes_and_Knaves/Minaka_Parikshana.md", "idx": 36, "type": "miscgear", "name": "Linen chef's apron", "system": null}
+{"file": "Heroes_and_Knaves/Minaka_Parikshana.md", "idx": 37, "type": "miscgear", "name": "Wooden spice box", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Minaka_Parikshana.md", "idx": 38, "type": "miscgear", "name": "Cooking utensils (set)", "system": null}
+{"file": "Heroes_and_Knaves/Minaka_Parikshana.md", "idx": 39, "type": "miscgear", "name": "Recipe book", "system": null}
+{"file": "Heroes_and_Knaves/Mithran_Mazanid.md", "idx": 40, "type": "miscgear", "name": "Shearing tools (set)", "system": null}
+{"file": "Heroes_and_Knaves/Mithran_Mazanid.md", "idx": 41, "type": "miscgear", "name": "Cured meats", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Mithran_Shiradar.md", "idx": 36, "type": "miscgear", "name": "Tribal insignia pendant", "system": null}
+{"file": "Heroes_and_Knaves/Mithran_Shiradar.md", "idx": 37, "type": "miscgear", "name": "War horn (bone and copper)", "system": null}
+{"file": "Heroes_and_Knaves/Muri_Tarikh.md", "idx": 41, "type": "miscgear", "name": "Physician's roll (bandages, herbs, salves)", "system": null}
+{"file": "Heroes_and_Knaves/Myrine_Kalypsos.md", "idx": 36, "type": "weapongear", "name": "Hooked fighting net", "system": {"value": 15}}
+{"file": "Heroes_and_Knaves/Myrine_Kalypsos.md", "idx": 40, "type": "miscgear", "name": "Fire divination implements (copper bowl, consecrated oils, ritual kindling)", "system": null}
+{"file": "Heroes_and_Knaves/Myrine_Kalypsos.md", "idx": 41, "type": "miscgear", "name": "Black Flame holy symbol (cast bronze, worn at throat)", "system": null}
+{"file": "Heroes_and_Knaves/Myrine_Kalypsos.md", "idx": 42, "type": "miscgear", "name": "Mendicant's cord and seal", "system": null}
+{"file": "Heroes_and_Knaves/Nakhtar_AmunRashet.md", "idx": 41, "type": "miscgear", "name": "Thatching tools (set)", "system": null}
+{"file": "Heroes_and_Knaves/Nakhtar_AmunRashet.md", "idx": 42, "type": "miscgear", "name": "Bundles of reed", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Nakhtar_AmunRashet.md", "idx": 43, "type": "miscgear", "name": "Wooden pegs", "system": {"quantity": 50}}
+{"file": "Heroes_and_Knaves/Narava_Suryatejamahananda.md", "idx": 41, "type": "miscgear", "name": "Glassblowing pipe", "system": null}
+{"file": "Heroes_and_Knaves/Narava_Suryatejamahananda.md", "idx": 42, "type": "miscgear", "name": "Tongs (various weights)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Narava_Suryatejamahananda.md", "idx": 43, "type": "miscgear", "name": "Colored glass powders", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Narava_Suryatejamahananda.md", "idx": 44, "type": "miscgear", "name": "Heat-resistant leather gloves", "system": null}
+{"file": "Heroes_and_Knaves/Narava_Suryatejamahananda.md", "idx": 46, "type": "miscgear", "name": "Sketch materials (charcoal, parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Nari_al-Sufra.md", "idx": 34, "type": "miscgear", "name": "Herbal healing kit", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Nari_al-Sufra.md", "idx": 35, "type": "miscgear", "name": "Ritual components (herbs, stones, bones)", "system": null}
+{"file": "Heroes_and_Knaves/Nari_al-Sufra.md", "idx": 36, "type": "miscgear", "name": "Divination materials (bones, shells, sand)", "system": null}
+{"file": "Heroes_and_Knaves/Nari_al-Sufra.md", "idx": 41, "type": "miscgear", "name": "Woven prayer cord", "system": null}
+{"file": "Heroes_and_Knaves/Neferet_Imi-Ra.md", "idx": 35, "type": "miscgear", "name": "Ink and quills", "system": null}
+{"file": "Heroes_and_Knaves/Neferet_Imi-Ra.md", "idx": 36, "type": "miscgear", "name": "Parchment (bundle)", "system": {"quantity": 10}}
+{"file": "Heroes_and_Knaves/Neferet_Imi-Ra.md", "idx": 37, "type": "miscgear", "name": "Star charts (maps and diagrams)", "system": null}
+{"file": "Heroes_and_Knaves/Neferet_Imi-Ra.md", "idx": 38, "type": "miscgear", "name": "Reference texts (scrolls)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Neferet_Imi-Ra.md", "idx": 39, "type": "miscgear", "name": "Writing desk materials", "system": null}
+{"file": "Heroes_and_Knaves/Nushir_Narsafi.md", "idx": 41, "type": "miscgear", "name": "Beeswax and tallow", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Nushir_Narsafi.md", "idx": 42, "type": "miscgear", "name": "Wick materials", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Nushir_Narsafi.md", "idx": 43, "type": "miscgear", "name": "Candle molds (various sizes)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Nushir_Narsafi.md", "idx": 44, "type": "miscgear", "name": "Measuring scales and weights", "system": null}
+{"file": "Heroes_and_Knaves/Nushir_Narsafi.md", "idx": 45, "type": "miscgear", "name": "Perfume oils (set of essences)", "system": null}
+{"file": "Heroes_and_Knaves/Osk_Drekanott.md", "idx": 38, "type": "miscgear", "name": "Thatching tools (set)", "system": null}
+{"file": "Heroes_and_Knaves/Osk_Drekanott.md", "idx": 39, "type": "miscgear", "name": "Twine and rope", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Osk_Drekanott.md", "idx": 41, "type": "miscgear", "name": "Sketches and design notes", "system": null}
+{"file": "Heroes_and_Knaves/Oskunn_Bjargskorn.md", "idx": 35, "type": "miscgear", "name": "Wool shawl", "system": null}
+{"file": "Heroes_and_Knaves/Oskunn_Bjargskorn.md", "idx": 36, "type": "miscgear", "name": "Sewing materials (needles, thread, scissors)", "system": null}
+{"file": "Heroes_and_Knaves/Oskunn_Bjargskorn.md", "idx": 37, "type": "miscgear", "name": "Fabric scraps (assorted dyes and weaves)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Oskunn_Bjargskorn.md", "idx": 38, "type": "miscgear", "name": "Natural dyes (powders and prepared solutions)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Padmavali_Dhanurvedakirtiraja.md", "idx": 37, "type": "miscgear", "name": "Charcoal pencils and drawing sticks", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Padmavali_Dhanurvedakirtiraja.md", "idx": 38, "type": "miscgear", "name": "Watercolor palette and brushes", "system": null}
+{"file": "Heroes_and_Knaves/Padmavali_Dhanurvedakirtiraja.md", "idx": 39, "type": "miscgear", "name": "Parchment (bundle for sketches)", "system": {"quantity": 10}}
+{"file": "Heroes_and_Knaves/Padmavali_Dhanurvedakirtiraja.md", "idx": 40, "type": "miscgear", "name": "Measuring compass and straightedge", "system": null}
+{"file": "Heroes_and_Knaves/Padmavali_Dhanurvedakirtiraja.md", "idx": 41, "type": "miscgear", "name": "Ink and quills", "system": null}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 31, "type": "miscgear", "name": "Quills (various nib sizes)", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 32, "type": "miscgear", "name": "Inks (black, colored, specialty pigments)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 33, "type": "miscgear", "name": "Parchment (sheets, rolls, specialty papers)", "system": {"quantity": 12}}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 34, "type": "miscgear", "name": "Gold leaf and decorative materials", "system": null}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 35, "type": "miscgear", "name": "Ruler and measuring tools", "system": null}
+{"file": "Heroes_and_Knaves/Pallavi_Draviksha.md", "idx": 36, "type": "miscgear", "name": "Burnishing tools and brushes", "system": null}
+{"file": "Heroes_and_Knaves/Parri_ReenKhensu.md", "idx": 34, "type": "miscgear", "name": "Quills (various styles)", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Parri_ReenKhensu.md", "idx": 35, "type": "miscgear", "name": "Ink and writing supplies", "system": null}
+{"file": "Heroes_and_Knaves/Parri_ReenKhensu.md", "idx": 36, "type": "miscgear", "name": "Philosophical texts (personal collection)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Parri_ReenKhensu.md", "idx": 37, "type": "miscgear", "name": "Parchment for writing", "system": {"quantity": 8}}
+{"file": "Heroes_and_Knaves/Parri_ReenKhensu.md", "idx": 38, "type": "miscgear", "name": "Meditation beads", "system": null}
+{"file": "Heroes_and_Knaves/Parthun_Belthal.md", "idx": 36, "type": "miscgear", "name": "Ink and quills (fine quality)", "system": null}
+{"file": "Heroes_and_Knaves/Parthun_Belthal.md", "idx": 37, "type": "miscgear", "name": "Sealing wax and seal", "system": null}
+{"file": "Heroes_and_Knaves/Parthun_Belthal.md", "idx": 38, "type": "miscgear", "name": "Local laws and legal references (book)", "system": null}
+{"file": "Heroes_and_Knaves/Parthun_Belthal.md", "idx": 39, "type": "miscgear", "name": "Official documents (collection)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Parthun_Belthal.md", "idx": 40, "type": "miscgear", "name": "Parchment (writing supplies)", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 34, "type": "miscgear", "name": "Jewelry-making tools (set)", "system": null}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 35, "type": "miscgear", "name": "Polishing cloths and materials", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 36, "type": "miscgear", "name": "Gems and semi-precious stones (various)", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 37, "type": "miscgear", "name": "Metalworking supplies", "system": null}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 38, "type": "miscgear", "name": "Design sketches (portfolio)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Paryan_Barmandan.md", "idx": 39, "type": "miscgear", "name": "Parchment and charcoal (drawing supplies)", "system": null}
+{"file": "Heroes_and_Knaves/Pasher_Hetremet.md", "idx": 36, "type": "miscgear", "name": "Lyre or harp (fine instrument)", "system": null}
+{"file": "Heroes_and_Knaves/Pasher_Hetremet.md", "idx": 37, "type": "miscgear", "name": "Notebook for lyrics and compositions", "system": null}
+{"file": "Heroes_and_Knaves/Pasher_Hetremet.md", "idx": 38, "type": "miscgear", "name": "Healing herbs and poultices", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Patnefur_Setmaar.md", "idx": 36, "type": "miscgear", "name": "Intricate glass bottles (various sizes)", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Patnefur_Setmaar.md", "idx": 37, "type": "miscgear", "name": "Perfume samples (testing collection)", "system": {"quantity": 8}}
+{"file": "Heroes_and_Knaves/Patnefur_Setmaar.md", "idx": 38, "type": "miscgear", "name": "Blending tools (mortar, pestle, measuring implements)", "system": null}
+{"file": "Heroes_and_Knaves/Patnefur_Setmaar.md", "idx": 39, "type": "miscgear", "name": "Rare ingredients catalog (reference book)", "system": null}
+{"file": "Heroes_and_Knaves/Patnefur_Setmaar.md", "idx": 40, "type": "miscgear", "name": "Wax seals and stoppers", "system": null}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 37, "type": "miscgear", "name": "Ceremonial robes (formal official attire)", "system": null}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 38, "type": "miscgear", "name": "Family signet ring", "system": null}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 39, "type": "miscgear", "name": "Quills and writing supplies", "system": null}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 40, "type": "miscgear", "name": "Official scrolls and documents", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 41, "type": "miscgear", "name": "Heraldic precedent references (book)", "system": null}
+{"file": "Heroes_and_Knaves/Philandros_Kyriakos.md", "idx": 42, "type": "miscgear", "name": "Wax seals and ribbon", "system": null}
+{"file": "Heroes_and_Knaves/Philetos_Kleftes.md", "idx": 35, "type": "miscgear", "name": "Military manuals and tactical references", "system": null}
+{"file": "Heroes_and_Knaves/Philetos_Kleftes.md", "idx": 36, "type": "miscgear", "name": "Map case with campaign maps", "system": null}
+{"file": "Heroes_and_Knaves/Philetos_Kleftes.md", "idx": 39, "type": "miscgear", "name": "Fire-starting materials and oil vials", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Philina_Markesianos.md", "idx": 36, "type": "miscgear", "name": "Tanning solutions and chemical compounds", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Philina_Markesianos.md", "idx": 37, "type": "miscgear", "name": "Decorative dyes (powders and prepared solutions)", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Philina_Markesianos.md", "idx": 38, "type": "miscgear", "name": "Sewing and embroidery kit", "system": null}
+{"file": "Heroes_and_Knaves/Philina_Markesianos.md", "idx": 39, "type": "miscgear", "name": "Leather-working tools (set)", "system": null}
+{"file": "Heroes_and_Knaves/Philina_Markesianos.md", "idx": 40, "type": "miscgear", "name": "Design sketches and pattern references", "system": null}
+{"file": "Heroes_and_Knaves/Philotheia_Niktariotes.md", "idx": 32, "type": "miscgear", "name": "Lute (fine instrument)", "system": null}
+{"file": "Heroes_and_Knaves/Philotheia_Niktariotes.md", "idx": 33, "type": "miscgear", "name": "Spare lute strings", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Philotheia_Niktariotes.md", "idx": 34, "type": "miscgear", "name": "Collection of folk songs (manuscript)", "system": null}
+{"file": "Heroes_and_Knaves/Philotheia_Niktariotes.md", "idx": 35, "type": "miscgear", "name": "Leather case for lute", "system": null}
+{"file": "Heroes_and_Knaves/Photianos_Strategopoulos.md", "idx": 34, "type": "miscgear", "name": "Cooking utensils (set)", "system": null}
+{"file": "Heroes_and_Knaves/Photianos_Strategopoulos.md", "idx": 35, "type": "miscgear", "name": "Herbal remedies and medicinal preparations", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Photianos_Strategopoulos.md", "idx": 36, "type": "miscgear", "name": "Ledger for bookings and accounts", "system": null}
+{"file": "Heroes_and_Knaves/Photianos_Strategopoulos.md", "idx": 37, "type": "miscgear", "name": "Brewing supplies (hops, grains, vessels)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Pritarika_Padmadiksha.md", "idx": 41, "type": "miscgear", "name": "Leather writing case with parchment and ink", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Pritarika_Padmadiksha.md", "idx": 42, "type": "miscgear", "name": "Sealed leather pouch of governance documents", "system": null}
+{"file": "Heroes_and_Knaves/Pritarika_Padmadiksha.md", "idx": 43, "type": "miscgear", "name": "Brass seal of House Padmadîksha", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Pritarika_Padmadiksha.md", "idx": 44, "type": "miscgear", "name": "Gold-embroidered ledger for estate accounts", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Pritarika_Padmadiksha.md", "idx": 45, "type": "miscgear", "name": "Carved wooden prayer beads (Mahájaya)", "system": null}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 36, "type": "miscgear", "name": "Leather jeweler's tool roll (files, chisels, gravers)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 37, "type": "miscgear", "name": "Brass magnifying glass", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 38, "type": "miscgear", "name": "Polishing cloths and compound (bundle)", "system": null}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 39, "type": "miscgear", "name": "Wooden gem case with compartments", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 40, "type": "miscgear", "name": "Stone collection (raw samples for study)", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Prthimaja_Kayadara.md", "idx": 41, "type": "miscgear", "name": "Small silver pendant (personal work)", "system": null}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 40, "type": "miscgear", "name": "Leather-bound astral charts journal", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 41, "type": "miscgear", "name": "Brass astrolabe", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 42, "type": "miscgear", "name": "Copper telescope (brass-fitted)", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 43, "type": "miscgear", "name": "Star maps (rolled parchment set)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 44, "type": "miscgear", "name": "Ink and quills", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Qamira_Lamari.md", "idx": 45, "type": "miscgear", "name": "Carved bone dice for divination", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Raiah_Sekmeta.md", "idx": 40, "type": "miscgear", "name": "Metalworking tools (hammer, tongs, chisel set, anvil stone)", "system": {"weight": 3.5}}
+{"file": "Heroes_and_Knaves/Raiah_Sekmeta.md", "idx": 41, "type": "miscgear", "name": "Leather tool roll", "system": null}
+{"file": "Heroes_and_Knaves/Raiah_Sekmeta.md", "idx": 43, "type": "miscgear", "name": "Charcoal for forge", "system": {"quantity": 5}}
+{"file": "Heroes_and_Knaves/Raiah_Sekmeta.md", "idx": 49, "type": "miscgear", "name": "Ingots of various metals", "system": null}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 33, "type": "miscgear", "name": "Leather-bound journal of political observations", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 34, "type": "miscgear", "name": "Book of court etiquette and history", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 35, "type": "miscgear", "name": "Accounting ledger for patronage donations", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 36, "type": "miscgear", "name": "Silk cosmetics pouch", "system": null}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 37, "type": "miscgear", "name": "Golden hand mirror (Íšét cult devotional)", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Raiya_Wasetneb.md", "idx": 38, "type": "miscgear", "name": "Ink and quills", "system": null}
+{"file": "Heroes_and_Knaves/Rangr_Vetrdomr.md", "idx": 40, "type": "miscgear", "name": "Thatching tools (knife, pricker, needle set)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Rangr_Vetrdomr.md", "idx": 41, "type": "miscgear", "name": "Coil of strong twine", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Rangr_Vetrdomr.md", "idx": 45, "type": "miscgear", "name": "Flask of mead", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Rangr_Vetrdomr.md", "idx": 48, "type": "miscgear", "name": "Ladder", "system": null}
+{"file": "Heroes_and_Knaves/Rangr_Vetrdomr.md", "idx": 49, "type": "miscgear", "name": "Bundles of straw", "system": null}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 35, "type": "miscgear", "name": "Leather ritual satchel", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 36, "type": "miscgear", "name": "Bundle of medicinal herbs (dried)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 37, "type": "miscgear", "name": "Hand drum (deer hide, carved wood)", "system": {"weight": 0.7}}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 38, "type": "miscgear", "name": "Set of carved bone and wooden totems", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 39, "type": "miscgear", "name": "Small carved fetish (personal spiritual item)", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Ranthor_Pardalen.md", "idx": 42, "type": "miscgear", "name": "Waterskin of fermented mead", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 39, "type": "miscgear", "name": "Woven ritual bag with stones and bells", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 40, "type": "miscgear", "name": "Copper bells (set of 7)", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 41, "type": "miscgear", "name": "Bundle of sacred herbs (desert plants)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 42, "type": "miscgear", "name": "Bone divining sticks", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 43, "type": "miscgear", "name": "Silk head wraps", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 48, "type": "miscgear", "name": "Healing herbs", "system": null}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 49, "type": "miscgear", "name": "Divination stones", "system": null}
+{"file": "Heroes_and_Knaves/Razanash_Mervaran.md", "idx": 50, "type": "miscgear", "name": "Ceremonial feathers", "system": null}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 38, "type": "miscgear", "name": "Leather bookkeeping ledger for inn", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 39, "type": "miscgear", "name": "Brewing supplies (herbs, spices, seeds)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 40, "type": "miscgear", "name": "Measuring cups and scales", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 42, "type": "miscgear", "name": "Sample bottles of various ales", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 47, "type": "miscgear", "name": "Cooking tools", "system": null}
+{"file": "Heroes_and_Knaves/Renute_Reenfre.md", "idx": 48, "type": "miscgear", "name": "Serving dishes", "system": null}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 36, "type": "miscgear", "name": "Leather satchel with magical texts", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 37, "type": "miscgear", "name": "Grimoire bound in leather", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 38, "type": "miscgear", "name": "Collection of runes and ritual marks (carved bone)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 39, "type": "miscgear", "name": "Ink well and quills (for spell notation)", "system": null}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 40, "type": "miscgear", "name": "Ritual candles (wax, scented)", "system": {"quantity": 12}}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 41, "type": "miscgear", "name": "Parchment (spell paper)", "system": {"quantity": 20}}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 45, "type": "miscgear", "name": "Spellbook", "system": null}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 46, "type": "miscgear", "name": "Arcane focus", "system": null}
+{"file": "Heroes_and_Knaves/Rikarthr_Iseldr.md", "idx": 47, "type": "miscgear", "name": "Magical reagents", "system": null}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 37, "type": "miscgear", "name": "Jester’s bells (sewn into cap and vest)", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 38, "type": "miscgear", "name": "Satchel of props (juggling balls, scarves, masks)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 39, "type": "miscgear", "name": "Hand drum", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 40, "type": "miscgear", "name": "Wooden flute", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 41, "type": "miscgear", "name": "Lute", "system": {"weight": 1.8}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 42, "type": "miscgear", "name": "Rope (silk, multi-colored)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 43, "type": "miscgear", "name": "Theatrical makeup and paint", "system": null}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 47, "type": "miscgear", "name": "Juggling balls", "system": null}
+{"file": "Heroes_and_Knaves/Rognvaldr_Asgrind.md", "idx": 48, "type": "miscgear", "name": "Written routines", "system": null}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 45, "type": "miscgear", "name": "Shipwright's tools (planes, saws, chisels, measuring)", "system": {"weight": 3.0}}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 46, "type": "miscgear", "name": "Leather tool roll and belt", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 47, "type": "miscgear", "name": "Scale drawings and ship plans (rolled parchment)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 49, "type": "miscgear", "name": "Rope (hemp, various weights)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 50, "type": "miscgear", "name": "Boat-building nails and fasteners", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Rosharan_Barmandan.md", "idx": 51, "type": "miscgear", "name": "Sealing wax and ink (for drafting)", "system": null}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 35, "type": "miscgear", "name": "Horse grooming kit (brushes, combs, cloth)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 36, "type": "miscgear", "name": "Herbal remedies for equines (dried herbs bundle)", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 37, "type": "miscgear", "name": "Feed bags (canvas)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 38, "type": "miscgear", "name": "Rope (hemp)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 40, "type": "miscgear", "name": "Liniment for muscle soreness", "system": null}
+{"file": "Heroes_and_Knaves/Rudavah_Farrud.md", "idx": 42, "type": "miscgear", "name": "Flask of rosewater (personal)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Runa_Hringsdottir.md", "idx": 38, "type": "miscgear", "name": "Quiver (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Runa_Hringsdottir.md", "idx": 42, "type": "miscgear", "name": "Rope (hemp)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Runa_Hringsdottir.md", "idx": 43, "type": "miscgear", "name": "Fishing line and hooks", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Sabir_Ajira.md", "idx": 35, "type": "miscgear", "name": "Burlap sacks (charcoal transport)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Sabir_Ajira.md", "idx": 36, "type": "miscgear", "name": "Kiln tools (rake, poker, spade)", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Sabir_Ajira.md", "idx": 37, "type": "miscgear", "name": "Fire-starting flint and steel", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Sabir_Ajira.md", "idx": 39, "type": "miscgear", "name": "Wood samples (oak, cedar, pine)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Sabir_Ajira.md", "idx": 40, "type": "miscgear", "name": "Cloth for filtering charcoal dust", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 40, "type": "miscgear", "name": "Herding crook (wooden, carved)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 41, "type": "miscgear", "name": "Basket of herding tools and equipment", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 42, "type": "miscgear", "name": "Rope (hemp, for tethering)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 43, "type": "miscgear", "name": "Bone whistle (herd calls)", "system": {"weight": 0.1}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 44, "type": "miscgear", "name": "Herbal remedies (for animals)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 45, "type": "miscgear", "name": "Flint and tinder", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 50, "type": "miscgear", "name": "Whistle for calling her flock", "system": null}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 51, "type": "miscgear", "name": "Herbal remedies", "system": null}
+{"file": "Heroes_and_Knaves/Samarina_Kalokyres.md", "idx": 52, "type": "miscgear", "name": "Wool shears", "system": null}
+{"file": "Heroes_and_Knaves/Satara_ReenKhensu.md", "idx": 37, "type": "miscgear", "name": "Woodworking tools (chisels, gouges, knives, planes)", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Satara_ReenKhensu.md", "idx": 38, "type": "miscgear", "name": "Woven basket for tool transport", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Satara_ReenKhensu.md", "idx": 39, "type": "miscgear", "name": "Measuring tape and rule", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Satara_ReenKhensu.md", "idx": 40, "type": "miscgear", "name": "Book of tree identification and lore", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Satara_ReenKhensu.md", "idx": 41, "type": "miscgear", "name": "Rope (hemp)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 38, "type": "miscgear", "name": "Ring of iron household keys", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 39, "type": "miscgear", "name": "Household ledger and inventory records", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 40, "type": "miscgear", "name": "Herbal medicines and remedies (bundle)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 41, "type": "miscgear", "name": "Embalming materials (natron, unguents)", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 42, "type": "miscgear", "name": "Cooking herbs and spices (pouch)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 43, "type": "miscgear", "name": "Cloth for cleaning and maintenance", "system": {"quantity": 6}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 45, "type": "miscgear", "name": "Wax candles (household stock sample)", "system": {"quantity": 4}}
+{"file": "Heroes_and_Knaves/Satiya_Nebakhet.md", "idx": 49, "type": "miscgear", "name": "Cleaning supplies", "system": null}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 42, "type": "miscgear", "name": "Quiver (leather)", "system": null}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 43, "type": "miscgear", "name": "Leather satchel for navigational documents", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 44, "type": "miscgear", "name": "Star charts and nautical maps (rolled)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 45, "type": "miscgear", "name": "Brass compass", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 46, "type": "miscgear", "name": "Fishing hooks and lines", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 47, "type": "miscgear", "name": "Rope (hemp, coiled)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 52, "type": "miscgear", "name": "Cargo manifests", "system": null}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 53, "type": "miscgear", "name": "Navigation tools", "system": null}
+{"file": "Heroes_and_Knaves/Sekhemet_Kasekhen.md", "idx": 54, "type": "miscgear", "name": "Maps", "system": null}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 41, "type": "miscgear", "name": "Bosun’s whistle (brass)", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 42, "type": "miscgear", "name": "Rope coil (hemp, multi-purpose)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 43, "type": "miscgear", "name": "Fishing net and hooks", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 45, "type": "miscgear", "name": "Tar and rope repair kit", "system": null}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 48, "type": "miscgear", "name": "Flask of rum (personal)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 52, "type": "miscgear", "name": "Leather bag for personal items", "system": null}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 53, "type": "miscgear", "name": "Ropes", "system": null}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 54, "type": "miscgear", "name": "Navigation tools", "system": null}
+{"file": "Heroes_and_Knaves/Senapati_Vikramada.md", "idx": 55, "type": "miscgear", "name": "Ship's log", "system": null}
+{"file": "Heroes_and_Knaves/Senta_TaSereket.md", "idx": 37, "type": "miscgear", "name": "Quiver (leather, reinforced)", "system": null}
+{"file": "Heroes_and_Knaves/Senta_TaSereket.md", "idx": 38, "type": "miscgear", "name": "Climbing rope and grappling hook", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Senta_TaSereket.md", "idx": 39, "type": "miscgear", "name": "Map of trade routes (caravan paths)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 38, "type": "miscgear", "name": "Alchemical satchel with crucibles and vials", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 39, "type": "miscgear", "name": "Dried herbs and plant specimens (bundle)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 40, "type": "miscgear", "name": "Bottles of prepared tinctures and extracts", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 41, "type": "miscgear", "name": "Brass scales and measuring weights", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 42, "type": "miscgear", "name": "Leather-bound alchemical journal", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 43, "type": "miscgear", "name": "Ink and quills", "system": null}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 44, "type": "miscgear", "name": "Mortar and pestle (stone)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Sevion_Myrkelis.md", "idx": 45, "type": "miscgear", "name": "Oil lamp and stand", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 34, "type": "miscgear", "name": "Leather portfolio with writing implements", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 35, "type": "miscgear", "name": "Set of quality quills (goose and reed)", "system": {"quantity": 20}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 36, "type": "miscgear", "name": "Multiple bottles of inks (various colors)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 37, "type": "miscgear", "name": "Parchment (prime quality sheets)", "system": {"quantity": 50}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 38, "type": "miscgear", "name": "Accounting ledgers (blank and personal)", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 39, "type": "miscgear", "name": "Ink stone and grinding rod", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Shadal_Nadina.md", "idx": 40, "type": "miscgear", "name": "Blotting sand and cloth", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Shadezar_Kamruz.md", "idx": 37, "type": "miscgear", "name": "Quiver (leather, tribal design)", "system": null}
+{"file": "Heroes_and_Knaves/Shadezar_Kamruz.md", "idx": 38, "type": "miscgear", "name": "Drinking horn (carved bone, personal)", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Shadezar_Kamruz.md", "idx": 39, "type": "miscgear", "name": "Tribal runestone (engraved, sacred)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Shadezar_Kamruz.md", "idx": 41, "type": "miscgear", "name": "Rope (hemp, braided)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 38, "type": "miscgear", "name": "Leather-bound journal of diplomatic notes", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 39, "type": "miscgear", "name": "Silk pouch of cosmetics and oils", "system": null}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 40, "type": "miscgear", "name": "Gold-embroidered handkerchief", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 41, "type": "miscgear", "name": "Set of luxury inks and quills", "system": null}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 42, "type": "miscgear", "name": "Small harp or oud (musical instrument)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 43, "type": "miscgear", "name": "Perfumed silk scarves", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Shadiq_ibn_Rahman.md", "idx": 44, "type": "miscgear", "name": "Letters of introduction from court", "system": null}
+{"file": "Heroes_and_Knaves/Sharminah_Tahvan.md", "idx": 39, "type": "miscgear", "name": "Satchel for ritual tools and sacred texts", "system": null}
+{"file": "Heroes_and_Knaves/Sharminah_Tahvan.md", "idx": 40, "type": "miscgear", "name": "Fire incense (bundle)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Sharminah_Tahvan.md", "idx": 41, "type": "miscgear", "name": "Ceremonial offerings for rituals", "system": null}
+{"file": "Heroes_and_Knaves/Sharminah_Tahvan.md", "idx": 42, "type": "miscgear", "name": "Prayer beads of the Sacred Flame", "system": null}
+{"file": "Heroes_and_Knaves/Shebas_Thutmosa.md", "idx": 38, "type": "miscgear", "name": "Woven basket for herbs", "system": null}
+{"file": "Heroes_and_Knaves/Shebas_Thutmosa.md", "idx": 39, "type": "miscgear", "name": "Herbal pouch with dried remedies", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Shebas_Thutmosa.md", "idx": 40, "type": "miscgear", "name": "Wooden mortar and pestle", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Shebas_Thutmosa.md", "idx": 41, "type": "miscgear", "name": "Field guide to medicinal herbs", "system": null}
+{"file": "Heroes_and_Knaves/Shebas_Thutmosa.md", "idx": 42, "type": "miscgear", "name": "Apothecary's scales and weights", "system": null}
+{"file": "Heroes_and_Knaves/Shenur_Bapata.md", "idx": 41, "type": "miscgear", "name": "Leather tool belt", "system": null}
+{"file": "Heroes_and_Knaves/Shenur_Bapata.md", "idx": 42, "type": "miscgear", "name": "Forge tools (hammer, tongs, chisel, anvil stand)", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Shenur_Bapata.md", "idx": 43, "type": "miscgear", "name": "Sharpening stones", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Shenur_Bapata.md", "idx": 44, "type": "miscgear", "name": "Iron and steel ingots (trade goods)", "system": {"quantity": 3, "weight": 1.5}}
+{"file": "Heroes_and_Knaves/Sigfuss_Stormrot.md", "idx": 39, "type": "miscgear", "name": "Rope (coil)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Sigfuss_Stormrot.md", "idx": 40, "type": "miscgear", "name": "Navigation tools (compass, sextant)", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Sigfuss_Stormrot.md", "idx": 41, "type": "miscgear", "name": "Fishing gear and hooks", "system": null}
+{"file": "Heroes_and_Knaves/Sigfuss_Stormrot.md", "idx": 44, "type": "miscgear", "name": "Fishing net (compact, rolled)", "system": null}
+{"file": "Heroes_and_Knaves/Siprah_Ipmaar.md", "idx": 37, "type": "miscgear", "name": "Locksmith tools (picks, tension wrenches, feeler gauges)", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Siprah_Ipmaar.md", "idx": 38, "type": "miscgear", "name": "Templates for lock designs (parchment)", "system": null}
+{"file": "Heroes_and_Knaves/Siprah_Ipmaar.md", "idx": 39, "type": "miscgear", "name": "Legal contracts and guild permits", "system": null}
+{"file": "Heroes_and_Knaves/Siprah_Ipmaar.md", "idx": 40, "type": "miscgear", "name": "Measuring calipers and rulers", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Sir_Andres_Lorca.md", "idx": 44, "type": "miscgear", "name": "Knight's heraldic surcoat (quartered arms)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Sir_Andres_Lorca.md", "idx": 45, "type": "miscgear", "name": "Silk cloak with knightly insignia", "system": null}
+{"file": "Heroes_and_Knaves/Sir_Andres_Lorca.md", "idx": 49, "type": "miscgear", "name": "Small holy icon (Táranon)", "system": null}
+{"file": "Heroes_and_Knaves/Sir_Drazha_Sycani.md", "idx": 44, "type": "miscgear", "name": "Knight's surcoat with Black Flame sigil", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Sir_Drazha_Sycani.md", "idx": 45, "type": "miscgear", "name": "Leather riding gloves", "system": null}
+{"file": "Heroes_and_Knaves/Skufrun_Stormrot.md", "idx": 37, "type": "miscgear", "name": "Needle and thread (multiple types)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Skufrun_Stormrot.md", "idx": 38, "type": "miscgear", "name": "Fabric dyes (powdered)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Skufrun_Stormrot.md", "idx": 39, "type": "miscgear", "name": "Small portable loom", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Skufrun_Stormrot.md", "idx": 40, "type": "miscgear", "name": "Cloth swatches and samples", "system": null}
+{"file": "Heroes_and_Knaves/Skufrun_Stormrot.md", "idx": 41, "type": "miscgear", "name": "Measuring tape and shears", "system": null}
+{"file": "Heroes_and_Knaves/Skuli_Vetrdomr.md", "idx": 40, "type": "miscgear", "name": "Large wooden chest for tools and supplies", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Skuli_Vetrdomr.md", "idx": 41, "type": "miscgear", "name": "Heavy-duty stitching and tent-making tools", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Skuli_Vetrdomr.md", "idx": 42, "type": "miscgear", "name": "Leather patches (assorted)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Skuli_Vetrdomr.md", "idx": 43, "type": "miscgear", "name": "Waxed thread (spools)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Snorri_Jarnskel.md", "idx": 41, "type": "miscgear", "name": "Wooden shovel (farming tool)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Snorri_Jarnskel.md", "idx": 42, "type": "miscgear", "name": "Hand-carved charm (blessed)", "system": null}
+{"file": "Heroes_and_Knaves/Snorri_Jarnskel.md", "idx": 43, "type": "miscgear", "name": "Rough rope (coil)", "system": null}
+{"file": "Heroes_and_Knaves/Snorri_Jarnskel.md", "idx": 44, "type": "miscgear", "name": "Woven sack for supplies", "system": null}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 32, "type": "miscgear", "name": "Silk purse (ornate, hand-embroidered)", "system": null}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 33, "type": "miscgear", "name": "Jewelry (earrings, bangles, multiple pieces)", "system": {"quantity": 3, "value": 15}}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 34, "type": "miscgear", "name": "Perfumed oils and incense", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 35, "type": "miscgear", "name": "Sitar or vina (stringed instrument)", "system": {"weight": 1.2}}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 36, "type": "miscgear", "name": "Cosmetic preparations (kohl, henna, rouge)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md", "idx": 37, "type": "miscgear", "name": "Silk scarves (various colors)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Suvaratika_Ratnisena.md", "idx": 37, "type": "miscgear", "name": "Wooden crate for toy supplies and materials", "system": {"weight": 2.2}}
+{"file": "Heroes_and_Knaves/Suvaratika_Ratnisena.md", "idx": 38, "type": "miscgear", "name": "Carving and woodworking tools (chisels, gouges, knives)", "system": {"weight": 0.7}}
+{"file": "Heroes_and_Knaves/Suvaratika_Ratnisena.md", "idx": 39, "type": "miscgear", "name": "Paintbrushes and paint pigments", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Suvaratika_Ratnisena.md", "idx": 40, "type": "miscgear", "name": "Wooden blocks (assorted sizes, blanks for carving)", "system": {"quantity": 3, "weight": 1.0}}
+{"file": "Heroes_and_Knaves/Suvaratika_Ratnisena.md", "idx": 41, "type": "miscgear", "name": "Ceramic paints and glazes", "system": null}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 35, "type": "miscgear", "name": "Embroidered silk bag (ornate, hand-sewn)", "system": null}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 36, "type": "miscgear", "name": "Elegant gown (additional formal dress)", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 37, "type": "miscgear", "name": "Books (philosophical and romantic texts)", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 38, "type": "miscgear", "name": "Calligraphy set (brushes, inks, papers)", "system": null}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 39, "type": "miscgear", "name": "Jewelry and cosmetics", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Tamiyra_Jaut.md", "idx": 40, "type": "miscgear", "name": "Scent bottles (perfumes and oils)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Tamura_Suryatejamahananda.md", "idx": 39, "type": "miscgear", "name": "Large wooden chest for tools and materials", "system": {"weight": 2.5}}
+{"file": "Heroes_and_Knaves/Tamura_Suryatejamahananda.md", "idx": 40, "type": "miscgear", "name": "Saw (hand saw for woodworking)", "system": null}
+{"file": "Heroes_and_Knaves/Tamura_Suryatejamahananda.md", "idx": 41, "type": "miscgear", "name": "Wood glue and finishing oils", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Tamura_Suryatejamahananda.md", "idx": 42, "type": "miscgear", "name": "Planing and shaving tools", "system": {"weight": 0.6}}
+{"file": "Heroes_and_Knaves/Tamura_Suryatejamahananda.md", "idx": 43, "type": "miscgear", "name": "Measuring tools and squares", "system": null}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 38, "type": "miscgear", "name": "Scroll case with astrological charts", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 39, "type": "miscgear", "name": "Brass surveyor's compass", "system": null}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 40, "type": "miscgear", "name": "Star maps (portable, rolled)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 41, "type": "miscgear", "name": "Nautical almanac", "system": null}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 42, "type": "miscgear", "name": "Tarot deck and divining cards", "system": null}
+{"file": "Heroes_and_Knaves/Tarellia_Belthal.md", "idx": 43, "type": "miscgear", "name": "Astronomical calculator and tables", "system": null}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 38, "type": "miscgear", "name": "Leather tool belt with pouches", "system": null}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 39, "type": "miscgear", "name": "Wooden chest for clockwork and mechanism parts", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 40, "type": "miscgear", "name": "Tiny gears and springs (assorted)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 41, "type": "miscgear", "name": "Wooden models and prototypes", "system": null}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 42, "type": "miscgear", "name": "Clockmaker’s and toymaker’s tools (files, drills, gauges)", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Tefnuti_HetWera.md", "idx": 43, "type": "miscgear", "name": "Wax and finishing materials", "system": null}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 36, "type": "miscgear", "name": "Wooden crate for glass supplies and tools", "system": {"weight": 2.0}}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 37, "type": "miscgear", "name": "Glass cutters and scoring tools", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 38, "type": "miscgear", "name": "Colored glass pieces (assorted)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 39, "type": "miscgear", "name": "Metal frames and leads for window assembly", "system": {"weight": 0.8}}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 40, "type": "miscgear", "name": "Glass polishing and smoothing tools", "system": null}
+{"file": "Heroes_and_Knaves/Thalisa_Torvaleth.md", "idx": 41, "type": "miscgear", "name": "Furnace materials and fusing supplies", "system": null}
+{"file": "Heroes_and_Knaves/Thekla_Rhomaios.md", "idx": 39, "type": "miscgear", "name": "Herbal remedies and healing poultices", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Thekla_Rhomaios.md", "idx": 40, "type": "miscgear", "name": "Survival gear (rope, hooks, line)", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Thekla_Rhomaios.md", "idx": 44, "type": "miscgear", "name": "Personal effects (old letters, mementos)", "system": null}
+{"file": "Heroes_and_Knaves/Theomides_Epiphaniotes.md", "idx": 40, "type": "miscgear", "name": "Leather satchel for trap components and tools", "system": null}
+{"file": "Heroes_and_Knaves/Theomides_Epiphaniotes.md", "idx": 41, "type": "miscgear", "name": "Steel animal traps (assorted sizes)", "system": {"quantity": 3, "weight": 1.2}}
+{"file": "Heroes_and_Knaves/Theomides_Epiphaniotes.md", "idx": 42, "type": "miscgear", "name": "Snares and trip-cord (bundled)", "system": null}
+{"file": "Heroes_and_Knaves/Theomides_Epiphaniotes.md", "idx": 43, "type": "miscgear", "name": "Dried meat and game provisions", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Theomides_Epiphaniotes.md", "idx": 44, "type": "miscgear", "name": "Flint and steel for fire", "system": null}
+{"file": "Heroes_and_Knaves/Thesalonike_Katharopoulos.md", "idx": 40, "type": "miscgear", "name": "Leather satchel for woodworking tools", "system": null}
+{"file": "Heroes_and_Knaves/Thesalonike_Katharopoulos.md", "idx": 41, "type": "miscgear", "name": "Hand saw for cutting wood", "system": null}
+{"file": "Heroes_and_Knaves/Thesalonike_Katharopoulos.md", "idx": 42, "type": "miscgear", "name": "Rope (coiled)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thesalonike_Katharopoulos.md", "idx": 43, "type": "miscgear", "name": "Wooden mallet and wedges", "system": null}
+{"file": "Heroes_and_Knaves/Thesalonike_Katharopoulos.md", "idx": 44, "type": "miscgear", "name": "Sharpening stone and honing tools", "system": null}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 38, "type": "miscgear", "name": "Velvet-lined garment bag for carrying fine clothes", "system": null}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 39, "type": "miscgear", "name": "High-quality fabrics (silk, velvet, wool samples)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 40, "type": "miscgear", "name": "Fine needles and specialty thread", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 41, "type": "miscgear", "name": "Gold thread (specialty, for embroidery)", "system": null}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 42, "type": "miscgear", "name": "Fashion sketchbook and design notes", "system": null}
+{"file": "Heroes_and_Knaves/Thjotharr_Hrafnsvald.md", "idx": 43, "type": "miscgear", "name": "Measuring tools and tailoring patterns", "system": null}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 42, "type": "miscgear", "name": "Cloth sack for carrying mining tools and ore", "system": null}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 43, "type": "miscgear", "name": "Pickaxe (mining tool)", "system": {"weight": 1.0}}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 44, "type": "miscgear", "name": "Old map of the mine workings", "system": null}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 45, "type": "miscgear", "name": "Measuring tools and mining markers", "system": null}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 46, "type": "miscgear", "name": "Rope and twine (utility)", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thorlakr_Vindrkve.md", "idx": 47, "type": "miscgear", "name": "Chisel and hammer (mining implements)", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Thornak_Mahnlin.md", "idx": 42, "type": "miscgear", "name": "Fur cloak (boar-hide, ritualistic)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Thornak_Mahnlin.md", "idx": 43, "type": "miscgear", "name": "Ritualistic bone decorations and totems", "system": {"quantity": 2}}
+{"file": "Heroes_and_Knaves/Thornak_Mahnlin.md", "idx": 44, "type": "miscgear", "name": "Hunting knife (bone-handled)", "system": null}
+{"file": "Heroes_and_Knaves/Thornak_Mahnlin.md", "idx": 45, "type": "miscgear", "name": "Dried game meat and pemmican", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Frostulf.md", "idx": 40, "type": "miscgear", "name": "Leather tool pouch", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Frostulf.md", "idx": 41, "type": "miscgear", "name": "Pottery wheel (workshop equipment)", "system": null}
+{"file": "Heroes_and_Knaves/Thorsteinn_Frostulf.md", "idx": 42, "type": "miscgear", "name": "Clay preparation tools and kiln supplies", "system": null}
+{"file": "Heroes_and_Knaves/Thorsteinn_Jarnskel.md", "idx": 41, "type": "miscgear", "name": "Herding rope and knots", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Jarnskel.md", "idx": 42, "type": "miscgear", "name": "Animal feed pouch", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Solvargr.md", "idx": 41, "type": "miscgear", "name": "Glassblowing pipe", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Solvargr.md", "idx": 42, "type": "miscgear", "name": "Wooden toolbox with molds and tools", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Thorsteinn_Solvargr.md", "idx": 44, "type": "miscgear", "name": "Cloth for polishing", "system": null}
+{"file": "Heroes_and_Knaves/Timotheon_Gavalas.md", "idx": 40, "type": "miscgear", "name": "Map of trade routes", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Timotheon_Gavalas.md", "idx": 41, "type": "miscgear", "name": "Pipe and tobacco pouch", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Timotheon_Gavalas.md", "idx": 42, "type": "miscgear", "name": "Wagon maintenance tools", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Tirye_Djetame.md", "idx": 34, "type": "miscgear", "name": "Silk pouch for makeup and cosmetics", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Tirye_Djetame.md", "idx": 35, "type": "miscgear", "name": "Stage prop collection", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Tirye_Djetame.md", "idx": 36, "type": "miscgear", "name": "Scripts and performance notes", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Tirye_Djetame.md", "idx": 37, "type": "miscgear", "name": "Mirror with ornate frame", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Totkar_HetWera.md", "idx": 37, "type": "miscgear", "name": "Leather satchel for legal documents", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Totkar_HetWera.md", "idx": 38, "type": "miscgear", "name": "Legal texts and reference volumes", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Totkar_HetWera.md", "idx": 39, "type": "miscgear", "name": "Writing materials (parchment, ink, quills)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Totkar_HetWera.md", "idx": 40, "type": "miscgear", "name": "Case notes and case files", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Unnr_Eldskari.md", "idx": 40, "type": "miscgear", "name": "Candle-making molds and carving tools", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Unnr_Eldskari.md", "idx": 41, "type": "miscgear", "name": "Scented herbs and wax preparations", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Vanika_Ratnisena.md", "idx": 39, "type": "miscgear", "name": "Large cooking pot (iron)", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Vanika_Ratnisena.md", "idx": 40, "type": "miscgear", "name": "Clay storage pots", "system": {"quantity": 3}}
+{"file": "Heroes_and_Knaves/Vanika_Ratnisena.md", "idx": 41, "type": "miscgear", "name": "Wooden ladle and spoons", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Veldor_Belthal.md", "idx": 36, "type": "miscgear", "name": "Leather bag for scripts", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Veldor_Belthal.md", "idx": 37, "type": "miscgear", "name": "Theater costumes and changes", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Veldor_Belthal.md", "idx": 38, "type": "miscgear", "name": "Makeup kit with cosmetics", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Veldor_Belthal.md", "idx": 39, "type": "miscgear", "name": "Collection of dramatic scripts", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Veldor_Belthal.md", "idx": 40, "type": "miscgear", "name": "Lute", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Vigbrandr_Skyrekkr.md", "idx": 38, "type": "miscgear", "name": "Wooden box for scrolls", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Vigbrandr_Skyrekkr.md", "idx": 39, "type": "miscgear", "name": "Runestones for divination", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Vigbrandr_Skyrekkr.md", "idx": 40, "type": "miscgear", "name": "Ceremonial drinking horn", "system": {"weight": 0.4}}
+{"file": "Heroes_and_Knaves/Vigbrandr_Skyrekkr.md", "idx": 41, "type": "miscgear", "name": "Lute or harp (musical instrument)", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Virangasikharam_Duksana.md", "idx": 39, "type": "miscgear", "name": "Leather pouch for administrative documents", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Virangasikharam_Duksana.md", "idx": 40, "type": "miscgear", "name": "Land ledger and accounts", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Virangasikharam_Duksana.md", "idx": 41, "type": "miscgear", "name": "Agricultural tools and implements", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Vishali_Balarnaya.md", "idx": 36, "type": "miscgear", "name": "Small pouch for tricks and sleight-of-hand supplies", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Vishali_Balarnaya.md", "idx": 37, "type": "miscgear", "name": "Props and juggling items", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Vishali_Balarnaya.md", "idx": 38, "type": "miscgear", "name": "Musical instruments (small pipes, bells)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Vishali_Balarnaya.md", "idx": 39, "type": "miscgear", "name": "Ornate mirror for tricks", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Vishnusha_Vidyasagaramandala.md", "idx": 38, "type": "miscgear", "name": "Leather satchel for personal items", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Vishnusha_Vidyasagaramandala.md", "idx": 39, "type": "miscgear", "name": "Mining tools and chisels", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Vishnusha_Vidyasagaramandala.md", "idx": 40, "type": "miscgear", "name": "Safety gear (padding, gloves)", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Vishnusha_Vidyasagaramandala.md", "idx": 41, "type": "miscgear", "name": "Lantern with oil", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Visvambharakhila_Ratnangadevadasa.md", "idx": 38, "type": "miscgear", "name": "Canvas bag for carrying supplies", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Visvambharakhila_Ratnangadevadasa.md", "idx": 39, "type": "miscgear", "name": "Scented oils for candle-making", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Visvambharakhila_Ratnangadevadasa.md", "idx": 40, "type": "miscgear", "name": "Dyes and colorants", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Visvambharakhila_Ratnangadevadasa.md", "idx": 41, "type": "miscgear", "name": "Beeswax and tallow supplies", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Visvara_Mahapara.md", "idx": 40, "type": "miscgear", "name": "Large canvas bag for personal items", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Visvara_Mahapara.md", "idx": 41, "type": "miscgear", "name": "Nautical ropes and cord", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Visvara_Mahapara.md", "idx": 42, "type": "miscgear", "name": "Navigation instruments (compass, lead line)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Visvara_Mahapara.md", "idx": 43, "type": "miscgear", "name": "Fishing lines and hooks", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Voggr_Blotholl.md", "idx": 37, "type": "miscgear", "name": "Large canvas bag for tools", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Voggr_Blotholl.md", "idx": 38, "type": "miscgear", "name": "Saw for timber work", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Voggr_Blotholl.md", "idx": 39, "type": "miscgear", "name": "Rope and cordage", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Voggr_Blotholl.md", "idx": 40, "type": "miscgear", "name": "Sapling seeds for forest restoration", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Xadros_Daemates.md", "idx": 38, "type": "miscgear", "name": "Wooden toolbox with carving implements", "system": {"weight": 2}}
+{"file": "Heroes_and_Knaves/Xadros_Daemates.md", "idx": 39, "type": "miscgear", "name": "Chisels and gouges", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Xadros_Daemates.md", "idx": 40, "type": "miscgear", "name": "Wood polish and finishes", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Xadros_Daemates.md", "idx": 41, "type": "miscgear", "name": "Sample woods for display", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Xerophon_Kalmakanes.md", "idx": 36, "type": "miscgear", "name": "Iron key ring", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Xerophon_Kalmakanes.md", "idx": 37, "type": "miscgear", "name": "Shackles and restraint chains", "system": {"weight": 3}}
+{"file": "Heroes_and_Knaves/Xerophon_Kalmakanes.md", "idx": 38, "type": "miscgear", "name": "Guard's whistle", "system": {"weight": 0.1}}
+{"file": "Heroes_and_Knaves/Xerophon_Kalmakanes.md", "idx": 39, "type": "miscgear", "name": "Prison logbook", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Yngvarr_Blotholl.md", "idx": 37, "type": "miscgear", "name": "Satchel for jest props", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Yngvarr_Blotholl.md", "idx": 38, "type": "miscgear", "name": "Musical instruments (pipes, bells, lute)", "system": {"weight": 1.5}}
+{"file": "Heroes_and_Knaves/Yngvarr_Blotholl.md", "idx": 39, "type": "miscgear", "name": "Juggling balls", "system": {"quantity": 1}}
+{"file": "Heroes_and_Knaves/Yngvarr_Blotholl.md", "idx": 40, "type": "miscgear", "name": "Collection of written jests and jokes", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Yngvarr_Drottgar.md", "idx": 43, "type": "miscgear", "name": "Navigation tools (compass, maps)", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Zahira_Malkhet.md", "idx": 40, "type": "miscgear", "name": "Rope and climbing gear", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Zahira_Malkhet.md", "idx": 41, "type": "miscgear", "name": "Tracker's tools and tracking supplies", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Zahra_Maelkan.md", "idx": 40, "type": "miscgear", "name": "Lockpicks and thief's tools", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Zahra_Maelkan.md", "idx": 41, "type": "miscgear", "name": "Disguise kit and cosmetics", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Zahra_Maelkan.md", "idx": 42, "type": "miscgear", "name": "Writing materials and coded notes", "system": {"weight": 0.3}}
+{"file": "Heroes_and_Knaves/Zahra_Maelkan.md", "idx": 43, "type": "miscgear", "name": "Fine silk face veil", "system": {"weight": 0.1}}
+{"file": "Heroes_and_Knaves/Zahra_Maelkan.md", "idx": 44, "type": "miscgear", "name": "Rope and grappling hook", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Zenais_Philokalos.md", "idx": 38, "type": "miscgear", "name": "Satchel with bird treats and seed", "system": {"weight": 1}}
+{"file": "Heroes_and_Knaves/Zenais_Philokalos.md", "idx": 39, "type": "miscgear", "name": "Training rods and whistles", "system": {"weight": 0.5}}
+{"file": "Heroes_and_Knaves/Zenais_Philokalos.md", "idx": 40, "type": "miscgear", "name": "Bells for bird training", "system": {"weight": 0.2}}
+{"file": "Heroes_and_Knaves/Zenais_Philokalos.md", "idx": 41, "type": "miscgear", "name": "Trainer's journal and notes", "system": {"weight": 0.3}}

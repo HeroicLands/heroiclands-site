@@ -1,0 +1,45 @@
+{{- /*
+  Render a sidebar section for mystical abilities (spells or arcane talents).
+
+  Expects a context dict:
+    items: slice of entry dicts
+      - spells:  { name, domain?, url?, domain_url? }
+      - talents: { name, url? }
+    title: section heading text (e.g. "Spells", "Arcane Talents")
+    kind:  "spell" | "talent" — controls whether a domain prefix is rendered
+
+  The section is omitted entirely when items is empty/missing, matching the
+  "silent disappear on missing data" convention of the surrounding sidebar.
+*/ -}}
+{{- $ctx := . -}}
+{{- $items := .items -}}
+{{- if and $items (gt (len $items) 0) }}
+<section class="info-section">
+  <h3 class="info-section-title">{{ $ctx.title }}</h3>
+  <ul class="info-mystical-list">
+    {{- range $items }}
+    {{- $name := .name -}}
+    {{- $url  := .url  -}}
+    {{- $domain := .domain -}}
+    {{- $domainUrl := .domain_url -}}
+    <li class="info-mystical-item">
+      {{- if eq $ctx.kind "spell" -}}
+        {{- with $domain -}}
+          {{- if $domainUrl -}}
+            <a class="mystical-domain" href="{{ $domainUrl }}">{{ . }}</a>
+          {{- else -}}
+            <span class="mystical-domain">{{ . }}</span>
+          {{- end -}}
+          <span class="mystical-sep">&nbsp;/&nbsp;</span>
+        {{- end -}}
+      {{- end -}}
+      {{- if $url -}}
+        <a class="mystical-name" href="{{ $url }}">{{ $name }}</a>
+      {{- else -}}
+        <span class="mystical-name">{{ $name }}</span>
+      {{- end -}}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end -}}

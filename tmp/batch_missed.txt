@@ -1,0 +1,4 @@
+Heroes_and_Knaves/Hathura_Isefre.md
+Heroes_and_Knaves/Nushir_Narsafi.md
+Heroes_and_Knaves/Rikarthr_Iseldr.md
+Heroes_and_Knaves/Samarina_Kalokyres.md

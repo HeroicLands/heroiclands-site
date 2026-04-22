@@ -1,0 +1,13 @@
+Heroes_and_Knaves/Photianos_Strategopoulos.md
+Heroes_and_Knaves/Qamira_Lamari.md
+Heroes_and_Knaves/Satara_ReenKhensu.md
+Heroes_and_Knaves/Sekhemet_Kasekhen.md
+Heroes_and_Knaves/Senta_TaSereket.md
+Heroes_and_Knaves/Siprah_Ipmaar.md
+Heroes_and_Knaves/Sir_Drazha_Sycani.md
+Heroes_and_Knaves/Sunati_Ayodhyarajavardhan.md
+Heroes_and_Knaves/Thesalonike_Katharopoulos.md
+Heroes_and_Knaves/Thorlakr_Vindrkve.md
+Heroes_and_Knaves/Vanika_Ratnisena.md
+Heroes_and_Knaves/Vigbrandr_Skyrekkr.md
+Heroes_and_Knaves/Xadros_Daemates.md

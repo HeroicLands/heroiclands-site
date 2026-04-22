@@ -583,6 +583,92 @@ function buildLookupMap(entries: VaultEntry[]): Map<string, LookupEntry> {
     return map;
 }
 
+// ── Mystical-ability index ─────────────────────────────────────────
+
+/**
+ * Per-shortcode indexes for mystical-ability resolution.
+ *
+ * Characters and creatures reference spells, arcane talents, and the
+ * domains those spells belong to by shortcode inside `sohl.items[]`.
+ * Building dedicated shortcode-keyed maps (rather than reusing the
+ * wikilink `lookup` map, which is keyed by stem/alias/name) lets the
+ * exporter resolve those references without ambiguity and independent
+ * of what stems authors happen to use.
+ *
+ * Only publishable entries are indexed, so an unpublished spell/talent/
+ * domain gracefully falls back to rendering just the shortcode. Later
+ * duplicate shortcodes in the same category are ignored so the first
+ * published definition wins (noisy, but non-fatal).
+ */
+interface MysticalRef {
+    title: string;
+    url: string;
+    /** For spells: the `sohl.<pantheon>.<domain>` code; null for talents. */
+    domainCode: string | null;
+}
+
+interface DomainRef {
+    title: string;
+    url: string;
+    shortcode: string;
+}
+
+interface MysticalIndex {
+    spells: Map<string, MysticalRef>;
+    talents: Map<string, MysticalRef>;
+    domains: Map<string, DomainRef>;
+}
+
+function buildMysticalIndex(entries: VaultEntry[]): MysticalIndex {
+    const spells = new Map<string, MysticalRef>();
+    const talents = new Map<string, MysticalRef>();
+    const domains = new Map<string, DomainRef>();
+
+    for (const entry of entries) {
+        const fm = entry.frontmatter;
+        const shortcode =
+            typeof fm.shortcode === "string" ? fm.shortcode : null;
+        if (!shortcode) continue;
+
+        if (entry.type === "mysticalability") {
+            const subType = typeof fm.subType === "string" ? fm.subType : "";
+            const domainCode =
+                typeof fm.domainCode === "string" ? fm.domainCode : null;
+            const ref: MysticalRef = {
+                title: entry.title,
+                url: entry.url,
+                domainCode,
+            };
+            if (subType === "arcaneincantation" && !spells.has(shortcode)) {
+                spells.set(shortcode, ref);
+            } else if (subType === "arcanetalent" && !talents.has(shortcode)) {
+                talents.set(shortcode, ref);
+            }
+        } else if (entry.type === "domain") {
+            if (!domains.has(shortcode)) {
+                domains.set(shortcode, {
+                    title: entry.title,
+                    url: entry.url,
+                    shortcode,
+                });
+            }
+        }
+    }
+
+    return { spells, talents, domains };
+}
+
+/**
+ * Resolve a domainCode like "sohl.hexhodai.physera" to the last segment,
+ * which by convention is the domain's own shortcode.
+ */
+function domainShortcodeFromCode(code: string | null | undefined): string | null {
+    if (!code || typeof code !== "string") return null;
+    const idx = code.lastIndexOf(".");
+    const sc = idx === -1 ? code : code.slice(idx + 1);
+    return sc.trim() || null;
+}
+
 // ── Wikilink graph ─────────────────────────────────────────────────
 
 /**
@@ -691,19 +777,14 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     title: (fm) => fm.name?.full || fm.title || "",
     slug: (fm) => fm.slug || undefined,
     description: (fm) => {
-        // An author-supplied description always wins.
+        // Description is a first-class authored field in the universal
+        // frontmatter schema. Pass through verbatim when present; when absent,
+        // leave the page with no description (the hero-banner tagline
+        // disappears rather than falling back to the note type).
         if (typeof fm.description === "string" && fm.description.trim()) {
             return fm.description;
         }
-        // Otherwise derive one from character-like social/thalorna fields.
-        const type = fm.type || "";
-        const realm = fm.thalorna?.realm || "";
-        const occupation = fm.social?.occupation || "";
-        const parts: string[] = [];
-        if (occupation) parts.push(occupation);
-        if (realm) parts.push(`of ${realm}`);
-        if (parts.length === 0 && type) parts.push(type);
-        return parts.join(" ") || undefined;
+        return undefined;
     },
     type: (fm) => fm.type?.toLowerCase(),
     tags: (fm) => fm.tags || [],
@@ -729,8 +810,196 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     social: (fm) => fm.social || undefined,
     thalorna: (fm) => fm.thalorna || undefined,
     traits: (fm) => fm.traits || undefined,
-    sohl: (fm) => fm.sohl || undefined,
+    sohl: (fm) => transformSohl(fm.sohl),
 };
+
+/**
+ * Transform the `sohl` block for Hugo consumption.
+ *
+ * The vault's canonical format stores skills and gear as tagged objects
+ * inside `sohl.items[]` (each with `shortcode`, `type`, and type-specific
+ * payload fields — e.g. skill items carry `"system.masteryLevelBase"`,
+ * gear items carry `type: weapongear | armorgear | miscgear | containergear`).
+ *
+ * The Hugo sidebars still read `.Params.sohl.skills` as a flat
+ * `shortcode → score` map (and similar grouped gear arrays may be added in
+ * future). To keep layouts unchanged while the source-of-truth format
+ * evolves, derive the legacy shapes here from `sohl.items`:
+ *   - sohl.skills:       { shortcode: masteryLevelBase } for type:skill items
+ *   - sohl.gear.weapons: [shortcode|name] for type:weapongear
+ *   - sohl.gear.armor:   [shortcode|name] for type:armorgear
+ *   - sohl.gear.misc:    [shortcode|name] for type:miscgear
+ *   - sohl.gear.containers: [shortcode|name] for type:containergear
+ *
+ * `sohl.items` itself is passed through verbatim so future layouts can
+ * read the richer per-item system fields (weight, quantity, durability, …)
+ * without another export change.
+ *
+ * Derived fields only populate when missing from the source, so any
+ * hand-authored `sohl.skills` or `sohl.gear.*` still wins (useful during
+ * migration while a few notes may retain the legacy shape).
+ */
+function transformSohl(sohl: any): Record<string, any> | undefined {
+    if (!sohl || typeof sohl !== "object") return undefined;
+    const out: Record<string, any> = { ...sohl };
+
+    if (!Array.isArray(out.items) || out.items.length === 0) {
+        return out;
+    }
+
+    // Derive skills map if absent.
+    const hasSkillsMap =
+        out.skills && typeof out.skills === "object" &&
+        !Array.isArray(out.skills) && Object.keys(out.skills).length > 0;
+    if (!hasSkillsMap) {
+        const skills: Record<string, number> = {};
+        for (const item of out.items) {
+            if (!item || typeof item !== "object") continue;
+            if (item.type !== "skill") continue;
+            const shortcode = item.shortcode;
+            // Foundry-style flat key: `"system.masteryLevelBase": N`.
+            // YAML quoting preserves the dot-laden key as a single string,
+            // not a nested `system.masteryLevelBase` object.
+            const level = (item as Record<string, any>)["system.masteryLevelBase"];
+            if (typeof shortcode === "string" && typeof level === "number") {
+                skills[shortcode] = level;
+            }
+        }
+        if (Object.keys(skills).length > 0) {
+            out.skills = skills;
+        }
+    }
+
+    // Derive grouped gear arrays if absent. Each gear category holds the
+    // item shortcodes (or `name` fallback for custom unshortcoded misc gear)
+    // so layouts can render simple item lists without re-parsing items[].
+    const existingGear =
+        out.gear && typeof out.gear === "object" && !Array.isArray(out.gear)
+            ? out.gear
+            : null;
+    const gearTypeToKey: Record<string, string> = {
+        weapongear: "weapons",
+        armorgear: "armor",
+        miscgear: "misc",
+        containergear: "containers",
+        projectilegear: "projectiles",
+        concoctiongear: "concoctions",
+    };
+    const derivedGear: Record<string, string[]> = {};
+    for (const item of out.items) {
+        if (!item || typeof item !== "object") continue;
+        const key = gearTypeToKey[(item as Record<string, any>).type];
+        if (!key) continue;
+        const label =
+            typeof (item as Record<string, any>).shortcode === "string"
+                ? (item as Record<string, any>).shortcode
+                : typeof (item as Record<string, any>).name === "string"
+                    ? (item as Record<string, any>).name
+                    : null;
+        if (!label) continue;
+        (derivedGear[key] ??= []).push(label);
+    }
+
+    if (Object.keys(derivedGear).length > 0) {
+        const gear: Record<string, any> = existingGear ? { ...existingGear } : {};
+        for (const [key, values] of Object.entries(derivedGear)) {
+            const existing = gear[key];
+            if (Array.isArray(existing) && existing.length > 0) continue;
+            gear[key] = values;
+        }
+        out.gear = gear;
+    }
+
+    return out;
+}
+
+/**
+ * Augment an already-transformed sohl block with resolved mystical-ability
+ * lists, derived from `sohl.items[]` using the vault-wide shortcode index.
+ *
+ *   - type=mysticalability, subType=arcaneincantation  →  sohl.spells
+ *     Each entry is `{ name, domain?, url?, domain_url? }`, where `name` is
+ *     the spell's `name.full`, `domain` is the owning domain's `name.full`,
+ *     and `url` / `domain_url` point to the rendered pages (when published).
+ *
+ *   - type=mysticalability, subType=arcanetalent       →  sohl.talents
+ *     Each entry is `{ name, url? }`.
+ *
+ * Sidebars render `sohl.spells` as `Domain/Spell` lines and `sohl.talents`
+ * as plain names. An item's inline `name` wins over the shortcode lookup,
+ * which is useful for homebrew abilities that don't have a catalog entry.
+ * If the shortcode resolves to nothing and no inline `name` exists, the
+ * item is dropped rather than leaking the raw shortcode.
+ *
+ * Mutates `sohl` in place (consistent with the caller's post-pass pattern)
+ * and leaves existing hand-authored `sohl.spells` / `sohl.talents` alone.
+ */
+function deriveSohlMysticals(
+    sohl: Record<string, any> | undefined,
+    index: MysticalIndex,
+): void {
+    if (!sohl || typeof sohl !== "object") return;
+    const items = sohl.items;
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    const hasArrayAlready = (key: string): boolean =>
+        Array.isArray(sohl[key]) && sohl[key].length > 0;
+
+    const spells: Array<Record<string, string>> = [];
+    const talents: Array<Record<string, string>> = [];
+
+    for (const item of items) {
+        if (!item || typeof item !== "object") continue;
+        const it = item as Record<string, any>;
+        if (it.type !== "mysticalability") continue;
+
+        const shortcode = typeof it.shortcode === "string" ? it.shortcode : null;
+        const inlineName = typeof it.name === "string" ? it.name : null;
+
+        if (it.subType === "arcaneincantation") {
+            const ref = shortcode ? index.spells.get(shortcode) : undefined;
+            const name = inlineName ?? ref?.title ?? null;
+            if (!name) continue;
+
+            // Domain resolution: item may supply a `domainCode` override, or
+            // we fall back to the spell catalog entry's domainCode.
+            const domainCode: string | null =
+                typeof it.domainCode === "string"
+                    ? it.domainCode
+                    : ref?.domainCode ?? null;
+            const domainShortcode = domainShortcodeFromCode(domainCode);
+            const domain = domainShortcode
+                ? index.domains.get(domainShortcode)
+                : undefined;
+
+            const entry: Record<string, string> = { name };
+            if (ref?.url) entry.url = ref.url;
+            if (domain) {
+                entry.domain = domain.title;
+                entry.domain_url = domain.url;
+            } else if (domainShortcode) {
+                // Unpublished domain — expose the shortcode so layouts can
+                // still show *something* meaningful ("physera/Wither").
+                entry.domain = domainShortcode;
+            }
+            spells.push(entry);
+        } else if (it.subType === "arcanetalent") {
+            const ref = shortcode ? index.talents.get(shortcode) : undefined;
+            const name = inlineName ?? ref?.title ?? null;
+            if (!name) continue;
+            const entry: Record<string, string> = { name };
+            if (ref?.url) entry.url = ref.url;
+            talents.push(entry);
+        }
+    }
+
+    if (spells.length > 0 && !hasArrayAlready("spells")) {
+        sohl.spells = spells;
+    }
+    if (talents.length > 0 && !hasArrayAlready("talents")) {
+        sohl.talents = talents;
+    }
+}
 
 function transformFrontMatter(fm: Record<string, any>): Record<string, any> {
     const result: Record<string, any> = {};
@@ -1465,6 +1734,14 @@ function main(): void {
     console.log("Building wikilink graph...");
     const graph = buildLinkGraph(entries, lookup);
 
+    console.log("Indexing mystical abilities...");
+    const mysticalIndex = buildMysticalIndex(entries);
+    if (verbose) {
+        console.log(
+            `  spells=${mysticalIndex.spells.size}, talents=${mysticalIndex.talents.size}, domains=${mysticalIndex.domains.size}`,
+        );
+    }
+
     let filesWritten = 0;
 
     console.log("\nExporting files...");
@@ -1475,6 +1752,10 @@ function main(): void {
 
         // Transform front matter
         const hugoFm = transformFrontMatter(entry.frontmatter);
+
+        // Post-pass: resolve spell/talent shortcodes in sohl.items to named
+        // entries the sidebars can render directly.
+        deriveSohlMysticals(hugoFm.sohl, mysticalIndex);
 
         // Inject related (backlinks + mentions) for layouts to render.
         // Omit empty directions and the whole block if both are empty.

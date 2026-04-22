@@ -142,4 +142,16 @@
   </section>
   {{- end }}
 
+  {{- /* ---- Spells (Domain / Spell) ---- */ -}}
+  {{- partial "sidebars/mystical.html" (dict
+    "items" .Params.sohl.spells
+    "title" "Spells"
+    "kind"  "spell") }}
+
+  {{- /* ---- Arcane Talents ---- */ -}}
+  {{- partial "sidebars/mystical.html" (dict
+    "items" .Params.sohl.talents
+    "title" "Arcane Talents"
+    "kind"  "talent") }}
+
 </aside>
