@@ -1390,25 +1390,36 @@ a.tag:hover {
 .strike-mode-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
-  line-height: 1.3;
+  font-size: 0.8rem;
+  line-height: 1.4;
   font-variant-numeric: tabular-nums;
+  margin-top: 0.25rem;
 }
 
 .strike-mode-table th,
 .strike-mode-table td {
-  padding: 0.25rem 0.4rem;
+  padding: 0.4rem 0.6rem;
   text-align: left;
+  vertical-align: baseline;
   border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.08));
   white-space: nowrap;
 }
 
+.strike-mode-table th:first-child,
+.strike-mode-table td:first-child {
+  padding-left: 0;
+}
+
+.strike-mode-table th:last-child,
+.strike-mode-table td:last-child {
+  padding-right: 0;
+}
+
 .strike-mode-table th {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-muted);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.2));
 }
 
@@ -1416,16 +1427,8 @@ a.tag:hover {
   border-bottom: 0;
 }
 
-.strike-mode-table td:nth-child(1) {
+.strike-mode-table td:first-child {
   font-weight: 600;
-}
-
-.strike-mode-table td:nth-child(n + 3) {
-  text-align: right;
-}
-
-.strike-mode-table th:nth-child(n + 3) {
-  text-align: right;
 }
 
 @media (max-width: 960px) {
