@@ -1,0 +1,62 @@
+{{- /*
+  Render a sidebar section for a character or creature's equipment.
+
+  Expects a context: the `sohl.gear` dict, each of whose keys holds an
+  ordered array of entries shaped like:
+    { name: "Handaxe", shortcode: "HAxe", url: "/project/possessions/weapongear/handaxe/" }
+
+  Renders a single "Equipment" section with one paragraph line per
+  non-empty subgroup (Weapons / Armor / Projectiles / Misc / Containers /
+  Concoctions), mirroring the "Skills" section layout. Entries with a URL
+  are linked; those without (freeform misc items, or catalog-less gear)
+  render as plain spans.
+
+  The whole section disappears if no subgroup has any items, matching the
+  "silent disappear on missing data" convention of the surrounding sidebar.
+*/ -}}
+{{- $gear := . -}}
+{{- if and $gear (reflect.IsMap $gear) -}}
+  {{- $groups := slice
+        (dict "key" "weapons"     "label" "Weapons")
+        (dict "key" "armor"       "label" "Armor")
+        (dict "key" "projectiles" "label" "Projectiles")
+        (dict "key" "misc"        "label" "Misc")
+        (dict "key" "containers"  "label" "Containers")
+        (dict "key" "concoctions" "label" "Concoctions") -}}
+  {{- $hasAny := false -}}
+  {{- range $groups -}}
+    {{- $items := index $gear .key -}}
+    {{- if and $items (gt (len $items) 0) -}}{{- $hasAny = true -}}{{- end -}}
+  {{- end -}}
+  {{- if $hasAny }}
+  <section class="info-section">
+    <h3 class="info-section-title">Equipment</h3>
+    {{- range $groups }}
+      {{- $label := .label -}}
+      {{- $items := index $gear .key -}}
+      {{- if and $items (gt (len $items) 0) }}
+      <p class="info-gear-line">
+        <span class="gear-cat">{{ $label }}:</span>
+        <span class="gear-entries">
+          {{- range $i, $it := $items -}}
+            {{- if $i -}}, {{ end -}}
+            {{- $name := "" -}}{{- $url := "" -}}
+            {{- if reflect.IsMap $it -}}
+              {{- with $it.name }}{{ $name = . }}{{ end -}}
+              {{- with $it.url  }}{{ $url  = . }}{{ end -}}
+            {{- else -}}
+              {{- $name = $it -}}
+            {{- end -}}
+            {{- if $url -}}
+              <a class="gear-entry" href="{{ $url }}">{{ $name }}</a>
+            {{- else -}}
+              <span class="gear-entry">{{ $name }}</span>
+            {{- end -}}
+          {{- end -}}
+        </span>
+      </p>
+      {{- end }}
+    {{- end }}
+  </section>
+  {{- end }}
+{{- end -}}

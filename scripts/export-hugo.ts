@@ -619,6 +619,25 @@ interface MysticalIndex {
     domains: Map<string, DomainRef>;
 }
 
+/**
+ * A catalog entry for a piece of gear — just enough for a sidebar to
+ * render a readable name and (when published) link back to the item page.
+ */
+interface GearRef {
+    title: string;
+    url: string;
+    /** Content type so we know which gear bucket this belongs to. */
+    type: ContentType;
+}
+
+/**
+ * Shortcode → GearRef, shared across every gear subtype. The shortcode
+ * namespace is globally unique in practice (HAxe, WCoat, bktlrg, …) so a
+ * single map keeps the lookup fast and the API simple; the `type` on each
+ * ref disambiguates weapons vs. armor vs. containers if a caller needs it.
+ */
+type GearIndex = Map<string, GearRef>;
+
 function buildMysticalIndex(entries: VaultEntry[]): MysticalIndex {
     const spells = new Map<string, MysticalRef>();
     const talents = new Map<string, MysticalRef>();
@@ -656,6 +675,42 @@ function buildMysticalIndex(entries: VaultEntry[]): MysticalIndex {
     }
 
     return { spells, talents, domains };
+}
+
+/**
+ * Build a shortcode → {title, url, type} map for every published gear
+ * entry (weapons, armor, miscgear, containers, projectiles, concoctions).
+ *
+ * The vault stores each gear item as its own note with a `shortcode`
+ * frontmatter field (e.g. HAxe, WCoat, bktlrg). Characters reference
+ * items by shortcode inside `sohl.items[]`; the sidebar renders the
+ * friendly name from this index rather than the shortcode.
+ *
+ * Duplicate shortcodes ignored — first published definition wins, which
+ * is acceptably stable since the Foundry-VTT data uses unique shortcodes.
+ */
+function buildGearIndex(entries: VaultEntry[]): GearIndex {
+    const gear: GearIndex = new Map();
+    const GEAR_TYPES: ContentType[] = [
+        "weapongear",
+        "armorgear",
+        "miscgear",
+        "containergear",
+        "projectilegear",
+        "concoctiongear",
+    ];
+    for (const entry of entries) {
+        if (!GEAR_TYPES.includes(entry.type)) continue;
+        const shortcode = entry.frontmatter.shortcode;
+        if (typeof shortcode !== "string" || !shortcode) continue;
+        if (gear.has(shortcode)) continue;
+        gear.set(shortcode, {
+            title: entry.title,
+            url: entry.url,
+            type: entry.type,
+        });
+    }
+    return gear;
 }
 
 /**
@@ -870,47 +925,90 @@ function transformSohl(sohl: any): Record<string, any> | undefined {
         }
     }
 
-    // Derive grouped gear arrays if absent. Each gear category holds the
-    // item shortcodes (or `name` fallback for custom unshortcoded misc gear)
-    // so layouts can render simple item lists without re-parsing items[].
-    const existingGear =
-        out.gear && typeof out.gear === "object" && !Array.isArray(out.gear)
-            ? out.gear
-            : null;
-    const gearTypeToKey: Record<string, string> = {
-        weapongear: "weapons",
-        armorgear: "armor",
-        miscgear: "misc",
-        containergear: "containers",
-        projectilegear: "projectiles",
-        concoctiongear: "concoctions",
-    };
-    const derivedGear: Record<string, string[]> = {};
-    for (const item of out.items) {
-        if (!item || typeof item !== "object") continue;
-        const key = gearTypeToKey[(item as Record<string, any>).type];
-        if (!key) continue;
-        const label =
-            typeof (item as Record<string, any>).shortcode === "string"
-                ? (item as Record<string, any>).shortcode
-                : typeof (item as Record<string, any>).name === "string"
-                    ? (item as Record<string, any>).name
-                    : null;
-        if (!label) continue;
-        (derivedGear[key] ??= []).push(label);
-    }
-
-    if (Object.keys(derivedGear).length > 0) {
-        const gear: Record<string, any> = existingGear ? { ...existingGear } : {};
-        for (const [key, values] of Object.entries(derivedGear)) {
-            const existing = gear[key];
-            if (Array.isArray(existing) && existing.length > 0) continue;
-            gear[key] = values;
-        }
-        out.gear = gear;
-    }
+    // Gear derivation moved to deriveSohlGear (post-pass) — it needs the
+    // vault-wide gear index to resolve shortcodes to display names + URLs,
+    // which isn't available here. `items` itself passes through verbatim.
 
     return out;
+}
+
+/**
+ * Gear category keys used on the emitted `sohl.gear` dict. Ordering here
+ * matches the order sidebars should render groups in.
+ */
+const GEAR_TYPE_TO_KEY: Record<string, string> = {
+    weapongear: "weapons",
+    armorgear: "armor",
+    projectilegear: "projectiles",
+    miscgear: "misc",
+    containergear: "containers",
+    concoctiongear: "concoctions",
+};
+
+/**
+ * Augment an already-transformed sohl block with resolved gear lists
+ * derived from `sohl.items[]` using the vault-wide gear index.
+ *
+ * Emits `sohl.gear.{weapons, armor, projectiles, misc, containers,
+ * concoctions}` as arrays of objects:
+ *
+ *   { name: "Handaxe", shortcode: "HAxe", url: "/project/possessions/weapongear/handaxe/" }
+ *
+ * Resolution rules:
+ *   - If the item has an inline `name`, it wins (homebrew / freeform
+ *     items like "Carpenter's toolbox" that don't appear in the gear
+ *     catalog still render readably).
+ *   - Otherwise, look up the item's `shortcode` in the gear index and
+ *     take its `title` and `url`. Both are copied to the emitted entry.
+ *   - If neither resolves — no inline name and no catalog hit — fall back
+ *     to the raw shortcode as the name so the item still surfaces (better
+ *     than silently dropping it).
+ *
+ * Existing hand-authored `sohl.gear.*` arrays are left alone (useful for
+ * edge cases and during migration).
+ */
+function deriveSohlGear(
+    sohl: Record<string, any> | undefined,
+    index: GearIndex,
+): void {
+    if (!sohl || typeof sohl !== "object") return;
+    const items = sohl.items;
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    const existingGear =
+        sohl.gear && typeof sohl.gear === "object" && !Array.isArray(sohl.gear)
+            ? sohl.gear
+            : null;
+
+    const derived: Record<string, Array<Record<string, string>>> = {};
+    for (const item of items) {
+        if (!item || typeof item !== "object") continue;
+        const it = item as Record<string, any>;
+        const key = GEAR_TYPE_TO_KEY[it.type];
+        if (!key) continue;
+
+        const shortcode = typeof it.shortcode === "string" ? it.shortcode : null;
+        const inlineName = typeof it.name === "string" ? it.name : null;
+        const ref = shortcode ? index.get(shortcode) : undefined;
+
+        const name = inlineName ?? ref?.title ?? shortcode;
+        if (!name) continue;
+
+        const entry: Record<string, string> = { name };
+        if (shortcode) entry.shortcode = shortcode;
+        if (ref?.url) entry.url = ref.url;
+        (derived[key] ??= []).push(entry);
+    }
+
+    if (Object.keys(derived).length === 0) return;
+
+    const gear: Record<string, any> = existingGear ? { ...existingGear } : {};
+    for (const [key, values] of Object.entries(derived)) {
+        const existing = gear[key];
+        if (Array.isArray(existing) && existing.length > 0) continue;
+        gear[key] = values;
+    }
+    sohl.gear = gear;
 }
 
 /**
@@ -1742,6 +1840,12 @@ function main(): void {
         );
     }
 
+    console.log("Indexing gear...");
+    const gearIndex = buildGearIndex(entries);
+    if (verbose) {
+        console.log(`  gear shortcodes=${gearIndex.size}`);
+    }
+
     let filesWritten = 0;
 
     console.log("\nExporting files...");
@@ -1756,6 +1860,10 @@ function main(): void {
         // Post-pass: resolve spell/talent shortcodes in sohl.items to named
         // entries the sidebars can render directly.
         deriveSohlMysticals(hugoFm.sohl, mysticalIndex);
+
+        // Post-pass: resolve gear shortcodes (weapons/armor/misc/…) to
+        // friendly-named entries with links, using the vault's gear catalog.
+        deriveSohlGear(hugoFm.sohl, gearIndex);
 
         // Inject related (backlinks + mentions) for layouts to render.
         // Omit empty directions and the whole block if both are empty.
