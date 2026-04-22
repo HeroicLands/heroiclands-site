@@ -1047,8 +1047,8 @@ a.tag:hover {
 .single.single-with-sidebar {
   display: grid;
   /* Sidebar capped at 1/3 of the viewport so prose stays readable on wide
-     screens, but never narrower than 280px or wider than 420px. */
-  grid-template-columns: minmax(0, 1fr) clamp(280px, 33vw, 420px);
+     screens, but never narrower than 330px or wider than 470px. */
+  grid-template-columns: minmax(0, 1fr) clamp(330px, 33vw, 470px);
   gap: 3rem;
   align-items: start;
   padding-top: 2rem;
@@ -1076,7 +1076,7 @@ a.tag:hover {
   position: sticky;
   top: 2rem;
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /* "Character Profile" header band */
@@ -1390,7 +1390,7 @@ a.tag:hover {
 .strike-mode-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   line-height: 1.4;
   font-variant-numeric: tabular-nums;
   margin-top: 0.25rem;
@@ -1416,7 +1416,7 @@ a.tag:hover {
 }
 
 .strike-mode-table th {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.05em;
