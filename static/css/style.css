@@ -1626,6 +1626,57 @@ a.tag:hover {
   }
 }
 
+/* ---- Polity infobox (in-flow, floated) ----
+
+   Polities get a compact profile card floated to the left at the
+   start of their content column. Prose wraps around it, and the
+   right column stays free for the TOC. Scrolls away with the page
+   rather than sticking to the viewport. Inherits the visual style
+   of .info-sidebar so the card matches other profile blocks, then
+   overrides the sidebar's sticky positioning and size. */
+
+.polity-infobox {
+  float: left;
+  width: 19rem;
+  max-width: 100%;
+  margin: 0 1.75rem 1rem 0;
+  /* Undo the sticky/grid behavior inherited from .info-sidebar. */
+  position: static;
+  top: auto;
+  align-self: auto;
+  font-size: 0.95rem;
+}
+
+/* Tighten the profile grid a touch inside the floated card — the
+   right-rail version has more room to breathe than a 19rem float. */
+.polity-infobox .info-profile-grid {
+  grid-template-columns: max-content 1fr;
+  gap: 0.3rem 0.6rem;
+  margin-bottom: 0;
+}
+
+.polity-infobox .info-profile-grid dd {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.polity-infobox .info-sub {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+  line-height: 1.35;
+}
+
+/* Stack the infobox above the prose on narrow viewports. */
+@media (max-width: 720px) {
+  .polity-infobox {
+    float: none;
+    width: 100%;
+    margin: 0 0 1.25rem 0;
+  }
+}
+
 /* ---- Related section (bottom of article) ----
 
    Rendered as a bordered, tinted card. Each row is one content type,

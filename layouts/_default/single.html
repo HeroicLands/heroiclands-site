@@ -31,6 +31,9 @@
     {{ end }}
 
     <div class="single-body">
+      {{- if eq $type "polity" -}}
+        {{ partial "infobox/polity.html" . }}
+      {{- end }}
       {{ .Content }}
     </div>
 

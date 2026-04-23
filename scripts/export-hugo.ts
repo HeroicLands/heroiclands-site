@@ -878,6 +878,20 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     armorType: (fm) => fm.armorType || undefined,
     detailMaterial: (fm) => fm.detailMaterial || undefined,
     material: (fm) => fm.material || undefined,
+
+    // ── Polity-specific top-level fields ───────────────────────────
+    // Passed through so the polity infobox (partials/infobox/polity.html)
+    // can render the realm's profile card at the top of the content.
+    // Other content types don't set these and will silently emit undefined.
+    subType: (fm) => fm.subType || undefined,
+    demonym: (fm) => fm.demonym || undefined,
+    capital: (fm) => fm.capital || undefined,
+    ruler: (fm) => fm.ruler || undefined,
+    government: (fm) => fm.government || undefined,
+    languages: (fm) => fm.languages || undefined,
+    pantheons: (fm) => fm.pantheons || undefined,
+    peoples: (fm) => fm.peoples || undefined,
+    terran_analog: (fm) => fm.terran_analog || undefined,
 };
 
 /**

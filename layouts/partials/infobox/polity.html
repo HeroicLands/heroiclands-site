@@ -1,0 +1,129 @@
+{{- /*
+  Polity infobox.
+
+  A floated card rendered at the top of a polity page's main content
+  column. Body text flows around it (float: left in CSS). Unlike the
+  right-rail info-sidebar used by characters/creatures/gear, this
+  infobox lives *inside* the prose so the TOC can still occupy the
+  right column for polity pages that have enough H2s to warrant one.
+
+  Shows the key polity frontmatter fields. Every section is guarded
+  so missing data silently disappears.
+
+  Slug-valued fields (languages, pantheons, capital) are resolved to
+  real pages and rendered as links when a match exists. Unresolvable
+  slugs fall back to a humanized label.
+*/ -}}
+
+{{- $ctx := . -}}
+{{- $name   := "" -}}{{- with .Params.name.full }}{{ $name = . }}{{ end -}}
+{{- if not $name }}{{ $name = .Title }}{{ end -}}
+{{- $sub    := .Params.subType -}}
+{{- $demonym:= .Params.demonym -}}
+{{- $capital:= .Params.capital -}}
+{{- $ruler  := .Params.ruler -}}
+{{- $gov    := .Params.government -}}
+{{- $langs  := .Params.languages  | default slice -}}
+{{- $panths := .Params.pantheons  | default slice -}}
+{{- $peoples:= .Params.peoples    | default slice -}}
+{{- $terran := .Params.terran_analog -}}
+
+{{- /* Local helper: turn a slug into either a link (if a page with that
+       slug exists) or a humanized label. Returns HTML as a string. */ -}}
+{{- $slugLink := `` -}}
+
+<aside class="polity-infobox info-sidebar">
+
+  <header class="info-sidebar-title">
+    <h2>Polity Profile</h2>
+  </header>
+
+  <dl class="info-profile-grid">
+    <dt>Name</dt>
+    <dd>{{ $name }}</dd>
+
+    {{- with $sub }}
+    <dt>Type</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}
+
+    {{- with $demonym }}
+    <dt>Demonym</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- with $capital }}
+      {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" .) -}}
+    <dt>Capital</dt>
+    <dd>
+      {{- with index $pg 0 -}}
+        <a href="{{ .Permalink }}">{{ .LinkTitle }}</a>
+      {{- else -}}
+        {{ . | humanize | title }}
+      {{- end -}}
+    </dd>
+    {{- end }}
+
+    {{- with $ruler }}{{- with .title }}
+    <dt>Ruler</dt>
+    <dd>{{ . }}{{ with $ruler.name }} {{ . }}{{ end }}</dd>
+    {{- end }}{{- end }}
+
+    {{- with $gov }}{{- with .type }}
+    <dt>Government</dt>
+    <dd>
+      {{ . | humanize | title }}
+      {{- with $gov.summary }}<div class="info-sub">{{ . }}</div>{{ end -}}
+    </dd>
+    {{- end }}{{- end }}
+
+    {{- if gt (len $peoples) 0 }}
+    <dt>Peoples</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $peoples -}}
+        {{- $parts = $parts | append (humanize . | title) -}}
+      {{- end -}}
+      {{ delimit $parts ", " }}
+    </dd>
+    {{- end }}
+
+    {{- if gt (len $langs) 0 }}
+    <dt>Language{{ if gt (len $langs) 1 }}s{{ end }}</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $slug := $langs -}}
+        {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" $slug) -}}
+        {{- with index $pg 0 -}}
+          {{- $parts = $parts | append (printf `<a href="%s">%s</a>` .Permalink .LinkTitle) -}}
+        {{- else -}}
+          {{- $parts = $parts | append (humanize $slug | title) -}}
+        {{- end -}}
+      {{- end -}}
+      {{ delimit $parts ", " | safeHTML }}
+    </dd>
+    {{- end }}
+
+    {{- if gt (len $panths) 0 }}
+    <dt>Pantheon{{ if gt (len $panths) 1 }}s{{ end }}</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $slug := $panths -}}
+        {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" $slug) -}}
+        {{- with index $pg 0 -}}
+          {{- $parts = $parts | append (printf `<a href="%s">%s</a>` .Permalink .LinkTitle) -}}
+        {{- else -}}
+          {{- $parts = $parts | append (humanize $slug | title) -}}
+        {{- end -}}
+      {{- end -}}
+      {{ delimit $parts ", " | safeHTML }}
+    </dd>
+    {{- end }}
+
+    {{- with $terran }}
+    <dt>Analog</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+  </dl>
+
+</aside>
