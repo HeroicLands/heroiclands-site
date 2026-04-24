@@ -1,0 +1,45 @@
+{{- /*
+  Region infobox — floated card at the top of a region page's content
+  column. Text flows around it (see .geo-infobox in style.css). Climbs
+  the parent chain to its continent(s) so a reader can walk up from any
+  region to the continent above and the world above that.
+
+  Fields rendered (all optional — guards keep missing data silent):
+    - Name
+    - Continent(s) — a slug list, rendered as links when a matching
+      page exists.
+*/ -}}
+
+{{- $ctx := . -}}
+{{- $name   := "" -}}{{- with .Params.name.full }}{{ $name = . }}{{ end -}}
+{{- if not $name }}{{ $name = .Title }}{{ end -}}
+{{- $conts  := .Params.continents   | default slice -}}
+
+<aside class="geo-infobox info-sidebar">
+
+  <header class="info-sidebar-title">
+    <h2>Region Profile</h2>
+  </header>
+
+  <dl class="info-profile-grid">
+    <dt>Name</dt>
+    <dd>{{ $name }}</dd>
+
+    {{- if gt (len $conts) 0 }}
+    <dt>Continent{{ if gt (len $conts) 1 }}s{{ end }}</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $slug := $conts -}}
+        {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" $slug) -}}
+        {{- with index $pg 0 -}}
+          {{- $parts = $parts | append (printf `<a href="%s">%s</a>` .Permalink .LinkTitle) -}}
+        {{- else -}}
+          {{- $parts = $parts | append (humanize $slug | title) -}}
+        {{- end -}}
+      {{- end -}}
+      {{ delimit $parts ", " | safeHTML }}
+    </dd>
+    {{- end }}
+  </dl>
+
+</aside>

@@ -26,13 +26,26 @@
 {{- $langs  := .Params.languages  | default slice -}}
 {{- $panths := .Params.pantheons  | default slice -}}
 {{- $peoples:= .Params.peoples    | default slice -}}
-{{- $terran := .Params.terran_analog -}}
+{{- $regs   := .Params.regions    | default slice -}}
+{{- $conts  := .Params.continents | default slice -}}
+
+{{- /* Parent polity — when set, the Type row is rewritten to read
+       "<Subtype> of: <parent>" (e.g. "City State of: Byzarian League",
+       "Province of: Vylarian Empire") so the hierarchy is obvious at
+       a glance. When unset, fall through to a plain "Type" row. */ -}}
+{{- $parentSlug := "" -}}
+{{- with .Params.parent }}{{- with .polity }}{{ $parentSlug = . }}{{ end }}{{ end -}}
+{{- $parentPage := "" -}}
+{{- with $parentSlug -}}
+  {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" .) -}}
+  {{- with index $pg 0 -}}{{ $parentPage = . }}{{- end -}}
+{{- end -}}
 
 {{- /* Local helper: turn a slug into either a link (if a page with that
        slug exists) or a humanized label. Returns HTML as a string. */ -}}
 {{- $slugLink := `` -}}
 
-<aside class="polity-infobox info-sidebar">
+<aside class="geo-infobox polity-infobox info-sidebar">
 
   <header class="info-sidebar-title">
     <h2>Polity Profile</h2>
@@ -43,8 +56,20 @@
     <dd>{{ $name }}</dd>
 
     {{- with $sub }}
+      {{- if $parentSlug }}
+        {{- /* Subordinate polity: collapse Type + parent into a single row. */ -}}
+    <dt>{{ . | humanize | title }} of</dt>
+    <dd>
+      {{- with $parentPage -}}
+        <a href="{{ .Permalink }}">{{ .LinkTitle }}</a>
+      {{- else -}}
+        {{ $parentSlug | humanize | title }}
+      {{- end -}}
+    </dd>
+      {{- else }}
     <dt>Type</dt>
     <dd>{{ . | humanize | title }}</dd>
+      {{- end }}
     {{- end }}
 
     {{- with $demonym }}
@@ -120,9 +145,37 @@
     </dd>
     {{- end }}
 
-    {{- with $terran }}
-    <dt>Analog</dt>
-    <dd>{{ . }}</dd>
+    {{- /* Climb the geographic chain: prefer regions, fall back to
+           continents for polities that sit directly under a continent
+           with no intermediate region note. */ -}}
+    {{- if gt (len $regs) 0 }}
+    <dt>Region{{ if gt (len $regs) 1 }}s{{ end }}</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $slug := $regs -}}
+        {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" $slug) -}}
+        {{- with index $pg 0 -}}
+          {{- $parts = $parts | append (printf `<a href="%s">%s</a>` .Permalink .LinkTitle) -}}
+        {{- else -}}
+          {{- $parts = $parts | append (humanize $slug | title) -}}
+        {{- end -}}
+      {{- end -}}
+      {{ delimit $parts ", " | safeHTML }}
+    </dd>
+    {{- else if gt (len $conts) 0 }}
+    <dt>Continent{{ if gt (len $conts) 1 }}s{{ end }}</dt>
+    <dd>
+      {{- $parts := slice -}}
+      {{- range $slug := $conts -}}
+        {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" $slug) -}}
+        {{- with index $pg 0 -}}
+          {{- $parts = $parts | append (printf `<a href="%s">%s</a>` .Permalink .LinkTitle) -}}
+        {{- else -}}
+          {{- $parts = $parts | append (humanize $slug | title) -}}
+        {{- end -}}
+      {{- end -}}
+      {{ delimit $parts ", " | safeHTML }}
+    </dd>
     {{- end }}
   </dl>
 

@@ -31,8 +31,18 @@
     {{ end }}
 
     <div class="single-body">
+      {{- /* Floated in-content infoboxes for the geographic hierarchy.
+             Each one climbs the parent chain — polity → region(s) →
+             continent(s) → world — so readers can walk up from any
+             note to the landmass and world it belongs to. Rendered
+             as float-left cards so body text flows around them and
+             the right column stays free for the TOC. */ -}}
       {{- if eq $type "polity" -}}
         {{ partial "infobox/polity.html" . }}
+      {{- else if eq $type "region" -}}
+        {{ partial "infobox/region.html" . }}
+      {{- else if eq $type "continent" -}}
+        {{ partial "infobox/continent.html" . }}
       {{- end }}
       {{ .Content }}
     </div>

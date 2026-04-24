@@ -892,6 +892,18 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     pantheons: (fm) => fm.pantheons || undefined,
     peoples: (fm) => fm.peoples || undefined,
     terran_analog: (fm) => fm.terran_analog || undefined,
+
+    // ── Geographic parent-chain fields ─────────────────────────────
+    // Every step in the World → Continent → Region → Polity chain
+    // records its immediate parent(s) so infoboxes can render links
+    // climbing up the hierarchy. Each one is a list where plausible
+    // (regions/continents) so cross-continental or multi-region
+    // entities — e.g. Mídhalión straddling Ankaris and Xerathia — can
+    // be expressed without a schema change.
+    regions: (fm) => fm.regions || undefined,       // polity → region(s)
+    continents: (fm) => fm.continents || undefined, // region → continent(s), or polity → continent(s) when no region ancestor exists
+    world: (fm) => fm.world || undefined,           // continent → world
+    parent: (fm) => fm.parent || undefined,         // polity → parent polity (and settlements → their polity)
 };
 
 /**

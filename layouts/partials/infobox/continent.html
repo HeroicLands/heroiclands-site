@@ -1,0 +1,40 @@
+{{- /*
+  Continent infobox — floated card at the top of a continent page's
+  content column. Text flows around it (see .geo-infobox in style.css).
+  Links up to the world the continent belongs to, closing the top of
+  the parent chain: world ← continent ← region ← polity.
+
+  Fields rendered (all optional — guards keep missing data silent):
+    - Name
+    - World — single slug, rendered as a link when a matching page exists.
+*/ -}}
+
+{{- $ctx := . -}}
+{{- $name   := "" -}}{{- with .Params.name.full }}{{ $name = . }}{{ end -}}
+{{- if not $name }}{{ $name = .Title }}{{ end -}}
+{{- $world  := .Params.world -}}
+
+<aside class="geo-infobox info-sidebar">
+
+  <header class="info-sidebar-title">
+    <h2>Continent Profile</h2>
+  </header>
+
+  <dl class="info-profile-grid">
+    <dt>Name</dt>
+    <dd>{{ $name }}</dd>
+
+    {{- with $world }}
+    <dt>World</dt>
+    <dd>
+      {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" .) -}}
+      {{- with index $pg 0 -}}
+        <a href="{{ .Permalink }}">{{ .LinkTitle }}</a>
+      {{- else -}}
+        {{ . | humanize | title }}
+      {{- end -}}
+    </dd>
+    {{- end }}
+  </dl>
+
+</aside>

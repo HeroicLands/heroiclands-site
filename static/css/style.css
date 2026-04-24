@@ -1626,16 +1626,18 @@ a.tag:hover {
   }
 }
 
-/* ---- Polity infobox (in-flow, floated) ----
+/* ---- Geographic infoboxes (in-flow, floated) ----
 
-   Polities get a compact profile card floated to the left at the
-   start of their content column. Prose wraps around it, and the
-   right column stays free for the TOC. Scrolls away with the page
-   rather than sticking to the viewport. Inherits the visual style
-   of .info-sidebar so the card matches other profile blocks, then
-   overrides the sidebar's sticky positioning and size. */
+   Polities, regions, and continents each get a compact profile card
+   floated to the left at the start of their content column. Prose
+   wraps around it, and the right column stays free for the TOC. The
+   card scrolls away with the page rather than sticking to the
+   viewport. Inherits the visual style of .info-sidebar so the card
+   matches other profile blocks, then overrides the sidebar's sticky
+   positioning and size. All three share .geo-infobox; per-type hook
+   classes (.polity-infobox, etc.) are available for future tweaks. */
 
-.polity-infobox {
+.geo-infobox {
   float: left;
   width: 19rem;
   max-width: 100%;
@@ -1649,18 +1651,18 @@ a.tag:hover {
 
 /* Tighten the profile grid a touch inside the floated card — the
    right-rail version has more room to breathe than a 19rem float. */
-.polity-infobox .info-profile-grid {
+.geo-infobox .info-profile-grid {
   grid-template-columns: max-content 1fr;
   gap: 0.3rem 0.6rem;
   margin-bottom: 0;
 }
 
-.polity-infobox .info-profile-grid dd {
+.geo-infobox .info-profile-grid dd {
   word-break: normal;
   overflow-wrap: anywhere;
 }
 
-.polity-infobox .info-sub {
+.geo-infobox .info-sub {
   display: block;
   font-size: 0.82rem;
   color: var(--text-muted);
@@ -1670,7 +1672,7 @@ a.tag:hover {
 
 /* Stack the infobox above the prose on narrow viewports. */
 @media (max-width: 720px) {
-  .polity-infobox {
+  .geo-infobox {
     float: none;
     width: 100%;
     margin: 0 0 1.25rem 0;
