@@ -1858,8 +1858,8 @@ a.tag:hover {
   justify-content: center;
   width: 10rem;
   height: 4rem;
-  padding: 0.1rem 0.2rem;  /* minimal — keeps glyph off the rounded
-                              corners without wasting interior space */
+  padding: 3px 5px;        /* tight but keeps glyph off the rounded
+                              corners — 3px top/bottom, 5px left/right */
   vertical-align: middle;
   background:
     radial-gradient(ellipse at 28% 22%, #f2e4c2 0%, #d9c29a 55%, #bda77c 100%);
