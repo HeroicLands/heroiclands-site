@@ -5,14 +5,19 @@
   pipeline works for any "named seal" SVG.
 
   Usage (shown with plain angle brackets so the Go template parser
-  doesn't try to close this comment):
+  doesn't try to close this comment). Hugo forbids MIXING positional
+  and named parameters in one call, so pick a form per call:
 
-    { {< cartouche "takheperu" >} }                        centered block
-    { {< cartouche "takheperu" align="right" >} }          floated right
-    { {< cartouche "ra" size="inline" >} }                 flows inline
-    { {< cartouche "anubis" caption="Anpu" >} }            figure + caption
+    { {< cartouche "takheperu" >} }                               positional
+    { {< cartouche slug="takheperu" >} }                          named, centered
+    { {< cartouche slug="takheperu" align="right" >} }            floated right
+    { {< cartouche slug="ra" size="inline" >} }                   inline
+    { {< cartouche slug="anubis" caption="Anpu" >} }              figure + caption
 
-  Named parameters:
+  Parameters (all optional except slug):
+    slug    - The cartouche SVG basename. May also be passed positionally
+              (as the first positional argument) when no other params
+              are needed — Hugo disallows mixing the two styles.
     size    - "inline" to flow with text. Otherwise block-level.
     align   - "left" or "right" to float so prose wraps. Default centered.
     alt     - Override screen-reader text. Defaults to humanized slug.
@@ -23,9 +28,13 @@
   (or a hard-coded brand color) so they tint cleanly against any
   background.
 */ -}}
-{{- $slug := .Get 0 -}}
+{{- /* Accept slug as either the first positional arg or the named
+       "slug" parameter, so a caller can pick the style that fits the
+       rest of their arguments. */ -}}
+{{- $slug := .Get "slug" -}}
+{{- if not $slug }}{{ $slug = .Get 0 }}{{ end -}}
 {{- if not $slug -}}
-  {{- errorf "cartouche shortcode at %s needs a slug as the first positional argument" .Position -}}
+  {{- errorf "cartouche shortcode at %s needs a slug (positional arg 0 or slug=\"…\")" .Position -}}
 {{- end -}}
 {{- $altDefault := humanize (replace $slug "-" " ") | title -}}
 {{- $alt    := .Get "alt"     | default $altDefault -}}
