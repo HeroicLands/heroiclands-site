@@ -2,14 +2,15 @@
   Cartouche shortcode — renders a named cartouche SVG as an ornamental
   accent on culture-flavored pages. The canonical use is Kheperi
   cartouches on Ta'Kheperu and Kemetian-pantheon pages, but the same
-  pipeline works for any "named seal" SVG (Tarvénian clan-seals,
-  Nordmal runic name-stones, etc. — just drop their SVGs alongside).
+  pipeline works for any "named seal" SVG.
 
-  Usage:
-    {{</* cartouche "takheperu" */>}}                       # centered block
-    {{</* cartouche "takheperu" align="right" */>}}         # floated right
-    {{</* cartouche "ra" size="inline" */>}}                # flows inline
-    {{</* cartouche "takheperu" alt="…" caption="…" */>}}   # override text
+  Usage (shown with plain angle brackets so the Go template parser
+  doesn't try to close this comment):
+
+    { {< cartouche "takheperu" >} }                        centered block
+    { {< cartouche "takheperu" align="right" >} }          floated right
+    { {< cartouche "ra" size="inline" >} }                 flows inline
+    { {< cartouche "anubis" caption="Anpu" >} }            figure + caption
 
   Named parameters:
     size    - "inline" to flow with text. Otherwise block-level.
