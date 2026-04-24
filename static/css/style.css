@@ -1820,11 +1820,19 @@ a.tag:hover {
   border: none;
   border-radius: 0;
   margin: 0;
-  /* Same warm-aged-charcoal treatment as cartouches, for visual
-     kinship across the writing-system family. */
+  /* Warm-aged-charcoal ink tone + bolder strokes. The four stacked
+     0.5px drop-shadows in cardinal directions effectively thicken
+     every dark pixel in the glyph by ~1px, simulating a heavier
+     chisel cut without touching the source SVGs. Brightness and
+     contrast are pushed harder than on cartouches since glyphs
+     display small and need to stay legible. */
   filter:
-    sepia(0.7) hue-rotate(-12deg) saturate(1.25) brightness(0.55)
-    blur(0.3px) contrast(1.15);
+    sepia(0.8) hue-rotate(-12deg) saturate(1.3)
+    brightness(0.35) contrast(1.5)
+    drop-shadow(0.5px 0 0 #3d2818)
+    drop-shadow(-0.5px 0 0 #3d2818)
+    drop-shadow(0 0.5px 0 #3d2818)
+    drop-shadow(0 -0.5px 0 #3d2818);
 }
 
 /* Size variants */
