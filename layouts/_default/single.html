@@ -43,6 +43,8 @@
         {{ partial "infobox/region.html" . }}
       {{- else if eq $type "continent" -}}
         {{ partial "infobox/continent.html" . }}
+      {{- else if or (eq $type "faith") (eq $type "religion") -}}
+        {{ partial "infobox/faith.html" . }}
       {{- end }}
       {{ .Content }}
     </div>

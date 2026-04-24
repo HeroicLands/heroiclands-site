@@ -904,6 +904,16 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     continents: (fm) => fm.continents || undefined, // region → continent(s), or polity → continent(s) when no region ancestor exists
     world: (fm) => fm.world || undefined,           // continent → world
     parent: (fm) => fm.parent || undefined,         // polity → parent polity (and settlements → their polity)
+
+    // ── Faith-specific top-level fields ─────────────────────────────
+    // Passed through so the faith infobox (partials/infobox/faith.html)
+    // can render the deity profile at the top of the content.
+    deity:    (fm) => fm.deity    || undefined,
+    epithet:  (fm) => fm.epithet  || undefined,
+    domain:   (fm) => fm.domain   || undefined,
+    symbol:   (fm) => fm.symbol   || undefined,
+    glyph:    (fm) => fm.glyph    || undefined,
+    pantheon: (fm) => fm.pantheon || undefined,
 };
 
 /**

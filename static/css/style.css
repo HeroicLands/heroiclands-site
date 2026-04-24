@@ -1887,6 +1887,15 @@ a.tag:hover {
   }
 }
 
+/* Faith infobox — the glyph-tablet sits centered at the top of the
+   card above the title and profile grid. Slight bottom margin to
+   separate the icon from the "Faith Profile" header. */
+.faith-glyph {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 0.8rem;
+}
+
 /* ---- Related section (bottom of article) ----
 
    Rendered as a bordered, tinted card. Each row is one content type,

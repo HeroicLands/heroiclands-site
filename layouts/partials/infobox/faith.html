@@ -1,0 +1,85 @@
+{{- /*
+  Faith infobox — floated card on pages with `type: faith`. Presents
+  the deity's glyph icon at the top of the card, then a compact
+  profile grid: deity name, epithet, domain, symbol, pantheon link.
+
+  Fields read from frontmatter (all optional; rows silently skip
+  when missing):
+    deity    — The deity's name (e.g. "Ánubís").
+    epithet  — The deity's epithet (e.g. "The Keeper of Transitions").
+    domain   — Single-word or short phrase (e.g. "Decay").
+    symbol   — Prose description of the deity's iconographic symbol
+               (e.g. "A jackal's head cradling a crescent moon").
+    glyph    — Slug of the hieroglyphic name SVG; resolves to
+               https://cdn.heroiclands.org/icons/<glyph>.svg and
+               renders inside a .glyph-tablet at the top of the card.
+    pantheon — Slug of the parent pantheon page; rendered as a link
+               when a page with that slug is found in the site.
+*/ -}}
+
+{{- $ctx := . -}}
+{{- $name := "" -}}{{- with .Params.name.full }}{{ $name = . }}{{ end -}}
+{{- if not $name }}{{ $name = .Title }}{{ end -}}
+{{- $deity := .Params.deity -}}
+{{- $epithet := .Params.epithet -}}
+{{- $domain := .Params.domain -}}
+{{- $symbol := .Params.symbol -}}
+{{- $glyph := .Params.glyph -}}
+{{- $pantheonSlug := .Params.pantheon -}}
+
+{{- /* Resolve the pantheon slug to a real page if one exists, so the
+       Pantheon row can be a link. Falls back to humanized slug text
+       if the page isn't found. */ -}}
+{{- $pantheonPage := "" -}}
+{{- with $pantheonSlug -}}
+  {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" .) -}}
+  {{- with index $pg 0 -}}{{ $pantheonPage = . }}{{- end -}}
+{{- end -}}
+
+<aside class="geo-infobox faith-infobox info-sidebar">
+
+  {{- with $glyph }}
+  <div class="faith-glyph">
+    <span class="glyph glyph-tablet">
+      <img src="https://cdn.heroiclands.org/icons/{{ . }}.svg"
+           alt="{{ $deity | default $name }}"
+           loading="lazy" />
+    </span>
+  </div>
+  {{- end }}
+
+  <header class="info-sidebar-title">
+    <h2>Faith Profile</h2>
+  </header>
+
+  <dl class="info-profile-grid">
+    {{- with $deity }}
+    <dt>Deity</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- with $epithet }}
+    <dt>Epithet</dt>
+    <dd><em>{{ . }}</em></dd>
+    {{- end }}
+
+    {{- with $domain }}
+    <dt>Domain</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- with $symbol }}
+    <dt>Symbol</dt>
+    <dd>{{ . }}</dd>
+    {{- end }}
+
+    {{- with $pantheonPage }}
+    <dt>Pantheon</dt>
+    <dd><a href="{{ .Permalink }}">{{ .LinkTitle }}</a></dd>
+    {{- else }}{{- with $pantheonSlug }}
+    <dt>Pantheon</dt>
+    <dd>{{ . | humanize | title }}</dd>
+    {{- end }}{{- end }}
+  </dl>
+
+</aside>
