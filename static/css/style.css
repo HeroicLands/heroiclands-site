@@ -1696,13 +1696,13 @@ a.tag:hover {
                                           useful when the cartouche IS
                                           the name being referenced. */
 
-/* Jsesh-exported cartouches are horizontal ovals (~3.4:1 wide:tall).
-   Size them by HEIGHT — width derives from the SVG's aspect ratio.
-   Per-call override comes from the shortcode's `height` parameter,
-   which sets an inline style on the <img>. */
+/* Jsesh-exported cartouches in vertical orientation are tall ovals
+   (~1:2 wide:tall). Size them by HEIGHT — width derives from the
+   SVG's aspect ratio. Per-call override comes from the shortcode's
+   `height` parameter, which sets an inline style on the <img>. */
 
 .cartouche {
-  --cartouche-h: 4rem;
+  --cartouche-h: 10rem;
   display: block;
   margin: 1.5rem auto;
   text-align: center;
@@ -1754,13 +1754,13 @@ a.tag:hover {
 }
 
 .cartouche-left {
-  --cartouche-h: 2.5rem;
+  --cartouche-h: 7rem;
   float: left;
   margin: 0.25rem 1.5rem 0.5rem 0;
 }
 
 .cartouche-right {
-  --cartouche-h: 2.5rem;
+  --cartouche-h: 7rem;
   float: right;
   margin: 0.25rem 0 0.5rem 1.5rem;
 }
@@ -1778,17 +1778,17 @@ a.tag:hover {
 .cartouche-inline img {
   display: inline-block;
   width: auto;
-  height: 1.3em;
-  vertical-align: -0.25em;
+  height: 2.6em;
+  vertical-align: -1em;
 }
 
 @media (max-width: 720px) {
   .cartouche {
-    --cartouche-h: 3rem;
+    --cartouche-h: 8rem;
   }
   .cartouche-left,
   .cartouche-right {
-    --cartouche-h: 2rem;
+    --cartouche-h: 6rem;
     float: none;
     margin: 1rem auto;
   }
