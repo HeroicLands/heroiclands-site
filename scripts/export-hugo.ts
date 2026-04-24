@@ -908,6 +908,9 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     // ── Faith-specific top-level fields ─────────────────────────────
     // Passed through so the faith infobox (partials/infobox/faith.html)
     // can render the deity profile at the top of the content.
+    img:      (fm) => fm.img      || undefined,  // per-deity portrait
+                                                  // (Aurèldián/Asguardian);
+                                                  // wins over `glyph`.
     deity:    (fm) => fm.deity    || undefined,
     epithet:  (fm) => fm.epithet  || undefined,
     domain:   (fm) => fm.domain   || undefined,

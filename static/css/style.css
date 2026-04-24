@@ -1887,9 +1887,33 @@ a.tag:hover {
   }
 }
 
-/* Faith infobox — the glyph-tablet sits centered at the top of the
-   card above the title and profile grid. Slight bottom margin to
-   separate the icon from the "Faith Profile" header. */
+/* Faith infobox icons. Independent — a faith page can have either,
+   both, or neither.
+   - .faith-portrait (img field) sits ABOVE the "Faith Profile"
+     title at the top of the card. Constrained to 150×150 max,
+     centered within the card's padding.
+   - .faith-glyph (glyph field) sits BELOW the title's dividing
+     line, using the same limestone tablet as the pantheon table. */
+
+.faith-portrait {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1rem;
+  line-height: 0;
+}
+
+.faith-portrait img {
+  display: block;
+  max-width: 150px;
+  max-height: 150px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: none;
+  border-radius: 0.25rem;
+  margin: 0;
+}
+
 .faith-glyph {
   display: flex;
   justify-content: center;
