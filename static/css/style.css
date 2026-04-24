@@ -1794,6 +1794,87 @@ a.tag:hover {
   }
 }
 
+/* ---- Glyphs ----
+
+   Small hieroglyphic clusters (Kemetían deity names, etc.) fetched
+   from https://cdn.heroiclands.org/icons/<slug>.svg via the glyph
+   shortcode. Smaller and lighter than cartouches — these represent
+   words, not royal seals, so they live inline with text or inside a
+   compact stone tablet for catalog use. The .glyph family shares
+   the warm-ink filter with cartouches so both read as members of
+   the same writing system. */
+
+.glyph {
+  display: inline-block;
+  vertical-align: -0.35em;
+  line-height: 0;
+}
+
+.glyph img {
+  display: inline-block;
+  height: 1.8em;           /* scales with surrounding text by default */
+  width: auto;
+  max-width: 100%;
+  /* Override the .single-content img body-photo frame — glyphs are
+     graphic marks, not photos, and don't need the border/margin. */
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  /* Same warm-aged-charcoal treatment as cartouches, for visual
+     kinship across the writing-system family. */
+  filter:
+    sepia(0.7) hue-rotate(-12deg) saturate(1.25) brightness(0.55)
+    blur(0.3px) contrast(1.15);
+}
+
+/* Size variants */
+.glyph-inline img { height: 1.4em; }
+
+.glyph-block {
+  display: block;
+  text-align: center;
+  margin: 1rem auto;
+  vertical-align: baseline;
+}
+.glyph-block img { height: 3rem; }
+
+/* Stone-tablet frame — for catalog layouts (pantheon table, lists of
+   deities) where visual parallelism across a column matters more than
+   showing each glyph at its intrinsic width. Tablet dimensions
+   accommodate up to ~7 signs horizontally; longer glyphs scale down,
+   shorter ones sit centered with limestone around them. */
+.glyph-tablet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 3rem;
+  padding: 0.25rem 0.5rem;
+  vertical-align: middle;
+  background:
+    radial-gradient(ellipse at 28% 22%, #f2e4c2 0%, #d9c29a 55%, #bda77c 100%);
+  border-radius: 0.2rem;
+  box-shadow:
+    inset 0 0 0.25rem rgba(101, 64, 27, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+  line-height: 0;
+  box-sizing: border-box;
+}
+
+.glyph-tablet img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .glyph-tablet {
+    width: 6.5rem;
+    height: 2.5rem;
+  }
+}
+
 /* ---- Related section (bottom of article) ----
 
    Rendered as a bordered, tinted card. Each row is one content type,

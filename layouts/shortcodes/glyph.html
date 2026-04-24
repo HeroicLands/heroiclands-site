@@ -1,0 +1,43 @@
+{{- /*
+  Glyph shortcode — renders a hieroglyphic deity-name cluster (or any
+  "icon-scale" SVG) from the project CDN. Parallel to cartouche.html
+  but for smaller, non-royal glyph groups: Kemetían deity names,
+  category icons, ornamental marks, etc.
+
+  Usage (Hugo disallows mixing positional and named params in one
+  call; pick a form per call):
+
+    { {< glyph "anubis" >} }                             inline, plain
+    { {< glyph slug="anubis" >} }                        same, named form
+    { {< glyph slug="anubis" frame="tablet" >} }         inside stone tablet
+    { {< glyph slug="ra" size="inline" >} }              scales with text
+    { {< glyph slug="ra" size="block" >} }               centered block
+    { {< glyph slug="ra" alt="Sun god Ra" >} }           override alt text
+
+  Parameters (all optional except slug):
+    slug    - Filename (without .svg). Passed positionally or as slug=.
+    frame   - "tablet" wraps in a limestone rectangular frame (good for
+              catalog layouts like the pantheon table where visual
+              parallelism across rows matters more than intrinsic width).
+    size    - "inline" (small, flows with text), "block" (centered
+              standalone). Default sits at 1.8em height.
+    alt     - Screen-reader text. Defaults to humanized slug.
+
+  SVG source: https://cdn.heroiclands.org/icons/<slug>.svg
+*/ -}}
+{{- $cdn := "https://cdn.heroiclands.org/icons" -}}
+{{- $slug := .Get "slug" -}}
+{{- if not $slug }}{{ $slug = .Get 0 }}{{ end -}}
+{{- if not $slug -}}
+  {{- errorf "glyph shortcode at %s needs a slug (positional arg 0 or slug=\"…\")" .Position -}}
+{{- end -}}
+{{- $altDefault := humanize (replace $slug "-" " ") | title -}}
+{{- $alt   := .Get "alt"   | default $altDefault -}}
+{{- $frame := .Get "frame" | default "" -}}
+{{- $size  := .Get "size"  | default "" -}}
+{{- $src   := printf "%s/%s.svg" $cdn $slug -}}
+{{- $classes := slice "glyph" -}}
+{{- with $frame }}{{ $classes = $classes | append (printf "glyph-%s" .) }}{{ end -}}
+{{- with $size  }}{{ $classes = $classes | append (printf "glyph-%s" .) }}{{ end -}}
+{{- $class := delimit $classes " " -}}
+<span class="{{ $class }}"><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" /></span>
