@@ -1696,17 +1696,29 @@ a.tag:hover {
                                           useful when the cartouche IS
                                           the name being referenced. */
 
-/* Cartouches are tall vertical shapes (~1:3 aspect), so size them by
-   HEIGHT and let the width derive from the SVG's aspect ratio. A
-   per-call override is available via the --cartouche-h CSS variable
-   that the shortcode sets from its `height` parameter. */
+/* Jsesh-exported cartouches are horizontal ovals (~3.4:1 wide:tall).
+   Size them by HEIGHT — width derives from the SVG's aspect ratio.
+   Per-call override comes from the shortcode's `height` parameter,
+   which sets an inline style on the <img>. */
 
 .cartouche {
-  --cartouche-h: 13rem;
+  --cartouche-h: 4rem;
   display: block;
   margin: 1.5rem auto;
   text-align: center;
   line-height: 0;          /* avoid extra strut under the <img> */
+  /* Limestone-panel treatment: a warm radial gradient backdrop with
+     an inset shadow suggests a plastered stone surface; the subtle
+     outer shadow lifts the panel off the page like a framed relief.
+     This is the single biggest visual shift from "SVG on white" to
+     "cartouche carved into a wall." */
+  background:
+    radial-gradient(ellipse at 28% 22%, #f2e4c2 0%, #d9c29a 55%, #bda77c 100%);
+  padding: 0.5em 1em;
+  border-radius: 0.25rem;
+  box-shadow:
+    inset 0 0 0.35rem rgba(101, 64, 27, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .cartouche img {
@@ -1720,6 +1732,14 @@ a.tag:hover {
   border: none;
   border-radius: 0;
   margin: 0;
+  /* Shift the Jsesh pure-black ink toward a warm aged-charcoal brown
+     so it reads as oxidized paint rather than printer toner, and
+     apply a tiny blur + contrast bump to soften sharp rectangular
+     edges (plural strokes) without visibly degrading the more
+     complex glyphs (the L1 scarab hides behind its own detail). */
+  filter:
+    sepia(0.7) hue-rotate(-12deg) saturate(1.25) brightness(0.55)
+    blur(0.3px) contrast(1.15);
 }
 
 .cartouche figcaption {
@@ -1734,13 +1754,13 @@ a.tag:hover {
 }
 
 .cartouche-left {
-  --cartouche-h: 9rem;
+  --cartouche-h: 2.5rem;
   float: left;
   margin: 0.25rem 1.5rem 0.5rem 0;
 }
 
 .cartouche-right {
-  --cartouche-h: 9rem;
+  --cartouche-h: 2.5rem;
   float: right;
   margin: 0.25rem 0 0.5rem 1.5rem;
 }
@@ -1758,16 +1778,17 @@ a.tag:hover {
 .cartouche-inline img {
   display: inline-block;
   width: auto;
-  height: 2.6em;
+  height: 1.3em;
+  vertical-align: -0.25em;
 }
 
 @media (max-width: 720px) {
   .cartouche {
-    --cartouche-h: 10rem;
+    --cartouche-h: 3rem;
   }
   .cartouche-left,
   .cartouche-right {
-    --cartouche-h: 8rem;
+    --cartouche-h: 2rem;
     float: none;
     margin: 1rem auto;
   }
