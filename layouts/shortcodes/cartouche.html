@@ -1,0 +1,46 @@
+{{- /*
+  Cartouche shortcode — renders a named cartouche SVG as an ornamental
+  accent on culture-flavored pages. The canonical use is Kheperi
+  cartouches on Ta'Kheperu and Kemetian-pantheon pages, but the same
+  pipeline works for any "named seal" SVG (Tarvénian clan-seals,
+  Nordmal runic name-stones, etc. — just drop their SVGs alongside).
+
+  Usage:
+    {{</* cartouche "takheperu" */>}}                       # centered block
+    {{</* cartouche "takheperu" align="right" */>}}         # floated right
+    {{</* cartouche "ra" size="inline" */>}}                # flows inline
+    {{</* cartouche "takheperu" alt="…" caption="…" */>}}   # override text
+
+  Named parameters:
+    size    - "inline" to flow with text. Otherwise block-level.
+    align   - "left" or "right" to float so prose wraps. Default centered.
+    alt     - Override screen-reader text. Defaults to humanized slug.
+    caption - Optional figcaption (block mode only).
+
+  SVG is expected at /static/img/cartouches/<slug>.svg. Design note:
+  cartouche SVGs should draw with stroke="currentColor" and fill="none"
+  (or a hard-coded brand color) so they tint cleanly against any
+  background.
+*/ -}}
+{{- $slug := .Get 0 -}}
+{{- if not $slug -}}
+  {{- errorf "cartouche shortcode at %s needs a slug as the first positional argument" .Position -}}
+{{- end -}}
+{{- $altDefault := humanize (replace $slug "-" " ") | title -}}
+{{- $alt    := .Get "alt"     | default $altDefault -}}
+{{- $size   := .Get "size"    | default "" -}}
+{{- $align  := .Get "align"   | default "" -}}
+{{- $cap    := .Get "caption" | default "" -}}
+{{- $src    := printf "/img/cartouches/%s.svg" $slug -}}
+{{- $classes := slice "cartouche" -}}
+{{- with $size  }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
+{{- with $align }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
+{{- $class := delimit $classes " " -}}
+{{- if eq $size "inline" -}}
+<span class="{{ $class }}"><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" /></span>
+{{- else -}}
+<figure class="{{ $class }}">
+  <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" />
+  {{- with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>
+{{- end -}}

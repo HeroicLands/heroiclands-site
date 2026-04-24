@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 410" role="img" aria-label="Ta'Kheperu">
+  <title>Ta'Kheperu</title>
+  <g fill="none" stroke="#8b6a3a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Cartouche frame (vertical capsule) -->
+    <path d="M 70 15
+             Q 125 15 125 60
+             L 125 320
+             Q 125 365 70 365
+             Q 15 365 15 320
+             L 15 60
+             Q 15 15 70 15 Z"/>
+    <!-- Shen bar (the horizontal tie that closes a cartouche) -->
+    <line x1="8" y1="390" x2="132" y2="390" stroke-width="7"/>
+
+    <!-- Glyph 1 — "Ta" (land): flat ground with three hills -->
+    <g transform="translate(70 80)">
+      <line x1="-30" y1="0" x2="30" y2="0" stroke-width="5"/>
+      <path d="M -24 -2 Q -19 -13 -14 -2" stroke-width="3"/>
+      <path d="M  -7 -2 Q   0 -17   7 -2" stroke-width="3"/>
+      <path d="M  14 -2 Q  19 -13  24 -2" stroke-width="3"/>
+    </g>
+
+    <!-- Glyph 2 — "Kheper" (scarab beetle) -->
+    <g transform="translate(70 190)">
+      <!-- Body (pointed oval) -->
+      <ellipse cx="0" cy="0" rx="24" ry="34" stroke-width="4"/>
+      <!-- Elytra division -->
+      <line x1="0" y1="-34" x2="0" y2="34" stroke-width="2.5"/>
+      <!-- Wing-case cross lines -->
+      <line x1="-22" y1="-6" x2="-3" y2="-6" stroke-width="2"/>
+      <line x1="3" y1="-6" x2="22" y2="-6" stroke-width="2"/>
+      <!-- Head / pronotum cap -->
+      <path d="M -10 -34 Q 0 -44 10 -34 Z" fill="#8b6a3a" stroke-width="2"/>
+      <!-- Legs (three a side, curved inward) -->
+      <path d="M -24 -16 Q -18 -22 -14 -20" stroke-width="2"/>
+      <path d="M -24  -2 Q -17  -2 -14  -4" stroke-width="2"/>
+      <path d="M -24  14 Q -18  22 -14  20" stroke-width="2"/>
+      <path d="M  24 -16 Q  18 -22  14 -20" stroke-width="2"/>
+      <path d="M  24  -2 Q  17  -2  14  -4" stroke-width="2"/>
+      <path d="M  24  14 Q  18  22  14  20" stroke-width="2"/>
+    </g>
+
+    <!-- Glyph 3 — "U" (reed-leaf, phonetic u/w) -->
+    <g transform="translate(70 310)">
+      <path d="M -12 -30 Q -12 -6 0 0 Q 12 -6 12 -30" stroke-width="4"/>
+      <line x1="0" y1="0" x2="0" y2="22" stroke-width="4"/>
+    </g>
+  </g>
+</svg>
