@@ -1637,10 +1637,14 @@ a.tag:hover {
    positioning and size. All three share .geo-infobox; per-type hook
    classes (.polity-infobox, etc.) are available for future tweaks. */
 
-.geo-infobox {
+.geo-infobox,
+.polity-infobox,
+.region-infobox,
+.continent-infobox {
   float: left;
   width: 19rem;
   max-width: 100%;
+  box-sizing: border-box;
   margin: 0 1.75rem 1rem 0;
   /* Undo the sticky/grid behavior inherited from .info-sidebar. */
   position: static;
@@ -1672,7 +1676,10 @@ a.tag:hover {
 
 /* Stack the infobox above the prose on narrow viewports. */
 @media (max-width: 720px) {
-  .geo-infobox {
+  .geo-infobox,
+  .polity-infobox,
+  .region-infobox,
+  .continent-infobox {
     float: none;
     width: 100%;
     margin: 0 0 1.25rem 0;
