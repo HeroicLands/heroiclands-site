@@ -1696,17 +1696,24 @@ a.tag:hover {
                                           useful when the cartouche IS
                                           the name being referenced. */
 
+/* Cartouches are tall vertical shapes (~1:3 aspect), so size them by
+   HEIGHT and let the width derive from the SVG's aspect ratio. A
+   per-call override is available via the --cartouche-h CSS variable
+   that the shortcode sets from its `height` parameter. */
+
 .cartouche {
+  --cartouche-h: 13rem;
   display: block;
   margin: 1.5rem auto;
-  max-width: 9rem;
   text-align: center;
+  line-height: 0;          /* avoid extra strut under the <img> */
 }
 
 .cartouche img {
-  display: block;
-  width: 100%;
-  height: auto;
+  display: inline-block;
+  height: var(--cartouche-h);
+  width: auto;
+  max-width: 100%;         /* stay inside a narrow column */
 }
 
 .cartouche figcaption {
@@ -1717,18 +1724,19 @@ a.tag:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-muted);
+  line-height: 1.3;
 }
 
 .cartouche-left {
+  --cartouche-h: 9rem;
   float: left;
-  margin: 0.25rem 1.5rem 0.75rem 0;
-  max-width: 7rem;
+  margin: 0.25rem 1.5rem 0.5rem 0;
 }
 
 .cartouche-right {
+  --cartouche-h: 9rem;
   float: right;
-  margin: 0.25rem 0 0.75rem 1.5rem;
-  max-width: 7rem;
+  margin: 0.25rem 0 0.5rem 1.5rem;
 }
 
 /* Inline variant: scales to line-height so the cartouche sits on the
@@ -1744,15 +1752,18 @@ a.tag:hover {
 .cartouche-inline img {
   display: inline-block;
   width: auto;
-  height: 2.8em;
+  height: 2.6em;
 }
 
 @media (max-width: 720px) {
+  .cartouche {
+    --cartouche-h: 10rem;
+  }
   .cartouche-left,
   .cartouche-right {
+    --cartouche-h: 8rem;
     float: none;
     margin: 1rem auto;
-    max-width: 8rem;
   }
 }
 

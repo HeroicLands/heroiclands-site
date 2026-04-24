@@ -20,6 +20,9 @@
               are needed — Hugo disallows mixing the two styles.
     size    - "inline" to flow with text. Otherwise block-level.
     align   - "left" or "right" to float so prose wraps. Default centered.
+    height  - CSS length override for the cartouche's height, e.g.
+              "10rem" or "160px". Default comes from .cartouche CSS
+              (13rem block, 9rem floated). Width scales from aspect ratio.
     alt     - Override screen-reader text. Defaults to humanized slug.
     caption - Optional figcaption (block mode only).
 
@@ -41,15 +44,16 @@
 {{- $size   := .Get "size"    | default "" -}}
 {{- $align  := .Get "align"   | default "" -}}
 {{- $cap    := .Get "caption" | default "" -}}
+{{- $height := .Get "height"  | default "" -}}
 {{- $src    := printf "/img/cartouches/%s.svg" $slug -}}
 {{- $classes := slice "cartouche" -}}
 {{- with $size  }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
 {{- with $align }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
 {{- $class := delimit $classes " " -}}
 {{- if eq $size "inline" -}}
-<span class="{{ $class }}"><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" /></span>
+<span class="{{ $class }}"{{ with $height }} style="--cartouche-h: {{ . }}"{{ end }}><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" /></span>
 {{- else -}}
-<figure class="{{ $class }}">
+<figure class="{{ $class }}"{{ with $height }} style="--cartouche-h: {{ . }}"{{ end }}>
   <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" />
   {{- with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
 </figure>
