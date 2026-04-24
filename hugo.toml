@@ -29,10 +29,30 @@ title = "Heroic Lands"
     url = "/blog/blog/"
     weight = 3
   [[menu.main]]
-    name = "Systems & Modules"
-    url = "/project/project/"
+    name = "Projects"
+    url = "/project/"
     weight = 4
-    identifier = "fvtt"
+    identifier = "projects"
+  [[menu.main]]
+    name = "Song of Heroic Lands"
+    url = "/project/sohl/"
+    weight = 1
+    parent = "projects"
+  [[menu.main]]
+    name = "HârnMaster 3"
+    url = "/project/harnmaster/"
+    weight = 2
+    parent = "projects"
+  [[menu.main]]
+    name = "Modules"
+    url = "/project/modules/"
+    weight = 3
+    parent = "projects"
+  [[menu.main]]
+    name = "Reference"
+    url = "/project/reference/"
+    weight = 4
+    parent = "projects"
   [[menu.main]]
     name = "License"
     url = "/license/"

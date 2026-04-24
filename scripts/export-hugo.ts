@@ -40,6 +40,7 @@ const VALID_TYPES = [
     "armorgear",
     "blog-post",
     "character",
+    "company",
     "concoctiongear",
     "containergear",
     "continent",
