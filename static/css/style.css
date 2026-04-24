@@ -1714,6 +1714,12 @@ a.tag:hover {
   height: var(--cartouche-h);
   width: auto;
   max-width: 100%;         /* stay inside a narrow column */
+  /* Override the .single-content img frame — cartouches are already a
+     self-contained shape and don't need an additional border or the
+     1.5rem vertical margin that body photos get. */
+  border: none;
+  border-radius: 0;
+  margin: 0;
 }
 
 .cartouche figcaption {
