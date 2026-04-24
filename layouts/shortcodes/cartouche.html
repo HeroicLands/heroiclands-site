@@ -50,11 +50,15 @@
 {{- with $size  }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
 {{- with $align }}{{ $classes = $classes | append (printf "cartouche-%s" .) }}{{ end -}}
 {{- $class := delimit $classes " " -}}
+{{- /* When `height` is given, apply it as an inline style directly on
+       the <img>. Inline styles on the target element are unambiguous —
+       they trump any .cartouche img CSS rule on specificity and don't
+       depend on custom-property inheritance. */ -}}
 {{- if eq $size "inline" -}}
-<span class="{{ $class }}"{{ with $height }} style="--cartouche-h: {{ . }}"{{ end }}><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" /></span>
+<span class="{{ $class }}"><img src="{{ $src }}" alt="{{ $alt }}" loading="lazy"{{ with $height }} style="height: {{ . }}; width: auto; max-width: none;"{{ end }} /></span>
 {{- else -}}
-<figure class="{{ $class }}"{{ with $height }} style="--cartouche-h: {{ . }}"{{ end }}>
-  <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" />
+<figure class="{{ $class }}">
+  <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy"{{ with $height }} style="height: {{ . }}; width: auto; max-width: none;"{{ end }} />
   {{- with $cap }}<figcaption>{{ . }}</figcaption>{{ end }}
 </figure>
 {{- end -}}
