@@ -26,15 +26,23 @@
 {{- $langs  := .Params.languages  | default slice -}}
 {{- $panths := .Params.pantheons  | default slice -}}
 {{- $peoples:= .Params.peoples    | default slice -}}
-{{- $regs   := .Params.regions    | default slice -}}
-{{- $conts  := .Params.continents | default slice -}}
+{{- $regs   := slice -}}
+{{- $conts  := slice -}}
+{{- $parentPolities := slice -}}
+{{- with .Params.parent -}}
+  {{- with .regions    }}{{ $regs = . }}{{ end -}}
+  {{- with .continents }}{{ $conts = . }}{{ end -}}
+  {{- with .polities   }}{{ $parentPolities = . }}{{ end -}}
+{{- end -}}
 
 {{- /* Parent polity — when set, the Type row is rewritten to read
        "<Subtype> of: <parent>" (e.g. "City State of: Byzarian League",
        "Province of: Vylarian Empire") so the hierarchy is obvious at
-       a glance. When unset, fall through to a plain "Type" row. */ -}}
+       a glance. When unset, fall through to a plain "Type" row. The
+       first entry of parent.polities is treated as the principal
+       parent for display purposes. */ -}}
 {{- $parentSlug := "" -}}
-{{- with .Params.parent }}{{- with .polity }}{{ $parentSlug = . }}{{ end }}{{ end -}}
+{{- if gt (len $parentPolities) 0 }}{{ $parentSlug = index $parentPolities 0 }}{{ end -}}
 {{- $parentPage := "" -}}
 {{- with $parentSlug -}}
   {{- $pg := first 1 (where $ctx.Site.RegularPages "Params.slug" .) -}}

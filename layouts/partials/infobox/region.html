@@ -13,7 +13,8 @@
 {{- $ctx := . -}}
 {{- $name   := "" -}}{{- with .Params.name.full }}{{ $name = . }}{{ end -}}
 {{- if not $name }}{{ $name = .Title }}{{ end -}}
-{{- $conts  := .Params.continents   | default slice -}}
+{{- $conts  := slice -}}
+{{- with .Params.parent }}{{- with .continents }}{{ $conts = . }}{{ end }}{{ end -}}
 
 <aside class="geo-infobox region-infobox info-sidebar">
 
