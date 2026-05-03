@@ -16,9 +16,12 @@
  *   4. Rewrites Obsidian wikilinks and image embeds to Hugo-compatible Markdown.
  *      Image embeds are rewritten to CDN URLs (https://cdn.heroiclands.org/images/...);
  *      the actual image files live on the CDN and are not bundled with the site.
- *   5. Writes transformed files to bucket-specific output paths
- *      (e.g. content/world/thalorna/{type}/{slug}.md,
- *      content/project/{bucket}/{slug}.md, content/blog/YYYY/MM/{slug}.md)
+ *   5. Writes transformed files to type-dispatched output paths
+ *      (e.g. content/setting/{type}/{slug}.md for world content,
+ *      content/sohl/{type}/{slug}.md for SoHL system content,
+ *      content/blog/YYYY/MM/{slug}.md for blog posts).
+ *      See the "Routing model" section below for the full dispatch
+ *      table.
  */
 
 import * as fs from "fs";
@@ -36,9 +39,12 @@ const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
+    "adventure",
     "affliction",
     "armorgear",
+    "attribute",
     "blog-post",
+    "campaign",
     "character",
     "company",
     "concoctiongear",
@@ -47,8 +53,11 @@ const VALID_TYPES = [
     "creature",
     "domain",
     "faith",
-    "religion",
+    "hm3-rules",
+    "hm3-user-guide",
     "language",
+    "lineage",
+    "location",
     "lore",
     "miscgear",
     "mystery",
@@ -58,12 +67,15 @@ const VALID_TYPES = [
     "pantheon",
     "people",
     "polity",
-    "project-page",
     "projectilegear",
+    "reference",
     "region",
+    "religion",
+    "section",
     "settlement",
-    "site",
     "skill",
+    "sohl-rules",
+    "sohl-user-guide",
     "trait",
     "type-catalog",
     "weapongear",
@@ -72,53 +84,90 @@ const VALID_TYPES = [
 
 type ContentType = (typeof VALID_TYPES)[number];
 
-// ── Bucket configuration ───────────────────────────────────────────
+// Types that route to /setting/{type}/{slug}/ — the world content space.
+const SETTING_TYPES: ReadonlySet<ContentType> = new Set([
+    "adventure",
+    "campaign",
+    "character",
+    "company",
+    "continent",
+    "creature",
+    "faith",
+    "language",
+    "location",
+    "lore",
+    "organization",
+    "page",
+    "pantheon",
+    "people",
+    "polity",
+    "reference",
+    "region",
+    "religion",
+    "settlement",
+    "world",
+]);
+
+// Types that route to /sohl/{type}/{slug}/ — the SoHL game system content
+// (gear catalogs, character mechanics). When HM3 grows its own copies of
+// these, they'll be added with an "hm3-" prefix and routed to /hm3/.
+const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
+    "affliction",
+    "armorgear",
+    "attribute",
+    "concoctiongear",
+    "containergear",
+    "domain",
+    "lineage",
+    "miscgear",
+    "mystery",
+    "mysticalability",
+    "projectilegear",
+    "skill",
+    "trait",
+    "weapongear",
+]);
+
+// ── Routing model ──────────────────────────────────────────────────
 
 /**
- * A bucket maps a vault-path prefix to a Hugo content path with a
- * specific routing strategy for the files within it.
+ * URL dispatch is a hybrid of vault-path and frontmatter-type rules:
  *
- *   vaultPrefix: path under VAULT_ROOT that identifies this bucket
- *     (must end with "/")
- *   hugoPath:    destination path under HUGO_CONTENT (no leading slash)
- *   routing:
- *     "by-type"  - per-type subdir, e.g. content/world/thalorna/character/{slug}.md
- *     "flat"     - all entries at bucket root, e.g. content/project/sohl/{slug}.md
- *     "by-date"  - date-prefixed from frontmatter.date (YYYY-MM-DD),
- *                  e.g. content/blog/YYYY/MM/{slug}.md
+ *   1. Files under Blog/ → /blog/YYYY/MM/{slug}/, dated from
+ *      frontmatter.date. Vault subpath is otherwise ignored.
+ *   2. Files under Projects/ → /projects/{slug}/, path-mirrored.
+ *      Projects/ contains only landing pages (one .md per project
+ *      plus a top-level _index.md).
+ *   3. Everything else dispatches by `type` field — vault folder
+ *      location is irrelevant. Each type maps to a fixed URL prefix:
  *
- * Order matters: buckets are matched longest-prefix-first, so more
- * specific paths (e.g. "Projects/Song_of_Heroic_Lands/") must come
- * before less specific ones (e.g. "Projects/").
+ *        type-catalog          → /type/{slug}/
+ *        section               → /section/{slug}/
+ *        sohl-user-guide       → /sohl/user-guide/{slug}/
+ *        sohl-rules            → /sohl/rules/{slug}/
+ *        hm3-user-guide        → /hm3/user-guide/{slug}/
+ *        hm3-rules             → /hm3/rules/{slug}/
+ *        T in SETTING_TYPES    → /setting/{T}/{slug}/
+ *        T in SOHL_SYSTEM_TYPES → /sohl/{T}/{slug}/
+ *
+ * Files that land in none of the above are skipped with a warning.
  */
-interface BucketConfig {
-    vaultPrefix: string;
-    hugoPath: string;
-    routing: "by-type" | "flat" | "by-date";
-}
 
-const BUCKETS: BucketConfig[] = [
-    { vaultPrefix: "Types/",                              hugoPath: "types",                routing: "flat"    },
-    { vaultPrefix: "Projects/Song_of_Heroic_Lands/",      hugoPath: "project/sohl",         routing: "flat"    },
-    { vaultPrefix: "Projects/HM3/",                       hugoPath: "project/hm3",          routing: "flat"    },
-    { vaultPrefix: "Projects/Modules/",                   hugoPath: "project/modules",      routing: "flat"    },
-    { vaultPrefix: "Projects/Systems/Characteristics/",   hugoPath: "project/characteristics", routing: "by-type" },
-    { vaultPrefix: "Projects/Systems/Domains/",           hugoPath: "project/domain",       routing: "flat"    },
-    { vaultPrefix: "Projects/Systems/Possessions/",       hugoPath: "project/possessions",  routing: "by-type" },
-    { vaultPrefix: "Projects/",                           hugoPath: "project",              routing: "flat"    },
-    { vaultPrefix: "Worlds/Thalorna/",                    hugoPath: "cosmos",               routing: "by-type" },
-    { vaultPrefix: "Blog/",                               hugoPath: "blog",                 routing: "by-date" },
+/**
+ * Top-level Hugo content directories the exporter writes into.
+ * Used by cleanStaleFiles() to know which subtrees of content/ to
+ * walk when sweeping orphaned files. Anything else under content/
+ * (such as hand-authored pages mounted from pages/) is left alone.
+ */
+const CONTENT_ROOTS: readonly string[] = [
+    "blog",
+    "hm3",
+    "projects",
+    "section",
+    "setting",
+    "sohl",
+    "type",
 ];
-
-function resolveBucket(filepath: string): BucketConfig | null {
-    const rel = path.relative(VAULT_ROOT, filepath);
-    for (const bucket of BUCKETS) {
-        if (rel.startsWith(bucket.vaultPrefix)) {
-            return bucket;
-        }
-    }
-    return null;
-}
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -137,8 +186,6 @@ interface VaultEntry {
     title: string;
     /** Lowercase slug for Hugo path */
     slug: string;
-    /** Which bucket this entry belongs to, based on its vault path */
-    bucket: BucketConfig;
     /** Whether this entry is a section index (_index.md) */
     isIndex: boolean;
     /** Absolute output path in the Hugo content tree */
@@ -356,79 +403,117 @@ function findMarkdownFiles(dir: string): string[] {
  * Scan the vault and build a list of publishable entries.
  */
 /**
- * Given a bucket and source filepath, compute where the file should
- * be written in the Hugo content tree and what its public URL will be.
+ * Compute where a vault entry should be written in the Hugo content
+ * tree and what its public URL will be.
  *
- * For `_index.md` files, the output is the section-index of the
- * appropriate bucket-subpath (preserving the vault's directory nesting).
- * For regular files, the bucket's routing strategy determines the
- * output path shape.
+ * Dispatch order (see "Routing model" above for full rules):
+ *   1. Files under Blog/ → by-date routing, vault subpath ignored.
+ *   2. Files under Projects/ → path mirror to /projects/.
+ *   3. Otherwise, by `type` field — folder location is irrelevant.
  *
- * Returns null if the entry cannot be routed (e.g. by-date bucket
- * but no valid date in frontmatter).
+ * Returns null if the entry cannot be routed (unknown type, missing
+ * date on a blog post, etc.) — callers warn and skip.
  */
 function resolveOutputPath(
-    entry: Omit<VaultEntry, "outputPath" | "url" | "bucket" | "isIndex"> & {
-        bucket: BucketConfig;
+    entry: Omit<VaultEntry, "outputPath" | "url" | "isIndex"> & {
         isIndex: boolean;
     },
 ): { outputPath: string; url: string } | null {
-    const hugoBase = path.join(HUGO_CONTENT, entry.bucket.hugoPath);
-    const urlBase = `/${entry.bucket.hugoPath}`;
+    const rel = path.relative(VAULT_ROOT, entry.filepath);
 
-    if (entry.isIndex) {
-        // Preserve vault subpath structure within the bucket.
-        const rel = path.relative(VAULT_ROOT, entry.filepath);
-        const vaultSubpath = path.dirname(
-            rel.substring(entry.bucket.vaultPrefix.length),
-        );
-        const subSegments =
-            vaultSubpath === "." || vaultSubpath === ""
-                ? []
-                : vaultSubpath.split(path.sep).map((s) => s.toLowerCase());
-        const outputPath = path.join(
-            hugoBase,
-            ...subSegments,
-            "_index.md",
-        );
-        const url = subSegments.length === 0
-            ? `${urlBase}/`
-            : `${urlBase}/${subSegments.join("/")}/`;
-        return { outputPath, url };
-    }
-
-    switch (entry.bucket.routing) {
-        case "by-type": {
-            const outputPath = path.join(
-                hugoBase,
-                entry.type,
-                `${entry.slug}.md`,
-            );
-            const url = `${urlBase}/${entry.type}/${entry.slug}/`;
-            return { outputPath, url };
+    // ── 1. Blog/ — by-date ───────────────────────────────────────
+    if (rel === "Blog" || rel.startsWith("Blog/") || rel.startsWith("Blog" + path.sep)) {
+        if (entry.isIndex) {
+            return {
+                outputPath: path.join(HUGO_CONTENT, "blog", "_index.md"),
+                url: "/blog/",
+            };
         }
-        case "flat": {
-            const outputPath = path.join(hugoBase, `${entry.slug}.md`);
-            const url = `${urlBase}/${entry.slug}/`;
-            return { outputPath, url };
-        }
-        case "by-date": {
-            const date = entry.frontmatter.date;
-            const match = typeof date === "string"
-                ? date.match(/^(\d{4})-(\d{2})-\d{2}/)
-                : null;
-            if (!match) return null;
-            const [, year, month] = match;
-            const outputPath = path.join(
-                hugoBase,
+        const date = entry.frontmatter.date;
+        const match = typeof date === "string"
+            ? date.match(/^(\d{4})-(\d{2})-\d{2}/)
+            : null;
+        if (!match) return null;
+        const [, year, month] = match;
+        return {
+            outputPath: path.join(
+                HUGO_CONTENT,
+                "blog",
                 year,
                 month,
                 `${entry.slug}.md`,
-            );
-            const url = `${urlBase}/${year}/${month}/${entry.slug}/`;
-            return { outputPath, url };
-        }
+            ),
+            url: `/blog/${year}/${month}/${entry.slug}/`,
+        };
     }
+
+    // ── 2. Projects/ — path mirror ───────────────────────────────
+    if (rel.startsWith("Projects/") || rel.startsWith("Projects" + path.sep)) {
+        if (entry.isIndex) {
+            return {
+                outputPath: path.join(HUGO_CONTENT, "projects", "_index.md"),
+                url: "/projects/",
+            };
+        }
+        return {
+            outputPath: path.join(HUGO_CONTENT, "projects", `${entry.slug}.md`),
+            url: `/projects/${entry.slug}/`,
+        };
+    }
+
+    // ── 3. Type-based dispatch ───────────────────────────────────
+    const T = entry.type;
+    const S = entry.slug;
+
+    if (T === "type-catalog") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "type", `${S}.md`),
+            url: `/type/${S}/`,
+        };
+    }
+    if (T === "section") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "section", `${S}.md`),
+            url: `/section/${S}/`,
+        };
+    }
+    if (T === "sohl-user-guide") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "sohl", "user-guide", `${S}.md`),
+            url: `/sohl/user-guide/${S}/`,
+        };
+    }
+    if (T === "sohl-rules") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "sohl", "rules", `${S}.md`),
+            url: `/sohl/rules/${S}/`,
+        };
+    }
+    if (T === "hm3-user-guide") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "hm3", "user-guide", `${S}.md`),
+            url: `/hm3/user-guide/${S}/`,
+        };
+    }
+    if (T === "hm3-rules") {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "hm3", "rules", `${S}.md`),
+            url: `/hm3/rules/${S}/`,
+        };
+    }
+    if (SETTING_TYPES.has(T)) {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "setting", T, `${S}.md`),
+            url: `/setting/${T}/${S}/`,
+        };
+    }
+    if (SOHL_SYSTEM_TYPES.has(T)) {
+        return {
+            outputPath: path.join(HUGO_CONTENT, "sohl", T, `${S}.md`),
+            url: `/sohl/${T}/${S}/`,
+        };
+    }
+
     return null;
 }
 
@@ -449,20 +534,17 @@ function scanVault(verbose: boolean): VaultEntry[] {
 
         if (!isPublishable(fm)) continue;
 
-        const bucket = resolveBucket(filepath);
-        if (!bucket) {
-            // File sits outside any configured bucket (e.g. at vault root).
-            // These are meta files (CLAUDE.md, TASKS.md) — silently skip.
-            continue;
-        }
-
         const stem = path.basename(filepath, ".md");
         const isIndex = stem === "_index";
+        const rel = path.relative(VAULT_ROOT, filepath);
+        const isProjectLanding =
+            rel.startsWith("Projects/") || rel.startsWith("Projects" + path.sep);
 
-        // Section indexes don't require a type; they are handled specially.
-        // Regular entries must declare a type from VALID_TYPES.
+        // _index.md files and Projects/ landing pages don't require a type
+        // — both use path-based dispatch and default to "page". Regular
+        // entries must declare a type from VALID_TYPES.
         let rawType: ContentType;
-        if (isIndex) {
+        if (isIndex || isProjectLanding) {
             rawType = "page";
         } else {
             const declaredType = (fm.type || "").toString().toLowerCase();
@@ -489,14 +571,13 @@ function scanVault(verbose: boolean): VaultEntry[] {
             type: rawType,
             title,
             slug,
-            bucket,
             isIndex,
         });
 
         if (!resolved) {
             if (verbose) {
                 console.warn(
-                    `  Skipping ${filepath}: could not resolve output path (bucket "${bucket.hugoPath}", routing "${bucket.routing}" — check frontmatter)`,
+                    `  Skipping ${filepath}: could not resolve output path for type "${rawType}" — file is outside Blog/ and Projects/, and the type is neither a known setting/sohl type nor type-catalog/section (check frontmatter date for blog posts).`,
                 );
             }
             continue;
@@ -510,7 +591,6 @@ function scanVault(verbose: boolean): VaultEntry[] {
             type: rawType,
             title,
             slug,
-            bucket,
             isIndex,
             outputPath: resolved.outputPath,
             url: resolved.url,
@@ -627,7 +707,7 @@ interface MysticalIndex {
 interface GearRef {
     title: string;
     url: string;
-    /** Content type so we know which gear bucket this belongs to. */
+    /** Content type so callers can disambiguate weapons vs. armor etc. */
     type: ContentType;
 }
 
@@ -1820,16 +1900,14 @@ function cleanStaleFiles(
         expectedFiles.add(entry.outputPath);
     }
 
-    // Walk each bucket's Hugo output tree and remove any .md files
-    // that aren't in the expected set. This catches files from deleted
-    // vault entries, renamed slugs, etc.
+    // Walk each top-level Hugo output tree the exporter writes into and
+    // remove any .md files that aren't in the expected set. This catches
+    // files from deleted vault entries, renamed slugs, etc. Anything
+    // outside CONTENT_ROOTS (e.g. hand-authored pages mounted from
+    // pages/) is left alone.
     const bucketRoots = new Set<string>();
-    for (const bucket of BUCKETS) {
-        // Use only the top-level segment of hugoPath as the clean root,
-        // so buckets like "project/sohl" don't cause us to walk the
-        // "project/" tree once per sub-bucket.
-        const topSegment = bucket.hugoPath.split("/")[0];
-        bucketRoots.add(path.join(HUGO_CONTENT, topSegment));
+    for (const root of CONTENT_ROOTS) {
+        bucketRoots.add(path.join(HUGO_CONTENT, root));
     }
 
     function walkClean(dir: string) {

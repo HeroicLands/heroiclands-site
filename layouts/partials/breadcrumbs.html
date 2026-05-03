@@ -2,38 +2,54 @@
   Breadcrumbs partial.
 
   Renders `Home > {type label} > {name}` using the page's type field
-  and the canonical Types catalog in /types/.
+  and the canonical Types catalog in /type/.
 
   Behavior:
     - Home page: not rendered.
-    - Type catalog pages (type == "type-catalog"): rendered as
+    - Aggregation pages (type == "type-catalog" or "section"):
         Home > {Title}
-      with no middle segment, since the page *is* the middle segment
-      for everything else.
-    - Typed content pages where /types/{type}/ exists: rendered as
+      with no middle segment, since the page *is* an aggregator.
+    - Compound types under /sohl/ or /hm3/ ({system}-{kind}, e.g.
+      sohl-rules, hm3-user-guide) get a curated label and link to
+      the appropriate section URL — no /type/{type}/ page needed.
+    - Typed content pages where /type/{type}/ exists:
         Home > {linked label} > {Title}
-      with the label pulled from that type page's Title.
-    - Typed content pages with no matching /types/{type}/ page:
+      with the label pulled from the catalog page's Title.
+    - Typed content pages with no matching /type/{type}/ page:
         Home > {type slug as plain text} > {Title}
-    - Pages with no type declared: rendered as
+    - Pages with no type declared:
         Home > {Title}
 
-  The /types/{type}/ lookup uses the slug set in each Types/*.md file's
+  The /type/{type}/ lookup uses the slug set in each Types/*.md file's
   frontmatter, not the filename, so the singular-type / plural-title
   split is transparent here.
 */ -}}
 {{- if .IsHome -}}{{- return -}}{{- end -}}
 {{- $type := .Params.type | default "" -}}
+{{- $isAggregator := or (eq $type "type-catalog") (eq $type "section") -}}
+
+{{- /* Curated labels for compound types that don't have /type/{type}/ pages */ -}}
+{{- $compoundLabels := dict
+  "sohl-rules"      (dict "label" "SoHL Rules"      "url" "/sohl/rules/")
+  "sohl-user-guide" (dict "label" "SoHL User Guide" "url" "/sohl/user-guide/")
+  "hm3-rules"       (dict "label" "HM3 Rules"       "url" "/hm3/rules/")
+  "hm3-user-guide"  (dict "label" "HM3 User Guide"  "url" "/hm3/user-guide/")
+-}}
 
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol>
     <li><a href="/">Home</a></li>
-    {{- if and (ne $type "") (ne $type "type-catalog") -}}
-      {{- $typePage := site.GetPage (printf "/types/%s" $type) -}}
-      {{- if $typePage -}}
-        <li><a href="{{ $typePage.RelPermalink }}">{{ $typePage.Title }}</a></li>
+    {{- if and (ne $type "") (not $isAggregator) -}}
+      {{- $compound := index $compoundLabels $type -}}
+      {{- if $compound -}}
+        <li><a href="{{ $compound.url }}">{{ $compound.label }}</a></li>
       {{- else -}}
-        <li>{{ $type }}</li>
+        {{- $typePage := site.GetPage (printf "/type/%s" $type) -}}
+        {{- if $typePage -}}
+          <li><a href="{{ $typePage.RelPermalink }}">{{ $typePage.Title }}</a></li>
+        {{- else -}}
+          <li>{{ $type }}</li>
+        {{- end -}}
       {{- end -}}
     {{- end -}}
     <li aria-current="page">{{ .Title }}</li>
