@@ -74,8 +74,7 @@ const VALID_TYPES = [
     "section",
     "settlement",
     "skill",
-    "sohl-rules",
-    "sohl-user-guide",
+    "doc",
     "trait",
     "type-catalog",
     "weapongear",
@@ -143,14 +142,34 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
  *
  *        type-catalog          → /type/{slug}/
  *        section               → /section/{slug}/
- *        sohl-user-guide       → /sohl/user-guide/{slug}/
- *        sohl-rules            → /sohl/rules/{slug}/
+ *        doc                   → /{package}/{category}/{slug}/  (see below)
  *        hm3-user-guide        → /hm3/user-guide/{slug}/
  *        hm3-rules             → /hm3/rules/{slug}/
  *        T in SETTING_TYPES    → /setting/{T}/{slug}/
  *        T in SOHL_SYSTEM_TYPES → /sohl/{T}/{slug}/
  *
  * Files that land in none of the above are skipped with a warning.
+ *
+ * Documentation routing (type: doc).
+ * --------------------------------
+ * Each doc declares two frontmatter properties:
+ *   - package  — the Foundry distribution unit ("sohl", "thalorna",
+ *                "kethira", future "hm3", etc.). Doubles as the
+ *                top-level URL segment.
+ *   - category — the kind of doc within that package ("user-guide",
+ *                "setting-guide", etc.). Doubles as the second URL
+ *                segment.
+ *
+ * URL = /{package}/{category}/{slug}/. No central route table —
+ * new packages or categories work automatically. Both values are
+ * required for type=doc; missing either skips the file with a
+ * warning.
+ *
+ * When adding a brand-new package (a new top-level URL segment), also
+ * add that name to CONTENT_ROOTS so stale-file cleanup walks it, and
+ * add a matching entry to the $packageLabels dict in
+ * layouts/partials/breadcrumbs.html so breadcrumbs render the right
+ * proper-noun casing.
  */
 
 /**
@@ -477,16 +496,15 @@ function resolveOutputPath(
             url: `/section/${S}/`,
         };
     }
-    if (T === "sohl-user-guide") {
+    if (T === "doc") {
+        const pkg = entry.frontmatter.package;
+        const category = entry.frontmatter.category;
+        if (typeof pkg !== "string" || !pkg || typeof category !== "string" || !category) {
+            return null;
+        }
         return {
-            outputPath: path.join(HUGO_CONTENT, "sohl", "user-guide", `${S}.md`),
-            url: `/sohl/user-guide/${S}/`,
-        };
-    }
-    if (T === "sohl-rules") {
-        return {
-            outputPath: path.join(HUGO_CONTENT, "sohl", "rules", `${S}.md`),
-            url: `/sohl/rules/${S}/`,
+            outputPath: path.join(HUGO_CONTENT, pkg, category, `${S}.md`),
+            url: `/${pkg}/${category}/${S}/`,
         };
     }
     if (T === "hm3-user-guide") {
@@ -924,6 +942,11 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     },
     type: (fm) => fm.type?.toLowerCase(),
     tags: (fm) => fm.tags || [],
+    // Documentation routing fields. For type=doc, these define both
+    // the URL (/{package}/{category}/{slug}/) and the breadcrumb
+    // section label. Other types don't set these.
+    package: (fm) => fm.package || undefined,
+    category: (fm) => fm.category || undefined,
     // Blog-post specific fields. Passed through verbatim so Hugo's
     // .Params.date / .Params.series (and date-based sort) work.
     date: (fm) => fm.date || undefined,

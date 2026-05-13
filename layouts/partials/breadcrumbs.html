@@ -1,17 +1,24 @@
 {{- /*
   Breadcrumbs partial.
 
-  Renders `Home > {type label} > {name}` using the page's type field
-  and the canonical Types catalog in /type/.
+  Renders `Home > {section label} > {name}` using the page's type
+  field, and — for type=doc — its package and category properties,
+  plus the canonical Types catalog in /type/.
 
   Behavior:
     - Home page: not rendered.
     - Aggregation pages (type == "type-catalog" or "section"):
         Home > {Title}
       with no middle segment, since the page *is* an aggregator.
-    - Compound types under /sohl/ or /hm3/ ({system}-{kind}, e.g.
-      sohl-rules, hm3-user-guide) get a curated label and link to
-      the appropriate section URL — no /type/{type}/ page needed.
+    - Documentation pages (type == "doc"):
+        The middle crumb is composed from .Params.package and
+        .Params.category. URL = /{package}/{category}/. Label =
+        $packageLabels[package] + " " + titleCase(category). The same
+        properties drive URL routing in scripts/export-hugo.ts; keep
+        $packageLabels in sync with the packages used in the vault.
+    - Compound types under /hm3/ ({system}-{kind}, e.g.
+      hm3-user-guide) get a curated label and link to the appropriate
+      section URL — no /type/{type}/ page needed.
     - Typed content pages where /type/{type}/ exists:
         Home > {linked label} > {Title}
       with the label pulled from the catalog page's Title.
@@ -30,19 +37,42 @@
 
 {{- /* Curated labels for compound types that don't have /type/{type}/ pages */ -}}
 {{- $compoundLabels := dict
-  "sohl-rules"      (dict "label" "SoHL Rules"      "url" "/sohl/rules/")
-  "sohl-user-guide" (dict "label" "SoHL User Guide" "url" "/sohl/user-guide/")
   "hm3-rules"       (dict "label" "HM3 Rules"       "url" "/hm3/rules/")
   "hm3-user-guide"  (dict "label" "HM3 User Guide"  "url" "/hm3/user-guide/")
+-}}
+
+{{- /*
+  Proper-noun labels for doc packages. Title-case alone can't produce
+  "SoHL" or "HM3", so each known package gets an explicit label here.
+  Unknown packages fall back to title-casing the package slug.
+*/ -}}
+{{- $packageLabels := dict
+  "sohl"     "SoHL"
+  "thalorna" "Thalorna"
+  "kethira"  "Kethira"
+  "hm3"      "HM3"
 -}}
 
 <nav class="breadcrumbs" aria-label="Breadcrumb">
   <ol>
     <li><a href="/">Home</a></li>
     {{- if and (ne $type "") (not $isAggregator) -}}
-      {{- $compound := index $compoundLabels $type -}}
-      {{- if $compound -}}
-        <li><a href="{{ $compound.url }}">{{ $compound.label }}</a></li>
+      {{- $section := "" -}}
+      {{- if eq $type "doc" -}}
+        {{- $pkg := .Params.package | default "" -}}
+        {{- $cat := .Params.category | default "" -}}
+        {{- if and (ne $pkg "") (ne $cat "") -}}
+          {{- $pkgLabel := index $packageLabels $pkg | default (title $pkg) -}}
+          {{- $catLabel := replace $cat "-" " " | title -}}
+          {{- $section = dict
+              "label" (printf "%s %s" $pkgLabel $catLabel)
+              "url"   (printf "/%s/%s/" $pkg $cat) -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $section = index $compoundLabels $type -}}
+      {{- end -}}
+      {{- if $section -}}
+        <li><a href="{{ $section.url }}">{{ $section.label }}</a></li>
       {{- else -}}
         {{- $typePage := site.GetPage (printf "/type/%s" $type) -}}
         {{- if $typePage -}}
