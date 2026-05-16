@@ -10,8 +10,10 @@
                                                                  If it's a full URL, use as-is; otherwise
                                                                  treat as a CDN fragment relative to
                                                                  https://cdn.heroiclands.org/images/.
-    2. https://cdn.heroiclands.org/images/banners/{type}.webp  — type-specific default
-    3. https://cdn.heroiclands.org/images/banners/default.webp — fallback when the page has no type
+    2. https://cdn.heroiclands.org/images/banners/{subtype}.webp — subtype-specific default,
+                                                                  where subtype = category for
+                                                                  type=doc pages, otherwise type
+    3. https://cdn.heroiclands.org/images/banners/default.webp  — fallback when the page has no type
 */ -}}
 {{- $cdn := "https://cdn.heroiclands.org/images" -}}
 {{- $banner := "" -}}
@@ -23,8 +25,13 @@
     {{- $banner = printf "%s/%s" $cdn (strings.TrimPrefix "/" $b) -}}
   {{- end -}}
 {{- else -}}
-  {{- $type := .Params.type | default "default" -}}
-  {{- $banner = printf "%s/banners/%s.webp" $cdn $type -}}
+  {{- /* For narrative content (type=doc) the meaningful kind of page
+         lives in `category` — continent, region, polity, faith, lore,
+         etc. — so prefer that when picking a default banner. */ -}}
+  {{- $type := .Params.type | default "" -}}
+  {{- $subtype := cond (eq $type "doc") (.Params.category | default "") $type -}}
+  {{- if not $subtype }}{{ $subtype = "default" }}{{ end -}}
+  {{- $banner = printf "%s/banners/%s.webp" $cdn $subtype -}}
 {{- end -}}
 
 <section class="hero hero-with-image" style="background-image: url('{{ $banner }}');">

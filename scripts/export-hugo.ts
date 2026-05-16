@@ -39,84 +39,57 @@ const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
-    "adventure",
     "affliction",
     "armorgear",
     "attribute",
     "blog-post",
-    "campaign",
     "character",
-    "company",
     "concoctiongear",
     "containergear",
-    "continent",
     "creature",
-    "domain",
-    "faith",
+    "doc",
     "hm3-rules",
     "hm3-user-guide",
-    "language",
     "lineage",
-    "location",
-    "lore",
     "miscgear",
     "mystery",
     "mysticalability",
-    "organization",
     "page",
-    "pantheon",
-    "people",
-    "polity",
     "projectilegear",
-    "reference",
-    "region",
-    "religion",
-    "section",
-    "settlement",
     "skill",
-    "doc",
     "trait",
-    "type-catalog",
     "weapongear",
-    "world",
 ] as const;
 
 type ContentType = (typeof VALID_TYPES)[number];
 
-// Types that route to /setting/{type}/{slug}/ — the world content space.
+// World-content types that participate in package-driven routing
+// (URL = /{package}/{type}/{slug}/). All other former entries
+// (adventure, campaign, company, continent, faith, language, location,
+// lore, organization, pantheon, people, polity, reference, region,
+// religion, settlement, world, …) collapsed into doc categories and
+// now route via `type: doc` + `category: X` instead. `page` stays as
+// the runtime type assigned to _index.md and Projects/ landings; both
+// dispatch via the Blog/Projects path branches before reaching the
+// type-based dispatch, but `page` remains here as a defensive fallback
+// for any future non-Blog/non-Projects _index.md.
 const SETTING_TYPES: ReadonlySet<ContentType> = new Set([
-    "adventure",
-    "campaign",
     "character",
-    "company",
-    "continent",
     "creature",
-    "faith",
-    "language",
-    "location",
-    "lore",
-    "organization",
     "page",
-    "pantheon",
-    "people",
-    "polity",
-    "reference",
-    "region",
-    "religion",
-    "settlement",
-    "world",
 ]);
 
-// Types that route to /sohl/{type}/{slug}/ — the SoHL game system content
-// (gear catalogs, character mechanics). When HM3 grows its own copies of
-// these, they'll be added with an "hm3-" prefix and routed to /hm3/.
+// SoHL game-system types that participate in package-driven routing
+// (gear catalogs, character mechanics). The `package: sohl` frontmatter
+// puts these under /sohl/{type}/{slug}/. When HM3 grows its own copies
+// of these, they'll either set `package: hm3` directly or be added with
+// an "hm3-" compound-type prefix that routes via /hm3/{kind}/{slug}/.
 const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
     "affliction",
     "armorgear",
     "attribute",
     "concoctiongear",
     "containergear",
-    "domain",
     "lineage",
     "miscgear",
     "mystery",
@@ -138,32 +111,35 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
  *      Projects/ contains only landing pages (one .md per project
  *      plus a top-level _index.md).
  *   3. Everything else dispatches by `type` field — vault folder
- *      location is irrelevant. Each type maps to a fixed URL prefix:
+ *      location is irrelevant. Each type maps to a URL prefix:
  *
- *        type-catalog          → /type/{slug}/
- *        section               → /section/{slug}/
- *        doc                   → /{package}/{category}/{slug}/  (see below)
  *        hm3-user-guide        → /hm3/user-guide/{slug}/
  *        hm3-rules             → /hm3/rules/{slug}/
- *        T in SETTING_TYPES    → /setting/{T}/{slug}/
- *        T in SOHL_SYSTEM_TYPES → /sohl/{T}/{slug}/
+ *        doc                   → /{package}/{category}/{slug}/   (see below)
+ *        T in SETTING_TYPES ∪ SOHL_SYSTEM_TYPES
+ *                              → /{package}/{T}/{slug}/          (see below)
  *
  * Files that land in none of the above are skipped with a warning.
  *
- * Documentation routing (type: doc).
- * --------------------------------
- * Each doc declares two frontmatter properties:
- *   - package  — the Foundry distribution unit ("sohl", "thalorna",
- *                "kethira", future "hm3", etc.). Doubles as the
- *                top-level URL segment.
- *   - category — the kind of doc within that package ("user-guide",
- *                "setting-guide", etc.). Doubles as the second URL
- *                segment.
+ * Package-driven routing.
+ * -----------------------
+ * Every typed piece of content (other than the special cases above)
+ * declares a `package` frontmatter property naming the Foundry
+ * distribution unit it belongs to ("sohl", "thalorna", "kethira",
+ * future "hm3", etc.). The package is the top-level URL segment.
  *
- * URL = /{package}/{category}/{slug}/. No central route table —
- * new packages or categories work automatically. Both values are
- * required for type=doc; missing either skips the file with a
- * warning.
+ * The middle segment depends on the type:
+ *   - For type: doc, it's the `category` property (a subtype label
+ *     like "lore", "faith", "company", or "user-guide"). The category
+ *     selects which optional schema/layout applies and groups docs of
+ *     the same subtype together on the site.
+ *   - For all other types, it's the type name itself ("character",
+ *     "weapongear", "skill", …).
+ *
+ * Both views collapse into the same shape: /{package}/{type|category}/{slug}/.
+ * The package property is required for both; type=doc additionally
+ * requires category. Missing required properties skip the file with
+ * a warning.
  *
  * When adding a brand-new package (a new top-level URL segment), also
  * add that name to CONTENT_ROOTS so stale-file cleanup walks it, and
@@ -181,11 +157,11 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
 const CONTENT_ROOTS: readonly string[] = [
     "blog",
     "hm3",
+    "kethira",
     "projects",
-    "section",
     "setting",
     "sohl",
-    "type",
+    "thalorna",
 ];
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -217,7 +193,7 @@ interface LookupEntry {
     title: string;
     /** Public URL path, e.g. "/world/thalorna/character/some-person/" */
     url: string;
-    /** Content type, e.g. "character", "region" */
+    /** Content type, e.g. "character", "creature" */
     type: ContentType;
 }
 
@@ -484,29 +460,6 @@ function resolveOutputPath(
     const T = entry.type;
     const S = entry.slug;
 
-    if (T === "type-catalog") {
-        return {
-            outputPath: path.join(HUGO_CONTENT, "type", `${S}.md`),
-            url: `/type/${S}/`,
-        };
-    }
-    if (T === "section") {
-        return {
-            outputPath: path.join(HUGO_CONTENT, "section", `${S}.md`),
-            url: `/section/${S}/`,
-        };
-    }
-    if (T === "doc") {
-        const pkg = entry.frontmatter.package;
-        const category = entry.frontmatter.category;
-        if (typeof pkg !== "string" || !pkg || typeof category !== "string" || !category) {
-            return null;
-        }
-        return {
-            outputPath: path.join(HUGO_CONTENT, pkg, category, `${S}.md`),
-            url: `/${pkg}/${category}/${S}/`,
-        };
-    }
     if (T === "hm3-user-guide") {
         return {
             outputPath: path.join(HUGO_CONTENT, "hm3", "user-guide", `${S}.md`),
@@ -519,16 +472,43 @@ function resolveOutputPath(
             url: `/hm3/rules/${S}/`,
         };
     }
-    if (SETTING_TYPES.has(T)) {
+
+    // Package-driven routing for type=doc and all SETTING/SOHL types.
+    // URL = /{package}/{type|category}/{slug}/. The middle segment is
+    // `category` when type=doc, otherwise the type itself.
+    //
+    // Special case: type=doc, category=collection. These notes ARE the
+    // section landing for /{package}/{slug}/ — they're authored once per
+    // (package, slug) pair when the author wants custom prose/banner above
+    // the auto-generated child listing. They're emitted as `_index.md`
+    // (Hugo's section-index convention) so the section index template
+    // suppresses the auto-list and shows the authored content instead.
+    // Sections without a collection note auto-generate their landing via
+    // `layouts/_default/list.html`.
+    if (T === "doc" || SETTING_TYPES.has(T) || SOHL_SYSTEM_TYPES.has(T)) {
+        const pkg = entry.frontmatter.package;
+        if (typeof pkg !== "string" || !pkg) {
+            return null;
+        }
+        if (T === "doc" && entry.frontmatter.category === "collection") {
+            return {
+                outputPath: path.join(HUGO_CONTENT, pkg, S, "_index.md"),
+                url: `/${pkg}/${S}/`,
+            };
+        }
+        let middle: string;
+        if (T === "doc") {
+            const category = entry.frontmatter.category;
+            if (typeof category !== "string" || !category) {
+                return null;
+            }
+            middle = category;
+        } else {
+            middle = T;
+        }
         return {
-            outputPath: path.join(HUGO_CONTENT, "setting", T, `${S}.md`),
-            url: `/setting/${T}/${S}/`,
-        };
-    }
-    if (SOHL_SYSTEM_TYPES.has(T)) {
-        return {
-            outputPath: path.join(HUGO_CONTENT, "sohl", T, `${S}.md`),
-            url: `/sohl/${T}/${S}/`,
+            outputPath: path.join(HUGO_CONTENT, pkg, middle, `${S}.md`),
+            url: `/${pkg}/${middle}/${S}/`,
         };
     }
 
@@ -595,7 +575,7 @@ function scanVault(verbose: boolean): VaultEntry[] {
         if (!resolved) {
             if (verbose) {
                 console.warn(
-                    `  Skipping ${filepath}: could not resolve output path for type "${rawType}" — file is outside Blog/ and Projects/, and the type is neither a known setting/sohl type nor type-catalog/section (check frontmatter date for blog posts).`,
+                    `  Skipping ${filepath}: could not resolve output path for type "${rawType}" — file is outside Blog/ and Projects/, and the type is not a known setting/sohl type (check frontmatter date for blog posts).`,
                 );
             }
             continue;
@@ -762,15 +742,16 @@ function buildMysticalIndex(entries: VaultEntry[]): MysticalIndex {
             } else if (subType === "arcanetalent" && !talents.has(shortcode)) {
                 talents.set(shortcode, ref);
             }
-        } else if (entry.type === "domain") {
-            if (!domains.has(shortcode)) {
-                domains.set(shortcode, {
-                    title: entry.title,
-                    url: entry.url,
-                    shortcode,
-                });
-            }
         }
+        // NOTE: domains used to be indexed here via `entry.type === "domain"`,
+        // but the vault has since collapsed `domain` into `type: doc,
+        // category: arcane-domain`. Domain resolution in spell rendering
+        // (around line ~1198) currently always falls through to the
+        // "unpublished domain — expose shortcode" branch as a result.
+        // Repopulating `domains` from arcane-domain doc pages is a separate
+        // fix; the keying convention (slug vs. an explicit shortcode field)
+        // needs deciding first since arcane-domain pages don't carry a
+        // `shortcode:` frontmatter today.
     }
 
     return { spells, talents, domains };
@@ -1912,13 +1893,77 @@ function writeHugoFile(
 
 // ── Clean stale files ──────────────────────────────────────────────
 
-function cleanStaleFiles(
+/**
+ * For every package-scoped section directory that received leaf files but
+ * has no hand-authored `_index.md` (no `type: doc, category: collection`
+ * note from the vault), emit a minimal stub `_index.md`. Hugo otherwise
+ * silently skips rendering a section landing for bare directories, so the
+ * stubs are what make `/{pkg}/{slug}/` land somewhere instead of 404.
+ * The stubs have empty bodies; `layouts/_default/list.html` detects the
+ * empty `.Content` and renders the auto-generated child listing.
+ *
+ * Returns the set of stub output paths written so they can be added to
+ * `expectedFiles` before the stale-file sweep.
+ */
+function generateSectionStubs(
     entries: VaultEntry[],
     dryRun: boolean,
     verbose: boolean,
+): Set<string> {
+    // Identify (package-dir, section-dir) pairs that received leaf files,
+    // and track which already have an _index.md written by the main pass.
+    const sectionDirs = new Map<string, { pkg: string; slug: string; hasIndex: boolean }>();
+    for (const entry of entries) {
+        const out = entry.outputPath;
+        const dir = path.dirname(out);
+        const isIndex = path.basename(out) === "_index.md";
+        // Only consider /{HUGO_CONTENT}/{pkg}/{slug}/... — skip Blog/Projects
+        // and any path that's not exactly two segments deep inside content/.
+        const rel = path.relative(HUGO_CONTENT, dir);
+        const parts = rel.split(path.sep).filter(Boolean);
+        if (parts.length < 2) continue;
+        const pkg = parts[0];
+        const slug = parts[1];
+        // Skip Blog and Projects — they own their own _index.md handling.
+        if (pkg === "blog" || pkg === "projects") continue;
+        const key = `${pkg}/${slug}`;
+        const prev = sectionDirs.get(key);
+        if (prev) {
+            if (isIndex) prev.hasIndex = true;
+        } else {
+            sectionDirs.set(key, { pkg, slug, hasIndex: isIndex });
+        }
+    }
+
+    const stubsWritten = new Set<string>();
+    for (const { pkg, slug, hasIndex } of sectionDirs.values()) {
+        if (hasIndex) continue;
+        const stubPath = path.join(HUGO_CONTENT, pkg, slug, "_index.md");
+        const title = slug
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+        const content =
+            `---\ntitle: ${title}\ntype: doc\ncategory: collection\npackage: ${pkg}\nslug: ${slug}\n---\n`;
+        if (dryRun) {
+            if (verbose) console.log(`  Would stub: ${stubPath}`);
+        } else {
+            fs.mkdirSync(path.dirname(stubPath), { recursive: true });
+            fs.writeFileSync(stubPath, content, "utf-8");
+            if (verbose) console.log(`  Stubbed:   ${stubPath}`);
+        }
+        stubsWritten.add(stubPath);
+    }
+    return stubsWritten;
+}
+
+function cleanStaleFiles(
+    entries: VaultEntry[],
+    extraExpected: Set<string>,
+    dryRun: boolean,
+    verbose: boolean,
 ): void {
-    // Build set of expected output paths (both regular entries and _index files).
-    const expectedFiles = new Set<string>();
+    // Build set of expected output paths (regular entries + stubs + _index files).
+    const expectedFiles = new Set<string>(extraExpected);
     for (const entry of entries) {
         expectedFiles.add(entry.outputPath);
     }
@@ -2042,9 +2087,15 @@ function main(): void {
         filesWritten++;
     }
 
+    // Emit stub _index.md for sections that lack a hand-authored collection
+    // note, so Hugo renders their auto-generated landing instead of 404.
+    console.log("\nGenerating section stubs...");
+    const stubs = generateSectionStubs(entries, dryRun, verbose);
+    if (verbose) console.log(`  Stubs written: ${stubs.size}`);
+
     // Clean stale files
     console.log("\nCleaning stale files...");
-    cleanStaleFiles(entries, dryRun, verbose);
+    cleanStaleFiles(entries, stubs, dryRun, verbose);
 
     console.log(`\n✓ Done. ${filesWritten} files exported.`);
 }

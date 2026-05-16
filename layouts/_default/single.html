@@ -3,6 +3,12 @@
 {{ partial "breadcrumbs.html" . }}
 
 {{- $type := .Params.type | default "" -}}
+{{- /* Narrative content now uses type=doc with a `category` subtype
+       label (e.g. continent/region/polity/faith). Structured content
+       (character/creature/gear) keeps its own type. $subtype collapses
+       both shapes into a single value so the dispatch below doesn't
+       need to know which shape a given page uses. */ -}}
+{{- $subtype := cond (eq $type "doc") (.Params.category | default "") $type -}}
 {{- $gearTypes := slice "weapongear" "armorgear" "miscgear" "containergear" "projectilegear" "concoctiongear" -}}
 {{- $hasSidebar := or (eq $type "character") (eq $type "creature") (in $gearTypes $type) -}}
 
@@ -37,13 +43,13 @@
              note to the landmass and world it belongs to. Rendered
              as float-left cards so body text flows around them and
              the right column stays free for the TOC. */ -}}
-      {{- if eq $type "polity" -}}
+      {{- if eq $subtype "polity" -}}
         {{ partial "infobox/polity.html" . }}
-      {{- else if eq $type "region" -}}
+      {{- else if eq $subtype "region" -}}
         {{ partial "infobox/region.html" . }}
-      {{- else if eq $type "continent" -}}
+      {{- else if eq $subtype "continent" -}}
         {{ partial "infobox/continent.html" . }}
-      {{- else if or (eq $type "faith") (eq $type "religion") -}}
+      {{- else if or (eq $subtype "faith") (eq $subtype "religion") -}}
         {{ partial "infobox/faith.html" . }}
       {{- end }}
       {{ .Content }}

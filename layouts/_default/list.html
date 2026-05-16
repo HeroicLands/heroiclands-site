@@ -14,16 +14,16 @@
       List child pages for:
         - taxonomy index pages (e.g. /tags/)        — each .Pages entry is a term page
         - term pages           (e.g. /tags/brigand/) — each .Pages entry is a tagged page
-        - auto-generated section indexes             — sections without their own _index.md
-                                                       (e.g. /setting/character/)
-      Hand-crafted section indexes (those with an _index.md) skip the
-      auto-list — the author is expected to compose the landing page
-      themselves.
+        - section indexes whose _index.md body is empty (stubs and bare
+          dirs) — the listing is the entire landing.
+      Section indexes with hand-authored body content (e.g. a converted
+      collection note that supplies its own Dataview tables) skip the
+      auto-list — the author composes the landing themselves.
     */ -}}
     {{- $showAutoList :=
       or (eq .Kind "taxonomy")
          (eq .Kind "term")
-         (and (eq .Kind "section") (not .File))
+         (and (eq .Kind "section") (not .Content))
     -}}
     {{- if $showAutoList -}}
       {{- with .Pages -}}
