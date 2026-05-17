@@ -17,7 +17,7 @@
  *      Image embeds are rewritten to CDN URLs (https://cdn.heroiclands.org/images/...);
  *      the actual image files live on the CDN and are not bundled with the site.
  *   5. Writes transformed files to type-dispatched output paths
- *      (e.g. content/setting/{type}/{slug}.md for world content,
+ *      (e.g. content/thalorna/{type|category}/{slug}.md for world content,
  *      content/sohl/{type}/{slug}.md for SoHL system content,
  *      content/blog/YYYY/MM/{slug}.md for blog posts).
  *      See the "Routing model" section below for the full dispatch
