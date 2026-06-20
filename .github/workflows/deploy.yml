@@ -25,19 +25,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout site repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout HeroicLands vault
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/HeroicLands
           path: _vault
           token: ${{ secrets.VAULT_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -53,8 +53,8 @@ jobs:
         uses: peaceiris/actions-hugo@v3
         with:
           # `hugo.Data` (used in layouts) requires >= 0.156.0; pinning to
-          # 0.160.1 to match the version specified as the minimum in README.
-          hugo-version: "0.160.1"
+          # 0.163.3 (latest extended release as of June 2026).
+          hugo-version: "0.163.3"
           extended: true
 
       - name: Build Hugo site
