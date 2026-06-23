@@ -51,6 +51,8 @@
         {{ partial "infobox/continent.html" . }}
       {{- else if or (eq $subtype "faith") (eq $subtype "religion") -}}
         {{ partial "infobox/faith.html" . }}
+      {{- else if eq $subtype "settlement" -}}
+        {{ partial "infobox/settlement.html" . }}
       {{- end }}
       {{ .Content }}
     </div>

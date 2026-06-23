@@ -1640,7 +1640,8 @@ a.tag:hover {
 .geo-infobox,
 .polity-infobox,
 .region-infobox,
-.continent-infobox {
+.continent-infobox,
+.settlement-infobox {
   float: left;
   width: 19rem;
   max-width: 100%;

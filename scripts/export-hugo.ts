@@ -969,6 +969,20 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     // can render the realm's profile card at the top of the content.
     // Other content types don't set these and will silently emit undefined.
     subType: (fm) => fm.subType || undefined,
+    // ── Settlement-specific top-level fields ───────────────────────
+    // Passed through so the settlement infobox
+    // (partials/infobox/settlement.html) can render a settlement's
+    // profile card. settlementType is a free-text display label
+    // ("Imperial City (Capital)", "Market & Temple Town") rendered
+    // verbatim; population is a display string ("~450,000"). A
+    // settlement's languages/pantheons/parent reuse the shared
+    // slug-valued fields below.
+    settlementType: (fm) => fm.settlementType || undefined,
+    // Population is integer-only. Emit it only when it is an actual
+    // number; a settlement with unknown population (authored as
+    // `population: null`, which some YAML readers surface as the string
+    // "null") is dropped so the infobox simply omits the row.
+    population: (fm) => (typeof fm.population === "number" ? fm.population : undefined),
     demonym: (fm) => fm.demonym || undefined,
     capital: (fm) => fm.capital || undefined,
     ruler: (fm) => fm.ruler || undefined,
