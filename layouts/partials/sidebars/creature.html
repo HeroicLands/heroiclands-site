@@ -4,7 +4,7 @@
   Layout:
     1. Creature image          (https://cdn.heroiclands.org/images/{slug}.webp)
     2. "Creature Profile"      header
-    3. Profile header dl       (name / lineage)
+    3. Profile header dl       (name / corpus)
     4. Attributes              auto-fit grid of label+value pairs
                                 (only attributes the creature actually has are
                                  rendered; creature stat blocks are typically
@@ -22,7 +22,7 @@
 {{- $categories := $sohl.skill_categories -}}
 {{- $attrs      := dict -}}{{- with .Params.sohl }}{{- with .attributes }}{{ $attrs = . }}{{ end }}{{ end -}}
 {{- $cSkills    := dict -}}{{- with .Params.sohl }}{{- with .skills    }}{{ $cSkills = . }}{{ end }}{{ end -}}
-{{- $lineage    := "" -}}{{- with .Params.traits }}{{- with .lineage }}{{ $lineage = . }}{{ end }}{{ end -}}
+{{- $corpus    := "" -}}{{- with .Params.traits }}{{- with .corpus }}{{ $corpus = . }}{{ end }}{{ end -}}
 
 <aside class="info-sidebar">
 
@@ -45,15 +45,15 @@
     <h2>Creature Profile</h2>
   </header>
 
-  {{- /* ---- Profile header (name, lineage) ---- */ -}}
+  {{- /* ---- Profile header (name, corpus) ---- */ -}}
   <dl class="info-profile-grid">
     {{- with .Params.name }}{{- with .full }}
     <dt>Name</dt>
     <dd>{{ . }}</dd>
     {{- end }}{{- end }}
 
-    {{- with $lineage }}
-    <dt>Lineage</dt>
+    {{- with $corpus }}
+    <dt>Corpus</dt>
     <dd>{{ . | humanize | title }}</dd>
     {{- end }}
   </dl>

@@ -4,7 +4,7 @@
   Layout:
     1. Portrait                (https://cdn.heroiclands.org/images/{slug}.webp)
     2. "Character Profile"     header
-    3. Profile header dl       (name / lineage / gender / born / occupation /
+    3. Profile header dl       (name / corpus / gender / born / occupation /
                                 class / realm / faith)
     4. Appearance              one-line composed sentence built from
                                 age, height, weight, frame, eye/hair/skin colors
@@ -47,7 +47,7 @@
     <h2>Character Profile</h2>
   </header>
 
-  {{- /* ---- Profile header (name, lineage, gender, born, occupation, ...) ---- */ -}}
+  {{- /* ---- Profile header (name, corpus, gender, born, occupation, ...) ---- */ -}}
   {{- $birthday := "" -}}{{- with $traits.birthday }}{{ $birthday = . }}{{ end -}}
   {{- $hasFaith := false -}}
   {{- with .Params.thalorna }}{{- with .faith }}{{- if gt (len .) 0 }}{{ $hasFaith = true }}{{ end }}{{ end }}{{ end -}}
@@ -57,8 +57,8 @@
     <dd>{{ . }}</dd>
     {{- end }}{{- end }}
 
-    {{- with $traits.lineage }}
-    <dt>Lineage</dt>
+    {{- with $traits.corpus }}
+    <dt>Corpus</dt>
     <dd>{{ . | humanize | title }}</dd>
     {{- end }}
 
