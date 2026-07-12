@@ -794,6 +794,28 @@ function buildGearIndex(entries: VaultEntry[]): GearIndex {
 }
 
 /**
+ * Build a shortcode -> {title, url} map for every published corpus note.
+ *
+ * Characters and creatures reference their corpus (species/body) by
+ * shortcode in the `type: corpus` entry of `sohl.items[]`; the sidebar
+ * renders the friendly name (and links to the corpus page) from this
+ * index rather than the raw shortcode.
+ */
+type CorpusRef = { title: string; url: string };
+type CorpusIndex = Map<string, CorpusRef>;
+function buildCorpusIndex(entries: VaultEntry[]): CorpusIndex {
+    const corpora: CorpusIndex = new Map();
+    for (const entry of entries) {
+        if (entry.type !== "corpus") continue;
+        const shortcode = entry.frontmatter.shortcode;
+        if (typeof shortcode !== "string" || !shortcode) continue;
+        if (corpora.has(shortcode)) continue;
+        corpora.set(shortcode, { title: entry.title, url: entry.url });
+    }
+    return corpora;
+}
+
+/**
  * Resolve a domainCode like "sohl.hexhodai.physera" to the last segment,
  * which by convention is the domain's own shortcode.
  */
@@ -933,7 +955,6 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     date: (fm) => fm.date || undefined,
     series: (fm) => fm.series || undefined,
     realm: (fm) => fm.thalorna?.realm || undefined,
-    corpus: (fm) => fm.traits?.corpus || undefined,
     gender: (fm) => fm.traits?.gender || undefined,
     occupation: (fm) => fm.social?.occupation || undefined,
     // Page-level banner override. Accepts either a full URL or a CDN-relative
@@ -1159,6 +1180,44 @@ function deriveSohlGear(
         gear[key] = values;
     }
     sohl.gear = gear;
+}
+
+/**
+ * Augment an already-transformed sohl block with a resolved `corpus`
+ * reference, derived from the `type: corpus` entry in `sohl.items[]`.
+ *
+ * Emits `sohl.corpus = { name, shortcode?, url? }` where `name` is the
+ * corpus note's title and `url` links to its page. Resolution mirrors
+ * deriveSohlGear: an inline `name` on the item wins; otherwise the item's
+ * `shortcode` is looked up in the corpus index; failing both, the raw
+ * shortcode is used as the name so the row still renders. A hand-authored
+ * `sohl.corpus` is left untouched.
+ */
+function deriveSohlCorpus(
+    sohl: Record<string, any> | undefined,
+    index: CorpusIndex,
+): void {
+    if (!sohl || typeof sohl !== "object") return;
+    if (sohl.corpus && typeof sohl.corpus === "object") return;
+    const items = sohl.items;
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    const item = items.find(
+        (it: any) => it && typeof it === "object" && it.type === "corpus",
+    );
+    if (!item) return;
+
+    const shortcode = typeof item.shortcode === "string" ? item.shortcode : null;
+    const inlineName = typeof item.name === "string" ? item.name : null;
+    const ref = shortcode ? index.get(shortcode) : undefined;
+
+    const name = inlineName ?? ref?.title ?? shortcode;
+    if (!name) return;
+
+    const corpus: Record<string, string> = { name };
+    if (shortcode) corpus.shortcode = shortcode;
+    if (ref?.url) corpus.url = ref.url;
+    sohl.corpus = corpus;
 }
 
 /**
@@ -2058,6 +2117,12 @@ function main(): void {
         console.log(`  gear shortcodes=${gearIndex.size}`);
     }
 
+    console.log("Indexing corpora...");
+    const corpusIndex = buildCorpusIndex(entries);
+    if (verbose) {
+        console.log(`  corpus shortcodes=${corpusIndex.size}`);
+    }
+
     let filesWritten = 0;
 
     console.log("\nExporting files...");
@@ -2076,6 +2141,10 @@ function main(): void {
         // Post-pass: resolve gear shortcodes (weapons/armor/misc/…) to
         // friendly-named entries with links, using the vault's gear catalog.
         deriveSohlGear(hugoFm.sohl, gearIndex);
+
+        // Post-pass: resolve the corpus (species) shortcode in sohl.items to
+        // a named, linked entry for the character/creature sidebars.
+        deriveSohlCorpus(hugoFm.sohl, corpusIndex);
 
         // Inject related (backlinks + mentions) for layouts to render.
         // Omit empty directions and the whole block if both are empty.

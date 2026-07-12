@@ -22,7 +22,7 @@
 {{- $categories := $sohl.skill_categories -}}
 {{- $attrs      := dict -}}{{- with .Params.sohl }}{{- with .attributes }}{{ $attrs = . }}{{ end }}{{ end -}}
 {{- $cSkills    := dict -}}{{- with .Params.sohl }}{{- with .skills    }}{{ $cSkills = . }}{{ end }}{{ end -}}
-{{- $corpus    := "" -}}{{- with .Params.traits }}{{- with .corpus }}{{ $corpus = . }}{{ end }}{{ end -}}
+{{- $corpus := .Params.sohl.corpus -}}
 
 <aside class="info-sidebar">
 
@@ -54,7 +54,7 @@
 
     {{- with $corpus }}
     <dt>Corpus</dt>
-    <dd>{{ . | humanize | title }}</dd>
+    <dd>{{ if .url }}<a href="{{ .url }}">{{ .name }}</a>{{ else }}{{ .name }}{{ end }}</dd>
     {{- end }}
   </dl>
 

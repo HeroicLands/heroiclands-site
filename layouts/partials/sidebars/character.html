@@ -57,9 +57,9 @@
     <dd>{{ . }}</dd>
     {{- end }}{{- end }}
 
-    {{- with $traits.corpus }}
+    {{- with .Params.sohl.corpus }}
     <dt>Corpus</dt>
-    <dd>{{ . | humanize | title }}</dd>
+    <dd>{{ if .url }}<a href="{{ .url }}">{{ .name }}</a>{{ else }}{{ .name }}{{ end }}</dd>
     {{- end }}
 
     {{- with $traits.gender }}
