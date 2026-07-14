@@ -1814,17 +1814,19 @@ function resolveDataviewQueries(
                     if (linkMatch) {
                         const displayExpr = linkMatch[2].trim();
                         const displayVal = resolveCell(e, displayExpr) || e.title;
-                        const lookupEntry = lookup.get(e.stem);
-                        if (lookupEntry) {
-                            return `[${displayVal}](${lookupEntry.url})`;
+                        // Link to this row entry's own URL. Resolving via the
+                        // stem lookup mis-targets when a name is shared by two
+                        // entries (e.g. a creature and its `corpus` body-twin),
+                        // since the lookup keeps only one of them.
+                        if (e.url) {
+                            return `[${displayVal}](${e.url})`;
                         }
                         return displayVal;
                     }
                     // file.link → same as bare link
                     if (expr === "file.link") {
-                        const lookupEntry = lookup.get(e.stem);
-                        if (lookupEntry) {
-                            return `[${e.title}](${lookupEntry.url})`;
+                        if (e.url) {
+                            return `[${e.title}](${e.url})`;
                         }
                         return e.title;
                     }
