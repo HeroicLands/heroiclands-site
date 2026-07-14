@@ -2,11 +2,16 @@ baseURL = "https://www.heroiclands.org/"
 locale = "en-us"
 title = "Heroic Lands"
 
-# We're using layouts directly, no external theme
+# Chrome, layouts, CSS, info-block partials, and data/sohl.yaml come from the
+# shared theme, so www / kb / api read as one coherent site.
+theme = "heroiclands-hugo-theme"
 
 [params]
   description = "Heroic Lands — World of Thalorna and Foundry VTT Game Systems and Modules"
   author = "Tom Rodriguez"
+
+# The brand nav ([menu]) is defined in the theme with absolute www URLs and
+# inherited here, so every site's header is identical.
 
 [markup]
   [markup.goldmark]
@@ -15,49 +20,8 @@ title = "Heroic Lands"
   [markup.highlight]
     style = "monokai"
 
-[menu]
-  [[menu.main]]
-    name = "Home"
-    url = "/"
-    weight = 1
-  [[menu.main]]
-    name = "Thalorna"
-    url = "/thalorna/world/thalorna/"
-    weight = 2
-  [[menu.main]]
-    name = "Blog"
-    url = "/blog/"
-    weight = 3
-  [[menu.main]]
-    name = "Projects"
-    url = "/projects/"
-    weight = 4
-    identifier = "projects"
-  [[menu.main]]
-    name = "Song of Heroic Lands"
-    url = "/projects/sohl/"
-    weight = 1
-    parent = "projects"
-  [[menu.main]]
-    name = "HârnMaster 3"
-    url = "/projects/hm3/"
-    weight = 2
-    parent = "projects"
-  [[menu.main]]
-    name = "Modules"
-    url = "/projects/modules/"
-    weight = 3
-    parent = "projects"
-  [[menu.main]]
-    name = "License"
-    url = "/license/"
-    weight = 5
-
 # Section pages (_index.md) render to HTML so hand-crafted landing pages
-# like /projects/_index.md work. To prevent auto-generated directory
-# listings for sections without a hand-crafted _index.md, set
-# `_build.render = "never"` in the section's front matter, or simply
-# leave the section without any _index.md and Hugo will 404 it.
+# like /projects/_index.md work.
 [outputs]
   home = ["HTML"]
   section = ["HTML"]
@@ -67,10 +31,8 @@ title = "Heroic Lands"
 [taxonomies]
   tag = "tags"
 
-# Mount both the generated content tree AND a hand-authored pages/
-# directory. The exporter writes to content/; pages/ holds static
-# pages (license, about, etc.) that live in the repo itself rather
-# than the vault. clean.ts wipes content/ but leaves pages/ alone.
+# Project mounts: the generated content tree + the hand-authored pages/.
+# layouts / data / static / archetypes now come from the theme.
 [module]
   [[module.mounts]]
     source = "content"
@@ -78,19 +40,3 @@ title = "Heroic Lands"
   [[module.mounts]]
     source = "pages"
     target = "content"
-  # Hugo requires explicit static mount once module.mounts is used.
-  [[module.mounts]]
-    source = "static"
-    target = "static"
-  [[module.mounts]]
-    source = "layouts"
-    target = "layouts"
-  [[module.mounts]]
-    source = "data"
-    target = "data"
-  [[module.mounts]]
-    source = "assets"
-    target = "assets"
-  [[module.mounts]]
-    source = "archetypes"
-    target = "archetypes"
