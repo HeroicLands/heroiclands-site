@@ -91,6 +91,42 @@ jobs:
 
 Option B: Manually trigger from the Actions tab (workflow_dispatch).
 
+## Retired: SoHL content at /sohl/
+
+This site no longer publishes the `sohl` package. The same vault notes are
+published to **kb.heroiclands.org/{type}/{slug}/** by the
+`Song-of-Heroic-Lands-FoundryVTT` repository, which generates them with the
+same code that compiles them into the game's compendium packs — so that copy
+cannot drift from the system, and this one always could. It had: `/sohl/`
+still carried `corpus` and `trait` pages after the system retired both
+concepts.
+
+`RETIRED_PACKAGES` in `scripts/export-hugo.ts` is what stops the export. The
+notes are still read and indexed, so cross-references from other content
+resolve; they are simply not routed to a page here. The export reports the
+count it skipped.
+
+**The redirect is a Cloudflare rule, not a repository change.** GitHub Pages
+serves static files and cannot issue a 301, and the site is proxied through
+Cloudflare, so the redirect belongs at the edge:
+
+> **Rules → Redirect Rules → Create rule**
+> Name: `sohl to knowledgebase`
+> When: `URI Path` `starts with` `/sohl/`
+> Then: **Dynamic** redirect, status **301**, preserve query string
+> Expression: `concat("https://kb.heroiclands.org", substring(http.request.uri.path, 5))`
+
+`substring(..., 5)` strips the leading `/sohl`, leaving `/{type}/{slug}/`.
+Every URL maps one-to-one: at the time of the change all 918 published
+`/sohl/*` URLs resolved on the knowledgebase at the identical
+`/{type}/{slug}/` path, including the handful whose slug had changed, which
+the knowledgebase serves through its own generated aliases.
+
+⚠️ **Order matters.** Add the Cloudflare rule *before* deploying the export
+change. The rule intercepts at the edge whether or not the origin still has
+the pages, so with the rule in place first there is no window in which the
+918 URLs 404.
+
 ## Local development
 
 ```bash
