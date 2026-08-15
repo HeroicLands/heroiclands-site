@@ -8,6 +8,11 @@ resources/_gen/
 # ever be committed or hand-edited.
 content/
 
+# Generated reference-name index. Written by scripts/export-hugo.ts over every
+# vault note so the theme can name a reference whose target has no page of its
+# own. Derived from the vault, like content/ — never hand-edited or committed.
+data/refnames.yaml
+
 # Node
 node_modules/
 dist/

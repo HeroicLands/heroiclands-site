@@ -8,6 +8,7 @@
  *
  * Removes:
  *   - content/                       (entire generated content tree)
+ *   - data/refnames.yaml             (generated reference-name index)
  *   - public/                        (Hugo's rendered output)
  *   - resources/_gen/                (Hugo's image/asset cache)
  *   - .hugo_build.lock
@@ -23,6 +24,7 @@ import * as path from "path";
 
 const REMOVE_PATHS = [
     "content",
+    "data/refnames.yaml",
     "public",
     "resources/_gen",
     ".hugo_build.lock",
