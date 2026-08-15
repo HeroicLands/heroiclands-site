@@ -7,18 +7,23 @@
     "export:dry": "npx ts-node scripts/export-hugo.ts --dry-run --verbose",
     "export:verbose": "npx ts-node scripts/export-hugo.ts --verbose",
     "clean": "npx ts-node scripts/clean.ts",
+    "check:slug-rule": "npx ts-node scripts/check-slug-rule.ts",
+    "capture:legacy-urls": "npx ts-node scripts/export-hugo.ts --capture-legacy-urls",
+    "drop:slug": "npx ts-node scripts/export-hugo.ts --drop-slug",
     "clean:dry": "npx ts-node scripts/clean.ts --dry-run --verbose",
     "clean:verbose": "npx ts-node scripts/clean.ts --verbose",
-    "build": "npm run clean && npm run export && hugo",
-    "build:verbose": "npm run clean:verbose && npm run export:verbose && hugo --verbose",
+    "build": "npm run clean && npm run check:slug-rule && npm run export && hugo",
+    "build:verbose": "npm run clean:verbose && npm run check:slug-rule && npm run export:verbose && hugo --verbose",
     "serve": "hugo server",
     "dev": "npm run export && hugo server"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.0.0",
+    "@types/unidecode": "^1.1.0",
+    "js-yaml": "^4.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.0",
-    "@types/node": "^20.0.0",
-    "js-yaml": "^4.1.0",
-    "@types/js-yaml": "^4.0.9"
+    "unidecode": "^1.1.0"
   }
 }
