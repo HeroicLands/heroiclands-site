@@ -117,15 +117,32 @@ Cloudflare, so the redirect belongs at the edge:
 > Expression: `concat("https://kb.heroiclands.org", substring(http.request.uri.path, 5))`
 
 `substring(..., 5)` strips the leading `/sohl`, leaving `/{type}/{slug}/`.
-Every URL maps one-to-one: at the time of the change all 918 published
-`/sohl/*` URLs resolved on the knowledgebase at the identical
-`/{type}/{slug}/` path, including the handful whose slug had changed, which
-the knowledgebase serves through its own generated aliases.
+Coverage was measured against the two sitemaps at the time of the change: of
+the 918 published `/sohl/*` URLs, **910 resolve on the knowledgebase** at the
+identical `/{type}/{slug}/` path — 904 as canonical pages, and 6 more through
+the knowledgebase's own generated aliases (the items whose slug changed
+upstream when item URLs began deriving from the name).
+
+The remaining **8 name pages that no longer exist anywhere**, so redirecting
+them loses nothing: `/sohl/trait/` (a concept the system retired);
+`/sohl/concoctiongear/` and `/sohl/mystery/`, type-index pages this site
+published with no items under them; and 5 `containergear` jar pages
+(`jar-glass-large`, `jar-glass-small`, `jar-lidded-large`, `jar-lidded-medium`,
+`jar-lidded-small`) left over from before those items were renamed to their
+volumes — the current items are `jar-glass-1-pt`, `jar-lidded-1-gallon`, and so
+on, all of which the knowledgebase serves.
+
+> **Verify a knowledgebase URL by its content, not its status code.**
+> kb.heroiclands.org is a Cloudflare Pages project with no `404.html`, so an
+> unknown path returns **HTTP 200 carrying the landing page**. A `curl -o
+> /dev/null -w '%{http_code}'` check therefore reports every URL as present.
+> Compare `<title>` instead: the landing page's is exactly
+> `SoHL Knowledgebase`.
 
 ⚠️ **Order matters.** Add the Cloudflare rule *before* deploying the export
 change. The rule intercepts at the edge whether or not the origin still has
 the pages, so with the rule in place first there is no window in which the
-918 URLs 404.
+published URLs 404.
 
 ## Local development
 
