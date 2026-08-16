@@ -954,6 +954,12 @@ function buildLinkGraph(
 const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     title: (fm) => fm.name?.full || fm.title || "",
     slug: (fm) => fm.slug || undefined,
+    // A note's stable identity, and the key every cross-page reference
+    // resolves on. `slug` is presentation — it changes whenever a page is
+    // renamed or restyled — so joining on it silently blanks an infobox the
+    // moment a title changes. `shortcode` never changes, so the infobox
+    // partials join on this instead. See assertUniqueShortcodes().
+    shortcode: (fm) => fm.shortcode || undefined,
     description: (fm) => {
         // Description is a first-class authored field in the universal
         // frontmatter schema. Pass through verbatim when present; when absent,
@@ -2101,6 +2107,70 @@ function cleanStaleFiles(
     }
 }
 
+// ── Identity integrity ─────────────────────────────────────────────
+
+/**
+ * Fail the export when two publishable notes of the same type claim the
+ * same `shortcode`.
+ *
+ * Cross-page references — a region's continent, a polity's capital, a
+ * settlement's languages — resolve on `shortcode` rather than `slug`,
+ * because a slug is presentation and changes whenever a page is renamed.
+ * Hugo's `where` returns the first match, or nothing, without erroring, so
+ * an ambiguous identity would quietly render the wrong page and a missing
+ * one would quietly blank the row. Neither shows up in a green build,
+ * which is why identity is checked here instead.
+ *
+ * Uniqueness is scoped per `type`, matching how the vault allocates
+ * shortcodes. A collision *across* types cannot be disambiguated by the
+ * type-blind join the infoboxes use, but no two colliding pages are both
+ * reference targets today, so that case is reported rather than fatal.
+ *
+ * @param entries Every publishable vault entry.
+ * @throws If two entries of one type share a shortcode.
+ */
+function assertUniqueShortcodes(entries: VaultEntry[]): void {
+    const withinType = new Map<string, string[]>();
+    const acrossTypes = new Map<string, string[]>();
+
+    for (const entry of entries) {
+        const raw = entry.frontmatter.shortcode;
+        if (typeof raw !== "string" || !raw.trim()) continue;
+        const code = raw.trim();
+        const rel = path.relative(VAULT_ROOT, entry.filepath);
+
+        const typed = `${entry.type}/${code}`;
+        if (!withinType.has(typed)) withinType.set(typed, []);
+        withinType.get(typed)!.push(rel);
+        if (!acrossTypes.has(code)) acrossTypes.set(code, []);
+        acrossTypes.get(code)!.push(rel);
+    }
+
+    const collisions = [...withinType].filter(([, files]) => files.length > 1);
+    if (collisions.length > 0) {
+        const detail = collisions
+            .map(
+                ([typed, files]) =>
+                    `  ${typed}\n${files.map((f) => `    - ${f}`).join("\n")}`,
+            )
+            .join("\n");
+        throw new Error(
+            `Duplicate shortcode within a type — a cross-page reference to it ` +
+                `cannot resolve to one page:\n${detail}`,
+        );
+    }
+
+    const shared = [...acrossTypes].filter(([, files]) => files.length > 1);
+    if (shared.length > 0) {
+        console.log(
+            `  ${shared.length} shortcode(s) shared across types: ` +
+                `${shared.map(([code]) => code).join(", ")}.\n` +
+                `  Each stays unique within its own type, so references remain ` +
+                `unambiguous; only a type-blind reference could pick the wrong page.`,
+        );
+    }
+}
+
 // ── Main ───────────────────────────────────────────────────────────
 
 function main(): void {
@@ -2119,6 +2189,9 @@ function main(): void {
         console.log("No publishable files found.");
         return;
     }
+
+    console.log("Checking shortcode identity...");
+    assertUniqueShortcodes(entries);
 
     console.log(`\nBuilding lookup map (${entries.length} entries)...`);
     const lookup = buildLookupMap(entries);
