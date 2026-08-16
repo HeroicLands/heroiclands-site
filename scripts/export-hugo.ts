@@ -26,6 +26,20 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { contentSlug } from "./content-slug";
+import {
+    LEGACY_SLUGS_PATH,
+    legacyKey,
+    readLegacySlugs,
+    slugOfUrl,
+} from "./legacy-urls";
+import {
+    findNotes,
+    joinNote,
+    noteName,
+    readFrontMatter,
+    splitNote,
+} from "./vault-frontmatter";
 
 // ── Configuration ──────────────────────────────────────────────────
 
@@ -195,6 +209,14 @@ interface VaultEntry {
     outputPath: string;
     /** Public URL path for wikilink resolution (leading slash, trailing slash) */
     url: string;
+    /**
+     * Where this page published under the previous rule — an authored `slug`
+     * if it had one, otherwise its filename. Undefined once the rules agree.
+     * Only meaningful while the vault still carries slugs; it is what the
+     * `--capture-legacy-urls` pass records so the address survives their
+     * removal.
+     */
+    legacyUrl?: string;
 }
 
 interface LookupEntry {
@@ -578,9 +600,37 @@ function scanVault(verbose: boolean): VaultEntry[] {
             rawType = declaredType as ContentType;
         }
 
-        const title =
-            fm.name?.full || fm.title || stem.replace(/_/g, " ");
-        const slug = fm.slug || stem.toLowerCase().replace(/_/g, "-");
+        const title = noteName(fm, filepath);
+        // The URL comes from the note's name, never from an authored `slug`
+        // (#1389). A hand-written slug was a second spelling of something the
+        // name already decided, free to drift from the page it named, and the
+        // reason this site and the SoHL system repository disagreed about a
+        // page's address. Where the derived URL differs from the one a page
+        // used to publish at, `scripts/legacy-slugs.json` records the old
+        // address and it is emitted as a redirect below.
+        //
+        // One exception, and it is not presentation at all: a
+        // `category: collection` note *is* the landing for a section, and its
+        // segment names that section — `Weapons.md` lands `/thalorna/weapongear/`,
+        // `Arcane_Domains.md` lands `/thalorna/arcane-domain/`. That value is
+        // identity, it is not derivable from the note's title, and deriving it
+        // anyway detaches every landing from the section it introduces. It is
+        // authored as `section`, which says what it does. (`slug` is read as a
+        // fallback so the exporter works against a vault that has not been
+        // migrated yet.)
+        const isCollection =
+            rawType === "doc" && fm.category === "collection";
+        let slug: string;
+        if (isCollection && (fm.section || fm.slug)) {
+            slug = fm.section || fm.slug;
+        } else {
+            try {
+                slug = contentSlug(title);
+            } catch (err) {
+                console.warn(`  Skipping ${filepath}: ${(err as Error).message}`);
+                continue;
+            }
+        }
 
         const resolved = resolveOutputPath({
             filepath,
@@ -602,6 +652,28 @@ function scanVault(verbose: boolean): VaultEntry[] {
             continue;
         }
 
+        // Where this page published before the URL was derived from the name:
+        // an authored `slug` when it had one, else its filename. Routed through
+        // the same resolver, so the recorded address cannot drift from the way
+        // addresses are actually built.
+        const legacySlug =
+            isCollection ?
+                slug
+            :   fm.slug || stem.toLowerCase().replace(/_/g, "-");
+        const legacyUrl =
+            legacySlug === slug ? undefined : (
+                resolveOutputPath({
+                    filepath,
+                    stem,
+                    frontmatter: fm,
+                    body,
+                    type: rawType,
+                    title,
+                    slug: legacySlug,
+                    isIndex,
+                })?.url
+            );
+
         entries.push({
             filepath,
             stem,
@@ -613,6 +685,7 @@ function scanVault(verbose: boolean): VaultEntry[] {
             isIndex,
             outputPath: resolved.outputPath,
             url: resolved.url,
+            legacyUrl,
         });
     }
 
@@ -953,7 +1026,13 @@ function buildLinkGraph(
 /** Fields to carry over to Hugo front matter */
 const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     title: (fm) => fm.name?.full || fm.title || "",
-    slug: (fm) => fm.slug || undefined,
+    // Never the authored `slug`. Hugo treats a front-matter `slug` as the URL
+    // segment, so passing the vault's through would override the derived one
+    // and quietly undo #1389 — and it would keep doing so for as long as any
+    // note still carried the property. The derived segment is set in
+    // applyUrl() instead, which makes the exporter authoritative about a
+    // page's address whether or not the vault has been migrated yet.
+    slug: () => undefined,
     // A note's stable identity, and the key every cross-page reference
     // resolves on. `slug` is presentation — it changes whenever a page is
     // renamed or restyled — so joining on it silently blanks an infobox the
@@ -987,10 +1066,19 @@ const HUGO_FIELDS: Record<string, (fm: Record<string, any>) => any> = {
     // Page-level banner override. Accepts either a full URL or a CDN-relative
     // fragment like "banners/character.webp"; hero-banner.html resolves both.
     banner: (fm) => fm.banner || undefined,
-    aliases: (fm) => {
-        const aliases = fm.aliases;
-        return aliases && aliases.length > 0 ? aliases : undefined;
-    },
+    // `aliases` is one word for two unrelated things, and conflating them
+    // published nonsense. In Obsidian a note's aliases are alternative
+    // *names* — what a reader might call the thing, and what makes a bare
+    // [[Text]] wikilink resolve. In Hugo they are *URL redirects*. Passing the
+    // Obsidian ones straight through turned every display name into a live
+    // address: /thalorna/settlement/Tz'uma No'tun/ was a real published page,
+    // as was /thalorna/settlement/doc-tzumanotun2/ from the addressing alias.
+    //
+    // A display name is not an old URL, so it is never a redirect. Redirects
+    // are generated, from the one record of where a page really did publish
+    // before — see addRedirects(). Emitted as undefined here and filled in
+    // afterwards, so nothing an author types can become a public URL.
+    aliases: () => undefined,
     // Nested structures passed through verbatim so layouts can read them
     // directly (e.g. .Params.sohl.attributes.str, .Params.traits.height.m).
     // serializeFrontMatter emits these as proper nested YAML.
@@ -2173,6 +2261,305 @@ function assertUniqueShortcodes(entries: VaultEntry[]): void {
 
 // ── Main ───────────────────────────────────────────────────────────
 
+// ── Redirects and artwork ──────────────────────────────────────────
+
+/** `type:shortcode` → the URL the page used to publish at. */
+const LEGACY_URLS: Record<string, string> = readLegacySlugs();
+
+/**
+ * Set a page's derived address, the redirects it owes, and the artwork name it
+ * was uploaded under.
+ *
+ * Deriving the URL from the note's name (#1389) moves 229 pages. Two things
+ * would break quietly if nothing carried the old address forward:
+ *
+ * - **Links and bookmarks** to the previous URL would 404. Hugo's `aliases`
+ *   emits a redirect for each, so they still land.
+ * - **Portraits.** The character and creature sidebars ask the CDN for
+ *   `/images/<slug>.webp`, a filename fixed when the image was uploaded.
+ *   Deriving a new URL does not rename a file on a CDN, so the sidebars read
+ *   `artwork` — the recorded name — rather than the page's current slug.
+ *
+ * A page with no recorded history redirects from nothing and keeps its own
+ * slug as the artwork name, which is what it has always been.
+ *
+ * @param hugoFm - The front matter about to be written (mutated).
+ * @param entry - The page it belongs to.
+ */
+function applyUrl(hugoFm: Record<string, any>, entry: VaultEntry): void {
+    // The address, derived from the note's name.
+    hugoFm.slug = entry.slug;
+
+    const legacyUrl =
+        LEGACY_URLS[
+            legacyKey(
+                entry.frontmatter,
+                path.relative(VAULT_ROOT, entry.filepath),
+            )
+        ];
+
+    // A page never redirects from where it already is; that is a loop.
+    if (legacyUrl && legacyUrl !== entry.url) {
+        hugoFm.aliases = [legacyUrl];
+    }
+    hugoFm.artwork = legacyUrl ? slugOfUrl(legacyUrl) : entry.slug;
+}
+
+/**
+ * Fail the export when two notes derive the same URL.
+ *
+ * Nothing stops two notes in one section from sharing a name, and Hugo would
+ * simply write one page over the other — the later export wins, the earlier
+ * page vanishes, and the build stays green. An authored `slug` used to let a
+ * clash be settled by hand; deriving the URL means the clash has to be settled
+ * in the name, which is where it belongs, so it is raised here instead of
+ * silently resolved.
+ *
+ * @param entries - Every publishable vault entry.
+ * @throws If two entries would publish to the same URL.
+ */
+function assertUniqueUrls(entries: VaultEntry[]): void {
+    const byUrl = new Map<string, VaultEntry[]>();
+    for (const entry of entries) {
+        const list = byUrl.get(entry.url);
+        if (list) list.push(entry);
+        else byUrl.set(entry.url, [entry]);
+    }
+
+    const clashes = [...byUrl.entries()].filter(([, v]) => v.length > 1);
+    if (clashes.length === 0) return;
+
+    console.error(
+        `\n\u2717 ${clashes.length} URL(s) claimed by more than one note \u2014 one page would overwrite the other:`,
+    );
+    for (const [url, notes] of clashes.sort()) {
+        console.error(`  ${url}`);
+        for (const n of notes) {
+            console.error(
+                `      ${path.relative(VAULT_ROOT, n.filepath)}  (name: ${n.title})`,
+            );
+        }
+    }
+    console.error(
+        `\nA page's URL comes from its name, so give each note a name of its own.`,
+    );
+    process.exit(1);
+}
+
+/**
+ * Record where every moving page publishes today, then stop.
+ *
+ * Run once, against a vault that still carries authored slugs, **before**
+ * `vault-drop-slug.ts` removes them:
+ *
+ *     npm run capture:legacy-urls -- --write
+ *
+ * A page's previous address exists in exactly one place — the `slug` in its
+ * front matter, or failing that its filename — and both disappear as a public
+ * address the moment the URL is derived from the note's name. Recording them
+ * here rather than in a script of its own is deliberate: the old address is
+ * routed through {@link resolveOutputPath}, the same function that builds the
+ * real one, so the record cannot drift from the routing. A hand-mirrored copy
+ * of those rules got the `collection` landings wrong and missed every note that
+ * never had a slug at all.
+ *
+ * Merges rather than replaces. An address already recorded was real and may
+ * still be linked, so it is never dropped.
+ *
+ * @param entries - Every publishable vault entry.
+ * @param write - Whether to write; otherwise report and change nothing.
+ */
+function captureLegacyUrls(entries: VaultEntry[], write: boolean): void {
+    const existing = readLegacySlugs();
+    const captured: Record<string, string> = {};
+
+    for (const entry of entries) {
+        if (!entry.legacyUrl || entry.legacyUrl === entry.url) continue;
+        captured[
+            legacyKey(
+                entry.frontmatter,
+                path.relative(VAULT_ROOT, entry.filepath),
+            )
+        ] = entry.legacyUrl;
+    }
+
+    const merged = { ...existing, ...captured };
+    const added = Object.keys(captured).filter((k) => !(k in existing));
+
+    console.log(`\n${entries.length} publishable note(s) scanned.`);
+    console.log(`  ${Object.keys(captured).length} change address and are recorded.`);
+    console.log(
+        `  ${Object.keys(existing).length} already recorded \u2192 ${Object.keys(merged).length} after merge (${added.length} new).`,
+    );
+
+    if (!write) {
+        console.log(`\nDry run: nothing written. Re-run with --write to record.`);
+        return;
+    }
+
+    const sorted: Record<string, string> = {};
+    for (const k of Object.keys(merged).sort()) sorted[k] = merged[k];
+    fs.writeFileSync(LEGACY_SLUGS_PATH, JSON.stringify(sorted, null, 4) + "\n", "utf8");
+    console.log(`\nWrote ${LEGACY_SLUGS_PATH}`);
+    console.log(`Commit it: it is now the only record of these addresses.`);
+}
+
+/**
+ * Remove the authored `slug` from the vault, then stop.
+ *
+ * Run once, deliberately, **after** the capture has been run and committed:
+ *
+ *     npm run capture:legacy-urls -- --write   # first, and commit the result
+ *     npm run drop:slug -- --write
+ *
+ * A `slug` was a hand-maintained second spelling of something the note's name
+ * already decided. It drifted from the page it named, it is why this site and
+ * the SoHL system repository disagreed about a page's address, and until #1388
+ * it doubled as the key cross-page references joined on. Nothing reads it now.
+ *
+ * Three kinds of note are treated differently, and telling them apart is why
+ * this lives in the exporter rather than in a script of its own — only the
+ * exporter knows which notes publish and where:
+ *
+ * - **A `category: collection` landing** keeps its value under the name
+ *   `section`. Its slug never described the note; it named the section the note
+ *   introduces (`Weapons.md` → `weapongear`), which is identity and is not
+ *   derivable from the title.
+ * - **A note that publishes and moves** must already be in the legacy-URL
+ *   record. If it is not, its address is about to be destroyed with nothing to
+ *   redirect from, so it is left alone and reported, and the run fails.
+ * - **Anything else** — a note that publishes at the same URL either way, and
+ *   every note that does not publish at all — simply loses the property.
+ *
+ * @param entries - Every publishable vault entry.
+ * @param write - Whether to write; otherwise report and change nothing.
+ */
+function dropAuthoredSlugs(entries: VaultEntry[], write: boolean): void {
+    const legacy = readLegacySlugs();
+    if (Object.keys(legacy).length === 0) {
+        console.error(
+            `\n\u2717 No legacy-URL record (scripts/legacy-slugs.json is missing or empty).\n\n` +
+                `  The \`slug\` in front matter is the only copy of where these pages\n` +
+                `  publish today. Run this first, and commit the result:\n\n` +
+                `      npm run capture:legacy-urls -- --write\n`,
+        );
+        process.exit(1);
+    }
+
+    const published = new Map<string, VaultEntry>();
+    for (const e of entries) published.set(e.filepath, e);
+
+    let removed = 0;
+    let renamedSection = 0;
+    let unpublished = 0;
+    const uncaptured: string[] = [];
+    const malformed: string[] = [];
+
+    for (const filepath of findNotes(VAULT_ROOT)) {
+        const rel = path.relative(VAULT_ROOT, filepath);
+        const text = fs.readFileSync(filepath, "utf8");
+        const split = splitNote(text);
+        if (!split) continue;
+        const fm = readFrontMatter(text);
+        if (!fm) {
+            // Unparseable front matter. Never skip one quietly: the note may
+            // well carry a `slug` this pass was meant to remove, and a silent
+            // skip is how the tree ends up half-migrated with nobody the
+            // wiser. Report and let the author fix the YAML.
+            if (/^slug:/m.test(split.frontMatter)) malformed.push(rel);
+            continue;
+        }
+        if (typeof fm.slug !== "string") continue;
+
+        let next: string;
+        if (fm.type === "doc" && fm.category === "collection") {
+            next = renameSlugLine(split.frontMatter, "section");
+            if (next !== split.frontMatter) renamedSection++;
+        } else {
+            const entry = published.get(filepath);
+            if (entry?.legacyUrl && entry.legacyUrl !== entry.url) {
+                const key = legacyKey(fm, rel);
+                if (!(key in legacy)) {
+                    uncaptured.push(`${rel}  (${entry.legacyUrl} \u2192 ${entry.url})`);
+                    continue;
+                }
+            }
+            next = dropSlugLine(split.frontMatter);
+            if (next !== split.frontMatter) {
+                if (entry) removed++;
+                else unpublished++;
+            }
+        }
+
+        if (next === split.frontMatter) continue;
+        if (write) {
+            fs.writeFileSync(filepath, joinNote({ ...split, frontMatter: next }), "utf8");
+        }
+    }
+
+    const verb = write ? "" : "Would ";
+    console.log(
+        `\n${verb}remove \`slug\` from ${removed} published note(s) and ${unpublished} unpublished one(s).`,
+    );
+    console.log(
+        `${verb}rename \`slug\` \u2192 \`section\` on ${renamedSection} collection landing(s).`,
+    );
+
+    if (malformed.length > 0) {
+        console.error(
+            `\n\u2717 ${malformed.length} note(s) still carry \`slug\` but their front matter does not parse \u2014 left untouched:`,
+        );
+        for (const rel of malformed.slice(0, 20)) console.error(`  ${rel}`);
+        if (malformed.length > 20) console.error(`  \u2026 and ${malformed.length - 20} more`);
+        console.error(
+            `\nThe usual cause is a duplicated key (these notes declare \`type\` twice).\n` +
+                `Fix the YAML and re-run; nothing else in the pass is affected.`,
+        );
+    }
+
+    if (uncaptured.length > 0) {
+        console.error(
+            `\n\u2717 ${uncaptured.length} page(s) move but are not in the legacy-URL record \u2014 left untouched:`,
+        );
+        for (const line of uncaptured.slice(0, 20)) console.error(`  ${line}`);
+        if (uncaptured.length > 20) console.error(`  \u2026 and ${uncaptured.length - 20} more`);
+        console.error(`\nRe-run \`npm run capture:legacy-urls -- --write\` and commit it first.`);
+        process.exit(1);
+    }
+
+    if (malformed.length > 0) process.exit(1);
+    if (!write) console.log(`\nDry run: nothing written. Re-run with --write to apply.`);
+}
+
+/**
+ * Rename the top-level `slug:` line, keeping its value and any trailing comment.
+ */
+function renameSlugLine(frontMatter: string, to: string): string {
+    const eol = frontMatter.includes("\r\n") ? "\r\n" : "\n";
+    let hit = false;
+    const out = frontMatter.split(/\r?\n/).map((line) => {
+        if (hit || line.startsWith(" ") || !/^slug:(\s|$)/.test(line)) return line;
+        hit = true;
+        return `${to}:${line.slice("slug:".length)}`;
+    });
+    return hit ? out.join(eol) : frontMatter;
+}
+
+/**
+ * Remove the top-level `slug:` line.
+ *
+ * Indent-aware rather than a `/^slug:/` sweep, so a nested `slug` belonging to
+ * some other structure is left alone.
+ */
+function dropSlugLine(frontMatter: string): string {
+    const eol = frontMatter.includes("\r\n") ? "\r\n" : "\n";
+    const lines = frontMatter.split(/\r?\n/);
+    const kept = lines.filter(
+        (line) => !/^slug:(\s|$)/.test(line) || line.startsWith(" "),
+    );
+    return kept.length === lines.length ? frontMatter : kept.join(eol);
+}
+
 function main(): void {
     const args = process.argv.slice(2);
     const dryRun = args.includes("--dry-run");
@@ -2192,6 +2579,21 @@ function main(): void {
 
     console.log("Checking shortcode identity...");
     assertUniqueShortcodes(entries);
+
+    assertUniqueUrls(entries);
+
+    // One-shot: record where these pages publish today, then stop. Must run
+    // while the vault still has slugs — see captureLegacyUrls().
+    if (process.argv.includes("--capture-legacy-urls")) {
+        captureLegacyUrls(entries, process.argv.includes("--write"));
+        return;
+    }
+
+    // One-shot: remove the property the derived URL replaced, then stop.
+    if (process.argv.includes("--drop-slug")) {
+        dropAuthoredSlugs(entries, process.argv.includes("--write"));
+        return;
+    }
 
     console.log(`\nBuilding lookup map (${entries.length} entries)...`);
     const lookup = buildLookupMap(entries);
@@ -2229,6 +2631,11 @@ function main(): void {
 
         // Transform front matter
         const hugoFm = transformFrontMatter(entry.frontmatter);
+
+        // Publish at the derived address, redirect from wherever this page used
+        // to live, and keep its portrait pointed at the CDN filename it was
+        // uploaded under.
+        applyUrl(hugoFm, entry);
 
         // Post-pass: resolve spell/talent shortcodes in sohl.items to named
         // entries the sidebars can render directly.
