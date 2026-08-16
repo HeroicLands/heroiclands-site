@@ -79,16 +79,28 @@ const VALID_TYPES = [
 type ContentType = (typeof VALID_TYPES)[number];
 
 // World-content types that participate in package-driven routing
-// (URL = /{package}/{type}/{slug}/). All other former entries
-// (adventure, campaign, company, continent, faith, language, location,
-// lore, organization, pantheon, people, polity, reference, region,
-// religion, settlement, world, …) collapsed into doc categories and
-// now route via `type: doc` + `category: X` instead. `page` stays as
-// the runtime type assigned to _index.md and Projects/ landings; both
-// dispatch via the Blog/Projects path branches before reaching the
-// type-based dispatch, but `page` remains here as a defensive fallback
+// (URL = /{package}/{type}/{slug}/). Most former entries (adventure,
+// campaign, company, continent, language, location, lore, people, polity,
+// reference, region, settlement, world, …) collapsed into doc categories and
+// now route via `type: doc` + `category: X` instead.
+//
+// `affiliation` is not among them: it is a real type, because it is a real
+// Foundry item — the thalorna module compiles a note into an Affiliation item
+// precisely when its `type` reads "affiliation". Every organized body in the
+// setting is one, and `sohl.subType` says which kind: a religion or church
+// (`divine`), a school of magic (`arcane`), a spirit or ancestor tradition
+// (`spirit`), or a secular guild, bank, syndicate, or military unit
+// (`social`). It therefore names its own section and carries its variation in
+// the subtype, exactly as `skill`, `mysticalability`, and `mystery` do — one
+// flat section whose members differ by subtype, not several sections invented
+// to stand in for one. See #1419.
+//
+// `page` stays as the runtime type assigned to _index.md and Projects/
+// landings; both dispatch via the Blog/Projects path branches before reaching
+// the type-based dispatch, but `page` remains here as a defensive fallback
 // for any future non-Blog/non-Projects _index.md.
 const SETTING_TYPES: ReadonlySet<ContentType> = new Set([
+    "affiliation",
     "character",
     "creature",
     "page",
@@ -115,19 +127,12 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
     "weapongear",
 ]);
 
-// World-content types whose URL segment is the note's `category`, not its
-// type name. `doc` is the generic case — narrative content whose only identity
-// is its subtype label. `affiliation` is the exception that proves why the two
-// axes have to be separate: those notes are *also* Foundry items (the thalorna
-// module compiles a note into an Affiliation item precisely when its `type` is
-// "affiliation"), so their type is spoken for by the game system and cannot
-// double as the site's taxonomy. Reading the category here lets a pantheon, a
-// faith, and a merchant guild — one Foundry type, three site sections — each
-// publish where a reader expects it. See #1419.
-const CATEGORY_ROUTED_TYPES: ReadonlySet<ContentType> = new Set([
-    "doc",
-    "affiliation",
-]);
+// World-content types whose URL segment is the note's `category` rather than
+// its type name. Only `doc` routes this way — it is narrative content whose
+// sole identity is its subtype label, so without a category it has no address
+// at all. Every other type names its own section and carries its variation in
+// `sohl.subType`, the way `skill`, `mysticalability`, and `mystery` do.
+const CATEGORY_ROUTED_TYPES: ReadonlySet<ContentType> = new Set(["doc"]);
 
 // Packages this site no longer publishes. Their notes are still read and
 // indexed (other content cross-references them), but they are not routed to
@@ -167,13 +172,12 @@ let retiredPackageSkips = 0;
  * future "hm3", etc.). The package is the top-level URL segment.
  *
  * The middle segment depends on the type:
- *   - For a type in CATEGORY_ROUTED_TYPES (doc, affiliation), it's the
- *     `category` property (a subtype label like "lore", "faith",
- *     "pantheon", "organization", or "user-guide"). The category selects
- *     which optional schema/layout applies and groups notes of the same
- *     subtype together on the site, whatever their Foundry type.
+ *   - For a type in CATEGORY_ROUTED_TYPES (`doc`), it's the `category`
+ *     property (a subtype label like "lore", "settlement", "polity", or
+ *     "user-guide"). The category selects which optional schema/layout
+ *     applies and groups docs of the same subtype together on the site.
  *   - For all other types, it's the type name itself ("character",
- *     "weapongear", "skill", …).
+ *     "affiliation", "weapongear", "skill", …).
  *
  * Both views collapse into the same shape: /{package}/{type|category}/{slug}/.
  * The package property is required for both; a category-routed type
@@ -647,11 +651,11 @@ function scanVault(verbose: boolean): VaultEntry[] {
             CATEGORY_ROUTED_TYPES.has(rawType) && fm.category === "collection";
 
         // A category-routed note with no category has nowhere to publish, and
-        // until #1419 that failure was silent: 129 affiliation notes went
+        // that failure used to be silent: 129 affiliation notes went
         // unpublished for months while the infoboxes that referenced them fell
         // through to a humanized label that happened to read like the link it
-        // was standing in for. Missing routing data is a defect in the note, so
-        // it is reported unconditionally rather than behind --verbose.
+        // was standing in for (#1419). Missing routing data is a defect in the
+        // note, so it is reported unconditionally rather than behind --verbose.
         if (
             CATEGORY_ROUTED_TYPES.has(rawType) &&
             !(typeof fm.category === "string" && fm.category)
@@ -2304,8 +2308,8 @@ function assertUniqueShortcodes(entries: VaultEntry[]): void {
 
 // ── Redirects and artwork ──────────────────────────────────────────
 
-/** `type:shortcode` → the URL the page used to publish at. */
-const LEGACY_URLS: Record<string, string> = readLegacySlugs();
+/** `type:shortcode` → the URL, or URLs, the page used to publish at. */
+const LEGACY_URLS: Record<string, string | string[]> = readLegacySlugs();
 
 /**
  * Set a page's derived address, the redirects it owes, and the artwork name it
@@ -2331,19 +2335,29 @@ function applyUrl(hugoFm: Record<string, any>, entry: VaultEntry): void {
     // The address, derived from the note's name.
     hugoFm.slug = entry.slug;
 
-    const legacyUrl =
+    // A page may have published at more than one address over its life, so a
+    // record is a string or a list of them. Retiring the `faith` designation
+    // proved it: /thalorna/affiliation/ is the one section that replaced four,
+    // and its landing has to answer at all four of the old addresses.
+    const recorded =
         LEGACY_URLS[
             legacyKey(
                 entry.frontmatter,
                 path.relative(VAULT_ROOT, entry.filepath),
             )
         ];
+    const legacyUrls = (
+        Array.isArray(recorded) ? recorded
+        : recorded ? [recorded]
+        : []
+        // A page never redirects from where it already is; that is a loop.
+    ).filter((u) => u && u !== entry.url);
 
-    // A page never redirects from where it already is; that is a loop.
-    if (legacyUrl && legacyUrl !== entry.url) {
-        hugoFm.aliases = [legacyUrl];
+    if (legacyUrls.length > 0) {
+        hugoFm.aliases = legacyUrls;
     }
-    hugoFm.artwork = legacyUrl ? slugOfUrl(legacyUrl) : entry.slug;
+    // The artwork name is the earliest address it was uploaded under.
+    hugoFm.artwork = legacyUrls.length > 0 ? slugOfUrl(legacyUrls[0]) : entry.slug;
 }
 
 /**
@@ -2438,7 +2452,7 @@ function captureLegacyUrls(entries: VaultEntry[], write: boolean): void {
         return;
     }
 
-    const sorted: Record<string, string> = {};
+    const sorted: Record<string, string | string[]> = {};
     for (const k of Object.keys(merged).sort()) sorted[k] = merged[k];
     fs.writeFileSync(LEGACY_SLUGS_PATH, JSON.stringify(sorted, null, 4) + "\n", "utf8");
     console.log(`\nWrote ${LEGACY_SLUGS_PATH}`);
