@@ -53,6 +53,7 @@ const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
+    "affiliation",
     "affliction",
     "armorgear",
     "attribute",
@@ -78,16 +79,28 @@ const VALID_TYPES = [
 type ContentType = (typeof VALID_TYPES)[number];
 
 // World-content types that participate in package-driven routing
-// (URL = /{package}/{type}/{slug}/). All other former entries
-// (adventure, campaign, company, continent, faith, language, location,
-// lore, organization, pantheon, people, polity, reference, region,
-// religion, settlement, world, …) collapsed into doc categories and
-// now route via `type: doc` + `category: X` instead. `page` stays as
-// the runtime type assigned to _index.md and Projects/ landings; both
-// dispatch via the Blog/Projects path branches before reaching the
-// type-based dispatch, but `page` remains here as a defensive fallback
+// (URL = /{package}/{type}/{slug}/). Most former entries (adventure,
+// campaign, company, continent, language, location, lore, people, polity,
+// reference, region, settlement, world, …) collapsed into doc categories and
+// now route via `type: doc` + `category: X` instead.
+//
+// `affiliation` is not among them: it is a real type, because it is a real
+// Foundry item — the thalorna module compiles a note into an Affiliation item
+// precisely when its `type` reads "affiliation". Every organized body in the
+// setting is one, and `sohl.subType` says which kind: a religion or church
+// (`divine`), a school of magic (`arcane`), a spirit or ancestor tradition
+// (`spirit`), or a secular guild, bank, syndicate, or military unit
+// (`social`). It therefore names its own section and carries its variation in
+// the subtype, exactly as `skill`, `mysticalability`, and `mystery` do — one
+// flat section whose members differ by subtype, not several sections invented
+// to stand in for one. See #1419.
+//
+// `page` stays as the runtime type assigned to _index.md and Projects/
+// landings; both dispatch via the Blog/Projects path branches before reaching
+// the type-based dispatch, but `page` remains here as a defensive fallback
 // for any future non-Blog/non-Projects _index.md.
 const SETTING_TYPES: ReadonlySet<ContentType> = new Set([
+    "affiliation",
     "character",
     "creature",
     "page",
@@ -114,6 +127,13 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
     "weapongear",
 ]);
 
+// World-content types whose URL segment is the note's `category` rather than
+// its type name. Only `doc` routes this way — it is narrative content whose
+// sole identity is its subtype label, so without a category it has no address
+// at all. Every other type names its own section and carries its variation in
+// `sohl.subType`, the way `skill`, `mysticalability`, and `mystery` do.
+const CATEGORY_ROUTED_TYPES: ReadonlySet<ContentType> = new Set(["doc"]);
+
 // Packages this site no longer publishes. Their notes are still read and
 // indexed (other content cross-references them), but they are not routed to
 // an output page here — another site is now their canonical home.
@@ -137,7 +157,8 @@ let retiredPackageSkips = 0;
  *
  *        hm3-user-guide        → /hm3/user-guide/{slug}/
  *        hm3-rules             → /hm3/rules/{slug}/
- *        doc                   → /{package}/{category}/{slug}/   (see below)
+ *        T in CATEGORY_ROUTED_TYPES
+ *                              → /{package}/{category}/{slug}/   (see below)
  *        T in SETTING_TYPES ∪ SOHL_SYSTEM_TYPES
  *                              → /{package}/{T}/{slug}/          (see below)
  *
@@ -151,17 +172,17 @@ let retiredPackageSkips = 0;
  * future "hm3", etc.). The package is the top-level URL segment.
  *
  * The middle segment depends on the type:
- *   - For type: doc, it's the `category` property (a subtype label
- *     like "lore", "faith", "company", or "user-guide"). The category
- *     selects which optional schema/layout applies and groups docs of
- *     the same subtype together on the site.
+ *   - For a type in CATEGORY_ROUTED_TYPES (`doc`), it's the `category`
+ *     property (a subtype label like "lore", "settlement", "polity", or
+ *     "user-guide"). The category selects which optional schema/layout
+ *     applies and groups docs of the same subtype together on the site.
  *   - For all other types, it's the type name itself ("character",
- *     "weapongear", "skill", …).
+ *     "affiliation", "weapongear", "skill", …).
  *
  * Both views collapse into the same shape: /{package}/{type|category}/{slug}/.
- * The package property is required for both; type=doc additionally
- * requires category. Missing required properties skip the file with
- * a warning.
+ * The package property is required for both; a category-routed type
+ * additionally requires category. Missing required properties skip the
+ * file with a warning.
  *
  * When adding a brand-new package (a new top-level URL segment), also
  * add that name to CONTENT_ROOTS so stale-file cleanup walks it, and
@@ -503,11 +524,12 @@ function resolveOutputPath(
         };
     }
 
-    // Package-driven routing for type=doc and all SETTING/SOHL types.
-    // URL = /{package}/{type|category}/{slug}/. The middle segment is
-    // `category` when type=doc, otherwise the type itself.
+    // Package-driven routing for the category-routed types and all
+    // SETTING/SOHL types. URL = /{package}/{type|category}/{slug}/. The middle
+    // segment is `category` for a category-routed type, otherwise the type
+    // itself.
     //
-    // Special case: type=doc, category=collection. These notes ARE the
+    // Special case: category=collection. These notes ARE the
     // section landing for /{package}/{slug}/ — they're authored once per
     // (package, slug) pair when the author wants custom prose/banner above
     // the auto-generated child listing. They're emitted as `_index.md`
@@ -515,7 +537,11 @@ function resolveOutputPath(
     // suppresses the auto-list and shows the authored content instead.
     // Sections without a collection note auto-generate their landing via
     // `layouts/_default/list.html`.
-    if (T === "doc" || SETTING_TYPES.has(T) || SOHL_SYSTEM_TYPES.has(T)) {
+    if (
+        CATEGORY_ROUTED_TYPES.has(T) ||
+        SETTING_TYPES.has(T) ||
+        SOHL_SYSTEM_TYPES.has(T)
+    ) {
         const pkg = entry.frontmatter.package;
         if (typeof pkg !== "string" || !pkg) {
             return null;
@@ -533,14 +559,17 @@ function resolveOutputPath(
             retiredPackageSkips++;
             return null;
         }
-        if (T === "doc" && entry.frontmatter.category === "collection") {
+        if (
+            CATEGORY_ROUTED_TYPES.has(T) &&
+            entry.frontmatter.category === "collection"
+        ) {
             return {
                 outputPath: path.join(HUGO_CONTENT, pkg, S, "_index.md"),
                 url: `/${pkg}/${S}/`,
             };
         }
         let middle: string;
-        if (T === "doc") {
+        if (CATEGORY_ROUTED_TYPES.has(T)) {
             const category = entry.frontmatter.category;
             if (typeof category !== "string" || !category) {
                 return null;
@@ -619,7 +648,23 @@ function scanVault(verbose: boolean): VaultEntry[] {
         // fallback so the exporter works against a vault that has not been
         // migrated yet.)
         const isCollection =
-            rawType === "doc" && fm.category === "collection";
+            CATEGORY_ROUTED_TYPES.has(rawType) && fm.category === "collection";
+
+        // A category-routed note with no category has nowhere to publish, and
+        // that failure used to be silent: 129 affiliation notes went
+        // unpublished for months while the infoboxes that referenced them fell
+        // through to a humanized label that happened to read like the link it
+        // was standing in for (#1419). Missing routing data is a defect in the
+        // note, so it is reported unconditionally rather than behind --verbose.
+        if (
+            CATEGORY_ROUTED_TYPES.has(rawType) &&
+            !(typeof fm.category === "string" && fm.category)
+        ) {
+            console.warn(
+                `  Skipping ${filepath}: type "${rawType}" routes by category, but the note declares none.`,
+            );
+            continue;
+        }
         let slug: string;
         if (isCollection && (fm.section || fm.slug)) {
             slug = fm.section || fm.slug;
@@ -2263,8 +2308,8 @@ function assertUniqueShortcodes(entries: VaultEntry[]): void {
 
 // ── Redirects and artwork ──────────────────────────────────────────
 
-/** `type:shortcode` → the URL the page used to publish at. */
-const LEGACY_URLS: Record<string, string> = readLegacySlugs();
+/** `type:shortcode` → the URL, or URLs, the page used to publish at. */
+const LEGACY_URLS: Record<string, string | string[]> = readLegacySlugs();
 
 /**
  * Set a page's derived address, the redirects it owes, and the artwork name it
@@ -2290,19 +2335,29 @@ function applyUrl(hugoFm: Record<string, any>, entry: VaultEntry): void {
     // The address, derived from the note's name.
     hugoFm.slug = entry.slug;
 
-    const legacyUrl =
+    // A page may have published at more than one address over its life, so a
+    // record is a string or a list of them. Retiring the `faith` designation
+    // proved it: /thalorna/affiliation/ is the one section that replaced four,
+    // and its landing has to answer at all four of the old addresses.
+    const recorded =
         LEGACY_URLS[
             legacyKey(
                 entry.frontmatter,
                 path.relative(VAULT_ROOT, entry.filepath),
             )
         ];
+    const legacyUrls = (
+        Array.isArray(recorded) ? recorded
+        : recorded ? [recorded]
+        : []
+        // A page never redirects from where it already is; that is a loop.
+    ).filter((u) => u && u !== entry.url);
 
-    // A page never redirects from where it already is; that is a loop.
-    if (legacyUrl && legacyUrl !== entry.url) {
-        hugoFm.aliases = [legacyUrl];
+    if (legacyUrls.length > 0) {
+        hugoFm.aliases = legacyUrls;
     }
-    hugoFm.artwork = legacyUrl ? slugOfUrl(legacyUrl) : entry.slug;
+    // The artwork name is the earliest address it was uploaded under.
+    hugoFm.artwork = legacyUrls.length > 0 ? slugOfUrl(legacyUrls[0]) : entry.slug;
 }
 
 /**
@@ -2397,7 +2452,7 @@ function captureLegacyUrls(entries: VaultEntry[], write: boolean): void {
         return;
     }
 
-    const sorted: Record<string, string> = {};
+    const sorted: Record<string, string | string[]> = {};
     for (const k of Object.keys(merged).sort()) sorted[k] = merged[k];
     fs.writeFileSync(LEGACY_SLUGS_PATH, JSON.stringify(sorted, null, 4) + "\n", "utf8");
     console.log(`\nWrote ${LEGACY_SLUGS_PATH}`);

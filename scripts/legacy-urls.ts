@@ -38,10 +38,11 @@ export const LEGACY_SLUGS_PATH = path.join(__dirname, "legacy-slugs.json");
 /**
  * Read the committed record.
  *
- * @returns `type:shortcode` → the page's previous URL. Empty when the record
- *   does not exist yet, which is the state before the first capture.
+ * @returns `type:shortcode` → the page's previous URL, or the list of them
+ *   where it has published at more than one. Empty when the record does not
+ *   exist yet, which is the state before the first capture.
  */
-export function readLegacySlugs(): Record<string, string> {
+export function readLegacySlugs(): Record<string, string | string[]> {
     if (!fs.existsSync(LEGACY_SLUGS_PATH)) return {};
     try {
         const parsed = JSON.parse(fs.readFileSync(LEGACY_SLUGS_PATH, "utf8"));
