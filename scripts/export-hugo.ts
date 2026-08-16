@@ -53,6 +53,7 @@ const HUGO_CONTENT = path.join(HUGO_ROOT, "content");
 const IMAGE_CDN_BASE = "https://cdn.heroiclands.org/images";
 
 const VALID_TYPES = [
+    "affiliation",
     "affliction",
     "armorgear",
     "attribute",
@@ -114,6 +115,20 @@ const SOHL_SYSTEM_TYPES: ReadonlySet<ContentType> = new Set([
     "weapongear",
 ]);
 
+// World-content types whose URL segment is the note's `category`, not its
+// type name. `doc` is the generic case — narrative content whose only identity
+// is its subtype label. `affiliation` is the exception that proves why the two
+// axes have to be separate: those notes are *also* Foundry items (the thalorna
+// module compiles a note into an Affiliation item precisely when its `type` is
+// "affiliation"), so their type is spoken for by the game system and cannot
+// double as the site's taxonomy. Reading the category here lets a pantheon, a
+// faith, and a merchant guild — one Foundry type, three site sections — each
+// publish where a reader expects it. See #1419.
+const CATEGORY_ROUTED_TYPES: ReadonlySet<ContentType> = new Set([
+    "doc",
+    "affiliation",
+]);
+
 // Packages this site no longer publishes. Their notes are still read and
 // indexed (other content cross-references them), but they are not routed to
 // an output page here — another site is now their canonical home.
@@ -137,7 +152,8 @@ let retiredPackageSkips = 0;
  *
  *        hm3-user-guide        → /hm3/user-guide/{slug}/
  *        hm3-rules             → /hm3/rules/{slug}/
- *        doc                   → /{package}/{category}/{slug}/   (see below)
+ *        T in CATEGORY_ROUTED_TYPES
+ *                              → /{package}/{category}/{slug}/   (see below)
  *        T in SETTING_TYPES ∪ SOHL_SYSTEM_TYPES
  *                              → /{package}/{T}/{slug}/          (see below)
  *
@@ -151,17 +167,18 @@ let retiredPackageSkips = 0;
  * future "hm3", etc.). The package is the top-level URL segment.
  *
  * The middle segment depends on the type:
- *   - For type: doc, it's the `category` property (a subtype label
- *     like "lore", "faith", "company", or "user-guide"). The category
- *     selects which optional schema/layout applies and groups docs of
- *     the same subtype together on the site.
+ *   - For a type in CATEGORY_ROUTED_TYPES (doc, affiliation), it's the
+ *     `category` property (a subtype label like "lore", "faith",
+ *     "pantheon", "organization", or "user-guide"). The category selects
+ *     which optional schema/layout applies and groups notes of the same
+ *     subtype together on the site, whatever their Foundry type.
  *   - For all other types, it's the type name itself ("character",
  *     "weapongear", "skill", …).
  *
  * Both views collapse into the same shape: /{package}/{type|category}/{slug}/.
- * The package property is required for both; type=doc additionally
- * requires category. Missing required properties skip the file with
- * a warning.
+ * The package property is required for both; a category-routed type
+ * additionally requires category. Missing required properties skip the
+ * file with a warning.
  *
  * When adding a brand-new package (a new top-level URL segment), also
  * add that name to CONTENT_ROOTS so stale-file cleanup walks it, and
@@ -503,11 +520,12 @@ function resolveOutputPath(
         };
     }
 
-    // Package-driven routing for type=doc and all SETTING/SOHL types.
-    // URL = /{package}/{type|category}/{slug}/. The middle segment is
-    // `category` when type=doc, otherwise the type itself.
+    // Package-driven routing for the category-routed types and all
+    // SETTING/SOHL types. URL = /{package}/{type|category}/{slug}/. The middle
+    // segment is `category` for a category-routed type, otherwise the type
+    // itself.
     //
-    // Special case: type=doc, category=collection. These notes ARE the
+    // Special case: category=collection. These notes ARE the
     // section landing for /{package}/{slug}/ — they're authored once per
     // (package, slug) pair when the author wants custom prose/banner above
     // the auto-generated child listing. They're emitted as `_index.md`
@@ -515,7 +533,11 @@ function resolveOutputPath(
     // suppresses the auto-list and shows the authored content instead.
     // Sections without a collection note auto-generate their landing via
     // `layouts/_default/list.html`.
-    if (T === "doc" || SETTING_TYPES.has(T) || SOHL_SYSTEM_TYPES.has(T)) {
+    if (
+        CATEGORY_ROUTED_TYPES.has(T) ||
+        SETTING_TYPES.has(T) ||
+        SOHL_SYSTEM_TYPES.has(T)
+    ) {
         const pkg = entry.frontmatter.package;
         if (typeof pkg !== "string" || !pkg) {
             return null;
@@ -533,14 +555,17 @@ function resolveOutputPath(
             retiredPackageSkips++;
             return null;
         }
-        if (T === "doc" && entry.frontmatter.category === "collection") {
+        if (
+            CATEGORY_ROUTED_TYPES.has(T) &&
+            entry.frontmatter.category === "collection"
+        ) {
             return {
                 outputPath: path.join(HUGO_CONTENT, pkg, S, "_index.md"),
                 url: `/${pkg}/${S}/`,
             };
         }
         let middle: string;
-        if (T === "doc") {
+        if (CATEGORY_ROUTED_TYPES.has(T)) {
             const category = entry.frontmatter.category;
             if (typeof category !== "string" || !category) {
                 return null;
@@ -619,7 +644,23 @@ function scanVault(verbose: boolean): VaultEntry[] {
         // fallback so the exporter works against a vault that has not been
         // migrated yet.)
         const isCollection =
-            rawType === "doc" && fm.category === "collection";
+            CATEGORY_ROUTED_TYPES.has(rawType) && fm.category === "collection";
+
+        // A category-routed note with no category has nowhere to publish, and
+        // until #1419 that failure was silent: 129 affiliation notes went
+        // unpublished for months while the infoboxes that referenced them fell
+        // through to a humanized label that happened to read like the link it
+        // was standing in for. Missing routing data is a defect in the note, so
+        // it is reported unconditionally rather than behind --verbose.
+        if (
+            CATEGORY_ROUTED_TYPES.has(rawType) &&
+            !(typeof fm.category === "string" && fm.category)
+        ) {
+            console.warn(
+                `  Skipping ${filepath}: type "${rawType}" routes by category, but the note declares none.`,
+            );
+            continue;
+        }
         let slug: string;
         if (isCollection && (fm.section || fm.slug)) {
             slug = fm.section || fm.slug;
