@@ -33,13 +33,7 @@ import {
     readLegacySlugs,
     slugOfUrl,
 } from "./legacy-urls";
-import {
-    findNotes,
-    joinNote,
-    noteName,
-    readFrontMatter,
-    splitNote,
-} from "./vault-frontmatter";
+import { noteName } from "./vault-frontmatter";
 
 // ── Configuration ──────────────────────────────────────────────────
 
@@ -644,9 +638,7 @@ function scanVault(verbose: boolean): VaultEntry[] {
         // `Arcane_Domains.md` lands `/thalorna/arcane-domain/`. That value is
         // identity, it is not derivable from the note's title, and deriving it
         // anyway detaches every landing from the section it introduces. It is
-        // authored as `section`, which says what it does. (`slug` is read as a
-        // fallback so the exporter works against a vault that has not been
-        // migrated yet.)
+        // authored as `section`, which says what it does.
         const isCollection =
             CATEGORY_ROUTED_TYPES.has(rawType) && fm.category === "collection";
 
@@ -665,9 +657,21 @@ function scanVault(verbose: boolean): VaultEntry[] {
             );
             continue;
         }
+        // A landing with no `section` is the same defect as a category-routed
+        // note with no category: the one value that says where it publishes is
+        // missing. Deriving a slug from its title instead would land it at a
+        // plausible-looking address that is not the section's, so report it
+        // rather than publish it somewhere wrong.
+        if (isCollection && !(typeof fm.section === "string" && fm.section)) {
+            console.warn(
+                `  Skipping ${filepath}: collection landing declares no \`section\` — nothing names the section it introduces.`,
+            );
+            continue;
+        }
+
         let slug: string;
-        if (isCollection && (fm.section || fm.slug)) {
-            slug = fm.section || fm.slug;
+        if (isCollection) {
+            slug = fm.section;
         } else {
             try {
                 slug = contentSlug(title);
@@ -2404,8 +2408,8 @@ function assertUniqueUrls(entries: VaultEntry[]): void {
 /**
  * Record where every moving page publishes today, then stop.
  *
- * Run once, against a vault that still carries authored slugs, **before**
- * `vault-drop-slug.ts` removes them:
+ * Run once, against a vault that still carries authored slugs, before those
+ * slugs are removed:
  *
  *     npm run capture:legacy-urls -- --write
  *
@@ -2459,162 +2463,6 @@ function captureLegacyUrls(entries: VaultEntry[], write: boolean): void {
     console.log(`Commit it: it is now the only record of these addresses.`);
 }
 
-/**
- * Remove the authored `slug` from the vault, then stop.
- *
- * Run once, deliberately, **after** the capture has been run and committed:
- *
- *     npm run capture:legacy-urls -- --write   # first, and commit the result
- *     npm run drop:slug -- --write
- *
- * A `slug` was a hand-maintained second spelling of something the note's name
- * already decided. It drifted from the page it named, it is why this site and
- * the SoHL system repository disagreed about a page's address, and until #1388
- * it doubled as the key cross-page references joined on. Nothing reads it now.
- *
- * Three kinds of note are treated differently, and telling them apart is why
- * this lives in the exporter rather than in a script of its own — only the
- * exporter knows which notes publish and where:
- *
- * - **A `category: collection` landing** keeps its value under the name
- *   `section`. Its slug never described the note; it named the section the note
- *   introduces (`Weapons.md` → `weapongear`), which is identity and is not
- *   derivable from the title.
- * - **A note that publishes and moves** must already be in the legacy-URL
- *   record. If it is not, its address is about to be destroyed with nothing to
- *   redirect from, so it is left alone and reported, and the run fails.
- * - **Anything else** — a note that publishes at the same URL either way, and
- *   every note that does not publish at all — simply loses the property.
- *
- * @param entries - Every publishable vault entry.
- * @param write - Whether to write; otherwise report and change nothing.
- */
-function dropAuthoredSlugs(entries: VaultEntry[], write: boolean): void {
-    const legacy = readLegacySlugs();
-    if (Object.keys(legacy).length === 0) {
-        console.error(
-            `\n\u2717 No legacy-URL record (scripts/legacy-slugs.json is missing or empty).\n\n` +
-                `  The \`slug\` in front matter is the only copy of where these pages\n` +
-                `  publish today. Run this first, and commit the result:\n\n` +
-                `      npm run capture:legacy-urls -- --write\n`,
-        );
-        process.exit(1);
-    }
-
-    const published = new Map<string, VaultEntry>();
-    for (const e of entries) published.set(e.filepath, e);
-
-    let removed = 0;
-    let renamedSection = 0;
-    let unpublished = 0;
-    const uncaptured: string[] = [];
-    const malformed: string[] = [];
-
-    for (const filepath of findNotes(VAULT_ROOT)) {
-        const rel = path.relative(VAULT_ROOT, filepath);
-        const text = fs.readFileSync(filepath, "utf8");
-        const split = splitNote(text);
-        if (!split) continue;
-        const fm = readFrontMatter(text);
-        if (!fm) {
-            // Unparseable front matter. Never skip one quietly: the note may
-            // well carry a `slug` this pass was meant to remove, and a silent
-            // skip is how the tree ends up half-migrated with nobody the
-            // wiser. Report and let the author fix the YAML.
-            if (/^slug:/m.test(split.frontMatter)) malformed.push(rel);
-            continue;
-        }
-        if (typeof fm.slug !== "string") continue;
-
-        let next: string;
-        if (fm.type === "doc" && fm.category === "collection") {
-            next = renameSlugLine(split.frontMatter, "section");
-            if (next !== split.frontMatter) renamedSection++;
-        } else {
-            const entry = published.get(filepath);
-            if (entry?.legacyUrl && entry.legacyUrl !== entry.url) {
-                const key = legacyKey(fm, rel);
-                if (!(key in legacy)) {
-                    uncaptured.push(`${rel}  (${entry.legacyUrl} \u2192 ${entry.url})`);
-                    continue;
-                }
-            }
-            next = dropSlugLine(split.frontMatter);
-            if (next !== split.frontMatter) {
-                if (entry) removed++;
-                else unpublished++;
-            }
-        }
-
-        if (next === split.frontMatter) continue;
-        if (write) {
-            fs.writeFileSync(filepath, joinNote({ ...split, frontMatter: next }), "utf8");
-        }
-    }
-
-    const verb = write ? "" : "Would ";
-    console.log(
-        `\n${verb}remove \`slug\` from ${removed} published note(s) and ${unpublished} unpublished one(s).`,
-    );
-    console.log(
-        `${verb}rename \`slug\` \u2192 \`section\` on ${renamedSection} collection landing(s).`,
-    );
-
-    if (malformed.length > 0) {
-        console.error(
-            `\n\u2717 ${malformed.length} note(s) still carry \`slug\` but their front matter does not parse \u2014 left untouched:`,
-        );
-        for (const rel of malformed.slice(0, 20)) console.error(`  ${rel}`);
-        if (malformed.length > 20) console.error(`  \u2026 and ${malformed.length - 20} more`);
-        console.error(
-            `\nThe usual cause is a duplicated key (these notes declare \`type\` twice).\n` +
-                `Fix the YAML and re-run; nothing else in the pass is affected.`,
-        );
-    }
-
-    if (uncaptured.length > 0) {
-        console.error(
-            `\n\u2717 ${uncaptured.length} page(s) move but are not in the legacy-URL record \u2014 left untouched:`,
-        );
-        for (const line of uncaptured.slice(0, 20)) console.error(`  ${line}`);
-        if (uncaptured.length > 20) console.error(`  \u2026 and ${uncaptured.length - 20} more`);
-        console.error(`\nRe-run \`npm run capture:legacy-urls -- --write\` and commit it first.`);
-        process.exit(1);
-    }
-
-    if (malformed.length > 0) process.exit(1);
-    if (!write) console.log(`\nDry run: nothing written. Re-run with --write to apply.`);
-}
-
-/**
- * Rename the top-level `slug:` line, keeping its value and any trailing comment.
- */
-function renameSlugLine(frontMatter: string, to: string): string {
-    const eol = frontMatter.includes("\r\n") ? "\r\n" : "\n";
-    let hit = false;
-    const out = frontMatter.split(/\r?\n/).map((line) => {
-        if (hit || line.startsWith(" ") || !/^slug:(\s|$)/.test(line)) return line;
-        hit = true;
-        return `${to}:${line.slice("slug:".length)}`;
-    });
-    return hit ? out.join(eol) : frontMatter;
-}
-
-/**
- * Remove the top-level `slug:` line.
- *
- * Indent-aware rather than a `/^slug:/` sweep, so a nested `slug` belonging to
- * some other structure is left alone.
- */
-function dropSlugLine(frontMatter: string): string {
-    const eol = frontMatter.includes("\r\n") ? "\r\n" : "\n";
-    const lines = frontMatter.split(/\r?\n/);
-    const kept = lines.filter(
-        (line) => !/^slug:(\s|$)/.test(line) || line.startsWith(" "),
-    );
-    return kept.length === lines.length ? frontMatter : kept.join(eol);
-}
-
 function main(): void {
     const args = process.argv.slice(2);
     const dryRun = args.includes("--dry-run");
@@ -2641,12 +2489,6 @@ function main(): void {
     // while the vault still has slugs — see captureLegacyUrls().
     if (process.argv.includes("--capture-legacy-urls")) {
         captureLegacyUrls(entries, process.argv.includes("--write"));
-        return;
-    }
-
-    // One-shot: remove the property the derived URL replaced, then stop.
-    if (process.argv.includes("--drop-slug")) {
-        dropAuthoredSlugs(entries, process.argv.includes("--write"));
         return;
     }
 
