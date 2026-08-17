@@ -16,9 +16,9 @@
  * resolves, what is still slug-valued, and what names nothing at all.
  *
  * Reporting only — it changes nothing and always exits 0. It is a measurement
- * tool for #1426 and #1427, not a build gate: the fields it reports on are
- * known to be unresolved, and failing the build on a known gap would only mean
- * nobody could build.
+ * tool, not a build gate: what it still reports is notes that have yet to be
+ * written or are still drafts, and failing the build on a known gap in the
+ * content would only mean nobody could build.
  *
  * Usage:
  *   npm run refs:report
@@ -143,10 +143,21 @@ function main(): void {
     console.log(
         `\n${slugTotal} value(s) still join on a slug, ${unresolvedTotal} name nothing at all.`,
     );
-    if (slugTotal > 0 || unresolvedTotal > 0) {
+    // The two remainders have different causes and different fixes, so they are
+    // reported apart rather than under one heading.
+    if (slugTotal > 0) {
         console.log(
             "A slug is presentation and changes when a note is retitled, so a " +
-                "slug-valued reference is a link waiting to break. See #1426.",
+                "slug-valued reference is a link waiting to break: migrate it " +
+                "to the target's shortcode.",
+        );
+    }
+    if (unresolvedTotal > 0) {
+        console.log(
+            "A value that names nothing is not a migration: there is no " +
+                "shortcode to migrate it to. Either the note it names has yet " +
+                "to be written, or it is still a draft and so unpublished. " +
+                "Re-run with --verbose to see them.",
         );
     }
 }

@@ -75,9 +75,9 @@ export const REF_FIELDS: readonly RefField[] = [
     { path: ["parent", "polities"], expect: ["polity"] },
     { path: ["parent", "regions"], expect: ["region"] },
     { path: ["parent", "continents"], expect: ["continent"] },
-    // Read by the character sidebar. Still slug-valued and still unresolved —
-    // they are what #1426 is for, and listing them here is what lets the
-    // report below measure the gap rather than leaving it to be rediscovered.
+    // Read by the character sidebar, which renders each as a link. `expect` is
+    // load-bearing here rather than a tie-breaker: `kalihara` names a polity
+    // and no region, so an unnarrowed region lookup resolves to the country.
     { path: ["thalorna", "realm"], expect: ["polity"] },
     { path: ["thalorna", "region"], expect: ["region"] },
 ];
