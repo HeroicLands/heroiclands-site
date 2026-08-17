@@ -10,8 +10,86 @@ theme = "heroiclands-hugo-theme"
   description = "Heroic Lands — World of Thalorna and Foundry VTT Game Systems and Modules"
   author = "Tom Rodriguez"
 
-# The brand nav ([menu]) is defined in the theme with absolute www URLs and
-# inherited here, so every site's header is identical.
+  # The theme carries layout, not addresses, so every site-specific URL it
+  # renders is supplied here. See the theme's README for the full contract.
+  cdnBaseURL = "https://cdn.heroiclands.org"
+
+  [params.brand]
+    logo       = "images/brand/sohl-icon-white.webp"
+    licenseURL = "https://www.heroiclands.org/license/"
+    discordURL = "https://discord.gg/EwMfkNd3az"
+
+  # The home page's hero and entry-point cards.
+  [params.home]
+    heroimage   = "images/brand/sohl-banner.webp"
+    herotitle   = "Explore Heroic Lands"
+    herotagline = "Dive into a richly immersive RPG setting that blends historical realism with deep fantasy, where heroism is forged through adversity and destiny awaits."
+
+    [[params.home.headings]]
+      title = "Song of Heroic Lands"
+    [[params.home.headings]]
+      title = "Settings"
+      class = "settings"
+
+    [[params.home.cards]]
+      key   = "kb"
+      title = "Knowledgebase"
+      url   = "https://kb.heroiclands.org/"
+      image = "images/banners/rules.webp"
+      text  = "Master the rules of Song of Heroic Lands — the definitive reference for the system's mechanics, character creation, combat, and mysteries, all in one searchable place."
+    [[params.home.cards]]
+      key   = "api"
+      title = "API Documentation"
+      url   = "https://api.heroiclands.org/"
+      image = "images/banners/dev-docs.webp"
+      text  = "Build on the system with confidence — technical documentation for the Song of Heroic Lands data model, Foundry VTT integration, and developer tooling."
+    [[params.home.cards]]
+      key   = "thalorna"
+      title = "Thalorna"
+      alt   = "The World of Thalorna"
+      url   = "/thalorna/world/thalorna/"
+      image = "images/banners/tapestry-of-dreams.webp"
+      text  = "Explore a growing trove of lore — NPCs, monsters, cultures, and adventures — crafted to enrich your settings and bring depth to every campaign."
+
+# The brand nav. Absolute URLs so one header works across every host the
+# projects publish to; defined here rather than in the shared theme, which
+# carries no addresses of its own.
+[menu]
+  [[menu.main]]
+    name = "Home"
+    url = "https://www.heroiclands.org/"
+    weight = 1
+  [[menu.main]]
+    name = "Song of Heroic Lands"
+    url = "https://www.heroiclands.org/projects/sohl/"
+    weight = 2
+    identifier = "sohl"
+  [[menu.main]]
+    name = "Knowledgebase"
+    url = "https://kb.heroiclands.org/"
+    weight = 1
+    parent = "sohl"
+  [[menu.main]]
+    name = "API Documentation"
+    url = "https://api.heroiclands.org/"
+    weight = 2
+    parent = "sohl"
+  [[menu.main]]
+    name = "Thalorna"
+    url = "https://www.heroiclands.org/thalorna/world/thalorna/"
+    weight = 3
+  [[menu.main]]
+    name = "HârnMaster 3"
+    url = "https://www.heroiclands.org/projects/hm3/"
+    weight = 4
+  [[menu.main]]
+    name = "Modules"
+    url = "https://www.heroiclands.org/projects/modules/"
+    weight = 5
+  [[menu.main]]
+    name = "License"
+    url = "https://www.heroiclands.org/license/"
+    weight = 6
 
 [markup]
   [markup.goldmark]
