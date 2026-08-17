@@ -10,7 +10,6 @@
     "check:slug-rule": "npx ts-node scripts/check-slug-rule.ts",
     "refs:report": "npx ts-node scripts/vault-refs-report.ts",
     "capture:legacy-urls": "npx ts-node scripts/export-hugo.ts --capture-legacy-urls",
-    "drop:slug": "npx ts-node scripts/export-hugo.ts --drop-slug",
     "clean:dry": "npx ts-node scripts/clean.ts --dry-run --verbose",
     "clean:verbose": "npx ts-node scripts/clean.ts --verbose",
     "build": "npm run clean && npm run check:slug-rule && npm run export && hugo",
