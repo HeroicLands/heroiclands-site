@@ -30,3 +30,13 @@ zone_name = "heroiclands.org"
 [[routes]]
 pattern = "www.heroiclands.org/sohl/*"
 zone_name = "heroiclands.org"
+
+# `/thalorna/*` and the bare `/thalorna`, served by the sohl-thalorna
+# repository's own Pages project.
+[[routes]]
+pattern = "www.heroiclands.org/thalorna"
+zone_name = "heroiclands.org"
+
+[[routes]]
+pattern = "www.heroiclands.org/thalorna/*"
+zone_name = "heroiclands.org"

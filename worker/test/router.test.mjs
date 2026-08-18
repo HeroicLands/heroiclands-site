@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import {
     ROUTES,
@@ -24,16 +25,41 @@ test("routes a package prefix, and its bare form", () => {
     assert.equal(routeFor("/sohl").prefix, "/sohl/");
 });
 
+test("routes each package to its own repository's project", () => {
+    // Two packages, two projects, no shared deploy: the property #1468 asks
+    // for is that these origins are independent of one another.
+    assert.equal(
+        routeFor("/thalorna/world/thalorna/").origin,
+        "https://sohl-thalorna.pages.dev",
+    );
+    assert.equal(routeFor("/thalorna").prefix, "/thalorna/");
+    assert.notEqual(routeFor("/sohl/").origin, routeFor("/thalorna/").origin);
+});
+
 test("leaves this site's own paths alone", () => {
-    for (const p of ["/", "/projects/", "/blog/", "/thalorna/world/thalorna/"]) {
+    for (const p of ["/", "/projects/", "/blog/", "/license/"]) {
         assert.equal(routeFor(p), undefined, p);
     }
+});
+
+test("the Worker routes and the table name the same packages", () => {
+    // A route with no row proxies nothing and a row with no route is never
+    // consulted; either way the prefix silently serves the wrong thing, which
+    // is why the two files are checked against each other rather than by eye.
+    const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
+    const patterns = [...toml.matchAll(/^pattern = "(.+)"$/gm)].map((m) => m[1]);
+    const expected = ROUTES.flatMap((r) => [
+        `www.heroiclands.org${r.prefix.slice(0, -1)}`,
+        `www.heroiclands.org${r.prefix}*`,
+    ]);
+    assert.deepEqual(patterns.sort(), expected.sort());
 });
 
 test("does not route a prefix that merely starts the same way", () => {
     // /sohlx/ is a different section, not the sohl package.
     assert.equal(routeFor("/sohlx/"), undefined);
     assert.equal(routeFor("/sohl-legacy/"), undefined);
+    assert.equal(routeFor("/thalornan/"), undefined);
 });
 
 test("preserves the path and query verbatim", () => {

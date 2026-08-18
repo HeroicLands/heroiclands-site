@@ -19,7 +19,10 @@
  * keeps the `*.pages.dev` subdomain it was created with, so the project renamed
  * to `sohl-site` still publishes there.
  */
-export const ROUTES = [{ prefix: "/sohl/", origin: "https://sohl-kb.pages.dev" }];
+export const ROUTES = [
+    { prefix: "/sohl/", origin: "https://sohl-kb.pages.dev" },
+    { prefix: "/thalorna/", origin: "https://sohl-thalorna.pages.dev" },
+];
 
 /** Origin this site's own pages are served from, for rewriting stray redirects. */
 export const SITE_ORIGIN = "https://www.heroiclands.org";
