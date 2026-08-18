@@ -135,13 +135,3 @@ theme = "heroiclands-hugo-theme"
 
 [taxonomies]
   tag = "tags"
-
-# Project mounts: the generated content tree + the hand-authored pages/.
-# layouts / data / static / archetypes now come from the theme.
-[module]
-  [[module.mounts]]
-    source = "content"
-    target = "content"
-  [[module.mounts]]
-    source = "pages"
-    target = "content"

@@ -2,15 +2,9 @@
 public/
 resources/_gen/
 
-# Exported content. Everything under content/ is generated from the
-# Obsidian vault by scripts/export-hugo.ts. The vault is the single
-# source of truth for all content — nothing in this directory should
-# ever be committed or hand-edited.
-content/
-
-# Node
+# Node (the routing Worker's dev dependencies; the site build itself
+# needs only Hugo)
 node_modules/
-dist/
 
 # OS files
 .DS_Store

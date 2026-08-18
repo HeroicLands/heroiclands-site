@@ -1,13 +1,14 @@
 name: Deploy to GitHub Pages
 
+# This repository authors its own content, so a push to main is the only
+# thing that changes what it publishes. Package content is built and deployed
+# by the repository that owns it (see DEPLOYMENT.md); nothing here rebuilds
+# when a package changes.
 on:
   push:
     branches: [main]
   # Allow triggering manually from the Actions tab
   workflow_dispatch:
-  # Rebuild when HeroicLands vault content changes
-  repository_dispatch:
-    types: [vault-updated]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -28,28 +29,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           submodules: recursive
-
-      - name: Checkout HeroicLands vault
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ github.repository_owner }}/HeroicLands
-          path: _vault
-          token: ${{ secrets.VAULT_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Export vault content to Hugo
-        run: npx ts-node scripts/export-hugo.ts --verbose
-        env:
-          VAULT_ROOT: ${{ github.workspace }}/_vault
-          HUGO_ROOT: ${{ github.workspace }}
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3

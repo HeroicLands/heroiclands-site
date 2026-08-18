@@ -10,10 +10,8 @@ routing Worker in `worker/`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Prerequisites
 
-The build has two external dependencies: **Node.js** (to run the TypeScript export
-script that converts the Obsidian vault into Hugo-ready markdown) and **Hugo**
-(the static-site generator itself). Both must be installed and on `PATH` before
-running any of the npm scripts.
+**Hugo** — and nothing else. The site's content is authored in this repository,
+so the build is a single `hugo` run with no generation step ahead of it.
 
 The pinned-in-CI Hugo version is **0.163.3 extended**
 (see `.github/workflows/deploy.yml`). The minimum supported version is **0.156.0**
@@ -30,54 +28,44 @@ whichever way fits your OS:
 
 Verify with `hugo version` — it should report `+extended`.
 
-Node.js 20+ is what CI uses. Any recent LTS will work.
+Node.js is needed only to run the routing Worker's tests (`cd worker && npm
+test`), never for the site build.
 
 ## Local Development
 
 ```bash
-npm install            # one-time, installs TypeScript / ts-node / etc.
-npm run dev            # exports content from the vault and starts hugo server
+git submodule update --init --recursive   # once, for the shared theme
+hugo server -D                            # preview, drafts included
 ```
 
 The site will be available at `http://localhost:1313/`.
 
-To do a full production build (clean + export + compile to `public/`):
+To do a production build into `public/`, exactly as CI does it:
 
 ```bash
-npm run build
+hugo --minify
 ```
-
-### Troubleshooting `ENOENT spawn hugo-bin/vendor/hugo`
-
-If `npm run build` fails with an error mentioning `hugo-bin/vendor/hugo`,
-your `node_modules` contains a stale symlink from a previous dependency
-setup. Clear it with:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-After that `npm run build` will call whatever `hugo` is on your `PATH`.
 
 ## Content Structure
 
 ```
 content/
-  worldbuilding/     # Thalorna lore, cultures, creatures, etc.
-  projects/          # Foundry VTT systems and modules
-  blog/              # Occasional posts
+  blog/              # Occasional posts, filed by /YYYY/MM/
+  projects/          # Landing pages: SoHL, HârnMaster 3, modules, reference
+  author.md          # /author/
+  license.md         # /license/
+content-templates/   # Note templates. Not content — nothing here is published.
+worker/              # The routing Worker (its own package.json and tests)
 ```
+
+Setting and game-system pages are **not** here: `/sohl/` is published by
+[Song-of-Heroic-Lands-FoundryVTT](https://github.com/HeroicLands/Song-of-Heroic-Lands-FoundryVTT)
+and `/thalorna/` by [sohl-thalorna](https://github.com/HeroicLands/sohl-thalorna),
+each onto the same hostname through the routing Worker.
 
 ## Adding Content
 
-Create a new page:
-
-```bash
-hugo new worldbuilding/my-page.md
-```
-
-Or just create a Markdown file in the appropriate `content/` directory with front matter:
+Create a Markdown file in the appropriate `content/` directory with front matter:
 
 ```yaml
 ---
@@ -94,8 +82,7 @@ Pages with `draft: true` won't appear in production builds (but will show with `
 
 ## Deployment
 
-Push to `main` → GitHub Actions exports the vault, builds with Hugo, and
-publishes to GitHub Pages.
+Push to `main` → GitHub Actions builds with Hugo and publishes to GitHub Pages.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for the whole picture: the three repositories
 that publish `www.heroiclands.org`, the routing layer that composes them, and
