@@ -19,6 +19,33 @@ theme = "heroiclands-hugo-theme"
     licenseURL = "https://www.heroiclands.org/license/"
     discordURL = "https://discord.gg/EwMfkNd3az"
 
+  # The "page not found" page. The theme gained the template in #1454; before
+  # that this site published no 404.html at all, so an unpublished address got
+  # the host's bare default. Note this site deliberately does NOT set
+  # params.list.shortcodes — a reader browsing by tag has no use for an item's
+  # internal identifier after its name.
+  [params.notfound]
+    heroimage = "images/brand/sohl-banner.webp"
+    tagline   = "This site has no page at"
+    sitenoun  = "site"
+
+    [[params.notfound.links]]
+      title = "Home"
+      url   = "/"
+      text  = "Everything Heroic Lands, from the top."
+    [[params.notfound.links]]
+      title = "Song of Heroic Lands"
+      url   = "/projects/song-of-heroic-lands/"
+      text  = "The HârnMaster-compatible Foundry VTT system, and where to start with it."
+    [[params.notfound.links]]
+      title = "Thalorna"
+      url   = "/thalorna/world/thalorna/"
+      text  = "The world: its realms, peoples, faiths, and the lore behind them."
+    [[params.notfound.links]]
+      title = "Blog"
+      url   = "/blog/"
+      text  = "Development notes and announcements."
+
   # The home page's hero and entry-point cards.
   [params.home]
     heroimage   = "images/brand/sohl-banner.webp"
