@@ -2,7 +2,11 @@
 
 The Heroic Lands website — worldbuilding resources, Foundry VTT systems and modules, and occasional blog posts.
 
-Built with [Hugo](https://gohugo.io/) and deployed to [Cloudflare Pages](https://pages.cloudflare.com/).
+Built with [Hugo](https://gohugo.io/) and deployed to [GitHub Pages](https://pages.github.com/),
+served through Cloudflare as `www.heroiclands.org`. This repository publishes
+everything outside a package prefix; `/sohl/` and `/thalorna/` are built and
+deployed by their own repositories and composed onto the same hostname by the
+routing Worker in `worker/`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Prerequisites
 
@@ -90,6 +94,9 @@ Pages with `draft: true` won't appear in production builds (but will show with `
 
 ## Deployment
 
-Push to `main` branch → Cloudflare Pages auto-builds and deploys.
+Push to `main` → GitHub Actions exports the vault, builds with Hugo, and
+publishes to GitHub Pages.
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for setup details.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for the whole picture: the three repositories
+that publish `www.heroiclands.org`, the routing layer that composes them, and
+how to move a package elsewhere.
