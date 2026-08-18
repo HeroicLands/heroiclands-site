@@ -49,3 +49,7 @@ jobs:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   workingDirectory: worker
+                  # The action still defaults to wrangler 3, which is not what
+                  # this Worker was developed and checked against.
+                  wranglerVersion: "4"
+
