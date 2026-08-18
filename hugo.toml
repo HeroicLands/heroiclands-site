@@ -61,13 +61,13 @@ theme = "heroiclands-hugo-theme"
     [[params.home.cards]]
       key   = "kb"
       title = "Knowledgebase"
-      url   = "https://kb.heroiclands.org/"
+      url   = "https://www.heroiclands.org/sohl/kb/"
       image = "images/banners/rules.webp"
       text  = "Master the rules of Song of Heroic Lands — the definitive reference for the system's mechanics, character creation, combat, and mysteries, all in one searchable place."
     [[params.home.cards]]
       key   = "api"
       title = "API Documentation"
-      url   = "https://api.heroiclands.org/"
+      url   = "https://www.heroiclands.org/sohl/api/"
       image = "images/banners/dev-docs.webp"
       text  = "Build on the system with confidence — technical documentation for the Song of Heroic Lands data model, Foundry VTT integration, and developer tooling."
     [[params.home.cards]]
@@ -93,12 +93,12 @@ theme = "heroiclands-hugo-theme"
     identifier = "sohl"
   [[menu.main]]
     name = "Knowledgebase"
-    url = "https://kb.heroiclands.org/"
+    url = "https://www.heroiclands.org/sohl/kb/"
     weight = 1
     parent = "sohl"
   [[menu.main]]
     name = "API Documentation"
-    url = "https://api.heroiclands.org/"
+    url = "https://www.heroiclands.org/sohl/api/"
     weight = 2
     parent = "sohl"
   [[menu.main]]
