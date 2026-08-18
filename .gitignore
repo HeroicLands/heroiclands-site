@@ -29,3 +29,6 @@ Thumbs.db
 # Ignored Files
 nogit/
 CLAUDE.md
+
+# Wrangler scratch from `wrangler dev`
+/worker/.wrangler/

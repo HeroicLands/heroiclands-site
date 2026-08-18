@@ -1,0 +1,32 @@
+# heroiclands-router — see src/index.js.
+#
+# The routes below are the whole of what this Worker intercepts. Everything
+# else on www.heroiclands.org never reaches the script at all and is served by
+# this repository's GitHub Pages deploy, so a broken router cannot take the
+# site down — only the prefixes listed here.
+#
+# Adding a package is a route here plus a row in ROUTES, and the two must agree:
+# a route with no row proxies nothing (the request falls through to the origin),
+# and a row with no route is never consulted.
+
+name = "heroiclands-router"
+main = "src/index.js"
+
+# Deliberately behind the runtime's newest: this date is also what `wrangler dev`
+# runs against locally, and a date the installed wrangler's bundled runtime does
+# not know refuses to start. Nothing here depends on a newer runtime.
+compatibility_date = "2026-04-16"
+
+# No *.workers.dev address. The Worker exists to serve one hostname's prefixes;
+# a second public address for it would be another way to reach the packages,
+# with none of the paths right.
+workers_dev = false
+
+# `/sohl/*` and the bare `/sohl`, which the package's own hosting redirects.
+[[routes]]
+pattern = "www.heroiclands.org/sohl"
+zone_name = "heroiclands.org"
+
+[[routes]]
+pattern = "www.heroiclands.org/sohl/*"
+zone_name = "heroiclands.org"

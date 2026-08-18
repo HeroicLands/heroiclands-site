@@ -1,0 +1,10 @@
+{
+    "name": "heroiclands-router",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "Path-prefix routing layer for www.heroiclands.org — no content, one row per package.",
+    "scripts": {
+        "test": "node --test test/*.test.mjs"
+    }
+}

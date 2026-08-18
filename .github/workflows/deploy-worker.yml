@@ -1,0 +1,51 @@
+name: Deploy the routing Worker
+
+# Publishes the path-prefix router that puts each package's own deploy under
+# www.heroiclands.org (HeroicLands/Song-of-Heroic-Lands-FoundryVTT#1468).
+#
+# Separate from deploy.yml on purpose: the site's pages and the routing layer
+# change for entirely different reasons, and a Worker deploy must not wait on a
+# vault export and a full Hugo build — nor a site deploy on the router.
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "worker/**"
+            - ".github/workflows/deploy-worker.yml"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# The Worker owns live routing for every package prefix; two deploys must never
+# race on it.
+concurrency:
+    group: router-deploy
+    cancel-in-progress: false
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+
+            # The routing table and the URL handling are pure functions; they
+            # are checked here rather than discovered by a reader hitting a
+            # package prefix that proxies to the wrong place.
+            - name: Test the router
+              working-directory: worker
+              run: npm test
+
+            - name: Deploy to Cloudflare
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  workingDirectory: worker

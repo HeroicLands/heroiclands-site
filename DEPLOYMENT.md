@@ -16,10 +16,14 @@ heroiclands-site (Hugo project)
     ▼
 GitHub Pages
     │
-    │  DNS proxy + CDN
+    │  DNS proxy + CDN, and the routing Worker (worker/),
+    │  which proxies each package prefix to its own hosting
     ▼
 Cloudflare → www.heroiclands.org
 ```
+
+`www` is the canonical hostname; the apex redirects to it. Everything outside a
+package prefix is served by the GitHub Pages deploy above.
 
 ## How it works
 
@@ -91,58 +95,49 @@ jobs:
 
 Option B: Manually trigger from the Actions tab (workflow_dispatch).
 
-## Retired: SoHL content at /sohl/
+## Packages under their own prefixes: the routing Worker
 
-This site no longer publishes the `sohl` package. The same vault notes are
-published to **kb.heroiclands.org/{type}/{slug}/** by the
-`Song-of-Heroic-Lands-FoundryVTT` repository, which generates them with the
-same code that compiles them into the game's compendium packs — so that copy
-cannot drift from the system, and this one always could. It had: `/sohl/`
-still carried `corpus` and `trait` pages after the system retired both
-concepts.
+`www.heroiclands.org` is one hostname with more than one publisher. This
+repository's GitHub Pages deploy serves the site; a package repository that
+builds and publishes its own subtree gets a **path prefix**, and requests under
+it are proxied to that repository's own hosting project.
 
-`RETIRED_PACKAGES` in `scripts/export-hugo.ts` is what stops the export. The
-notes are still read and indexed, so cross-references from other content
-resolve; they are simply not routed to a page here. The export reports the
-count it skipped.
+| Prefix    | Served by                             | Hosting                      |
+| --------- | ------------------------------------- | ---------------------------- |
+| `/sohl/*` | `Song-of-Heroic-Lands-FoundryVTT`     | Cloudflare Pages, `sohl-site` |
+| `/*`      | this repository                       | GitHub Pages                 |
 
-**The redirect is a Cloudflare rule, not a repository change.** GitHub Pages
-serves static files and cannot issue a 301, and the site is proxied through
-Cloudflare, so the redirect belongs at the edge:
+That is what `worker/` is: a Cloudflare Worker holding **no content and no
+per-page knowledge**, one row per package. Adding a package is a row in `ROUTES`
+(`worker/src/router.js`) and a route in `worker/wrangler.toml`; removing one is
+deleting them. `worker/test/` covers the table and the URL handling as ordinary
+functions — `cd worker && npm test`.
 
-> **Rules → Redirect Rules → Create rule**
-> Name: `sohl to knowledgebase`
-> When: `URI Path` `starts with` `/sohl/`
-> Then: **Dynamic** redirect, status **301**, preserve query string
-> Expression: `concat("https://kb.heroiclands.org", substring(http.request.uri.path, 5))`
+Two properties are worth understanding before changing it.
 
-`substring(..., 5)` strips the leading `/sohl`, leaving `/{type}/{slug}/`.
-Coverage was measured against the two sitemaps at the time of the change: of
-the 918 published `/sohl/*` URLs, **910 resolve on the knowledgebase** at the
-identical `/{type}/{slug}/` path — 904 as canonical pages, and 6 more through
-the knowledgebase's own generated aliases (the items whose slug changed
-upstream when item URLs began deriving from the name).
+**The path is preserved, not rewritten.** Each package's deployment carries its
+own prefix physically: `/sohl/kb/x/` is at `sohl/kb/x/` inside the SoHL project's
+upload. So the proxy is a straight pass-through, and the same deployment behaves
+identically at its own `*.pages.dev` address — which is how a package repository
+verifies a release before anything here points at it. A router that stripped the
+prefix would make those two disagree.
 
-The remaining **8 name pages that no longer exist anywhere**, so redirecting
-them loses nothing: `/sohl/trait/` (a concept the system retired);
-`/sohl/concoctiongear/` and `/sohl/mystery/`, type-index pages this site
-published with no items under them; and 5 `containergear` jar pages
-(`jar-glass-large`, `jar-glass-small`, `jar-lidded-large`, `jar-lidded-medium`,
-`jar-lidded-small`) left over from before those items were renamed to their
-volumes — the current items are `jar-glass-1-pt`, `jar-lidded-1-gallon`, and so
-on, all of which the knowledgebase serves.
+**The Worker only sees what its routes claim.** Everything outside the prefixes
+in `wrangler.toml` never reaches the script, so a broken router cannot take the
+site down — only the prefixes it claims.
 
-> **Verify a knowledgebase URL by its content, not its status code.**
-> kb.heroiclands.org is a Cloudflare Pages project with no `404.html`, so an
-> unknown path returns **HTTP 200 carrying the landing page**. A `curl -o
-> /dev/null -w '%{http_code}'` check therefore reports every URL as present.
-> Compare `<title>` instead: the landing page's is exactly
-> `SoHL Knowledgebase`.
+Deploying it needs two repository secrets, `CLOUDFLARE_API_TOKEN` (a token with
+**Workers Scripts: Edit**, **Workers Routes: Edit** and **Zone: Read** on
+`heroiclands.org`) and `CLOUDFLARE_ACCOUNT_ID`. The
+**Deploy the routing Worker** workflow runs on any push touching `worker/`, and
+by hand from the Actions tab.
 
-⚠️ **Order matters.** Add the Cloudflare rule *before* deploying the export
-change. The rule intercepts at the edge whether or not the origin still has
-the pages, so with the rule in place first there is no window in which the
-published URLs 404.
+> **A note on the SoHL package.** This site does not publish it:
+> `RETIRED_PACKAGES` in `scripts/export-hugo.ts` skips the export, though the
+> notes are still read and indexed so cross-references from other content
+> resolve. The pages come from `Song-of-Heroic-Lands-FoundryVTT`, generated by
+> the same code that compiles them into the game's compendium packs, so that copy
+> cannot drift from the system — and this one always could.
 
 ## Local development
 
