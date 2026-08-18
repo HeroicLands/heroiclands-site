@@ -102,10 +102,11 @@ repository's GitHub Pages deploy serves the site; a package repository that
 builds and publishes its own subtree gets a **path prefix**, and requests under
 it are proxied to that repository's own hosting project.
 
-| Prefix    | Served by                             | Hosting                      |
-| --------- | ------------------------------------- | ---------------------------- |
-| `/sohl/*` | `Song-of-Heroic-Lands-FoundryVTT`     | Cloudflare Pages, `sohl-site` |
-| `/*`      | this repository                       | GitHub Pages                 |
+| Prefix        | Served by                         | Hosting                          |
+| ------------- | --------------------------------- | -------------------------------- |
+| `/sohl/*`     | `Song-of-Heroic-Lands-FoundryVTT` | Cloudflare Pages, `sohl-site`     |
+| `/thalorna/*` | `sohl-thalorna`                   | Cloudflare Pages, `sohl-thalorna` |
+| `/*`          | this repository                   | GitHub Pages                     |
 
 That is what `worker/` is: a Cloudflare Worker holding **no content and no
 per-page knowledge**, one row per package. Adding a package is a row in `ROUTES`
@@ -113,7 +114,7 @@ per-page knowledge**, one row per package. Adding a package is a row in `ROUTES`
 deleting them. `worker/test/` covers the table and the URL handling as ordinary
 functions — `cd worker && npm test`.
 
-Two properties are worth understanding before changing it.
+Three properties are worth understanding before changing it.
 
 **The path is preserved, not rewritten.** Each package's deployment carries its
 own prefix physically: `/sohl/kb/x/` is at `sohl/kb/x/` inside the SoHL project's
@@ -125,6 +126,18 @@ prefix would make those two disagree.
 **The Worker only sees what its routes claim.** Everything outside the prefixes
 in `wrangler.toml` never reaches the script, so a broken router cannot take the
 site down — only the prefixes it claims.
+
+**Two response headers name the upstream's own address, and both are rewritten
+here.** `Location`, because a redirect Pages issues on its own account would
+otherwise walk the reader onto `*.pages.dev`; and `X-Robots-Tag`, because a
+package's deployment marks its host-assigned address `noindex` so that second
+address for the same pages cannot compete with the canonical URL in search
+results (`Song-of-Heroic-Lands-FoundryVTT#1469`). The hosting cannot tell this
+proxy's request apart from a reader's — same URL, same address — so that header
+arrives here too, on pages that are canonical and must be indexed. Dropping it
+is therefore the router's job, in `canonicalHeaders`: this is the only place the
+two addresses are distinguishable. A package wanting a page indexed nowhere says
+so in the document (`<meta name="robots">`), which passes through untouched.
 
 Deploying it needs two repository secrets, `CLOUDFLARE_API_TOKEN` (a token with
 **Workers Scripts: Edit**, **Workers Routes: Edit** and **Zone: Read** on

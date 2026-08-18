@@ -7,6 +7,7 @@ import {
     routeFor,
     upstreamURL,
     rewriteLocation,
+    canonicalHeaders,
 } from "../src/router.js";
 
 test("the table carries prefixes, not pages", () => {
@@ -99,4 +100,56 @@ test("leaves relative and third-party redirects alone", () => {
         "https://example.org/x",
     );
     assert.equal(rewriteLocation(null, origin), null);
+});
+
+test("drops the noindex a package sets for its own address", () => {
+    // The package's deployment marks *.pages.dev noindex so that second
+    // address cannot compete with this one in search results
+    // (Song-of-Heroic-Lands-FoundryVTT#1469). Served here the page IS the
+    // canonical one and must stay indexable — and this is the only place the
+    // two addresses can be told apart.
+    const origin = "https://sohl-kb.pages.dev";
+    const headers = canonicalHeaders(
+        new Headers({ "x-robots-tag": "noindex" }),
+        origin,
+    );
+    assert.equal(headers.get("x-robots-tag"), null);
+});
+
+test("rewrites the upstream's redirect while it is at it", () => {
+    const origin = "https://sohl-kb.pages.dev";
+    const headers = canonicalHeaders(
+        new Headers({
+            location: `${origin}/sohl/kb/x/`,
+            "x-robots-tag": "noindex",
+        }),
+        origin,
+    );
+    assert.equal(
+        headers.get("location"),
+        "https://www.heroiclands.org/sohl/kb/x/",
+    );
+    assert.equal(headers.get("x-robots-tag"), null);
+});
+
+test("passes every other header through untouched", () => {
+    // The router carries no content and no opinions about it: only the headers
+    // naming the upstream's own address are its business.
+    const origin = "https://sohl-kb.pages.dev";
+    const link = "<https://fonts.googleapis.com>; rel=preconnect";
+    const headers = canonicalHeaders(
+        new Headers({
+            "content-type": "text/html; charset=utf-8",
+            "cache-control": "public, max-age=0, must-revalidate",
+            link,
+        }),
+        origin,
+    );
+    assert.equal(headers.get("content-type"), "text/html; charset=utf-8");
+    assert.equal(
+        headers.get("cache-control"),
+        "public, max-age=0, must-revalidate",
+    );
+    assert.equal(headers.get("link"), link);
+    assert.equal(headers.get("location"), null);
 });

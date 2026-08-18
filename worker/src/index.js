@@ -21,7 +21,7 @@
  * one is not a handler. The table and the URL handling live in src/router.js.
  */
 
-import { routeFor, upstreamURL, rewriteLocation } from "./router.js";
+import { routeFor, upstreamURL, canonicalHeaders } from "./router.js";
 
 export default {
     /**
@@ -49,17 +49,14 @@ export default {
             redirect: "manual",
         });
 
+        // The upstream answers as its own hosting project — naming itself in
+        // redirects, and marking itself `noindex` — and this is where those
+        // answers become this site's. See `canonicalHeaders`.
         const response = await fetch(proxied);
-        const original = response.headers.get("location");
-        const location = rewriteLocation(original, route.origin);
-        if (location === original) return response;
-
-        const headers = new Headers(response.headers);
-        headers.set("location", location);
         return new Response(response.body, {
             status: response.status,
             statusText: response.statusText,
-            headers,
+            headers: canonicalHeaders(response.headers, route.origin),
         });
     },
 };

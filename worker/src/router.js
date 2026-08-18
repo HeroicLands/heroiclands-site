@@ -87,3 +87,41 @@ export function rewriteLocation(location, origin, siteOrigin = SITE_ORIGIN) {
             siteOrigin + location.slice(origin.length)
         :   location;
 }
+
+/**
+ * The header a package's deployment marks its own host-assigned address with.
+ *
+ * Lower-case because `Headers` matches case-insensitively and reads back
+ * lower-cased; naming it once keeps the test and the router in step.
+ */
+export const ROBOTS_HEADER = "x-robots-tag";
+
+/**
+ * The upstream response's headers as they should be served here: its `Location`
+ * pointed back at this site, and its `noindex` dropped.
+ *
+ * A package's deployment marks the hosting project's own address
+ * (`*.pages.dev`) `X-Robots-Tag: noindex`, so that second, unadvertised address
+ * for the same pages cannot compete with the canonical URL in search results
+ * (Song-of-Heroic-Lands-FoundryVTT#1469). The hosting cannot tell this proxy's
+ * request apart from a reader's — it is the same URL at the same address, and
+ * Pages answers both as `*.pages.dev` — so the header arrives here too, on
+ * pages that are being served at their canonical address and must be indexed.
+ * **This is the only place the two addresses are distinguishable**, so removing
+ * it is the router's job.
+ *
+ * A package that wants a page indexed nowhere says so in the document
+ * (`<meta name="robots">`), which is body content and passes through untouched.
+ *
+ * @param {Headers} headers - The upstream response's headers.
+ * @param {string} origin - The route's origin.
+ * @param {string} [siteOrigin] - The origin to rewrite redirects to.
+ * @returns {Headers} Headers to serve at the canonical address.
+ */
+export function canonicalHeaders(headers, origin, siteOrigin = SITE_ORIGIN) {
+    const out = new Headers(headers);
+    const location = rewriteLocation(out.get("location"), origin, siteOrigin);
+    if (location) out.set("location", location);
+    out.delete(ROBOTS_HEADER);
+    return out;
+}
