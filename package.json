@@ -1,0 +1,22 @@
+{
+  "name": "heroiclands-site",
+  "private": true,
+  "version": "0.0.0",
+  "description": "heroiclands.org — the project's front-door Hugo site.",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "author": {
+    "name": "Tom Rodriguez",
+    "email": "toasty@heroiclands.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeroicLands/heroiclands-site.git"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "devDependencies": {
+    "@heroiclands/hugo-theme": "^0.1.0"
+  }
+}

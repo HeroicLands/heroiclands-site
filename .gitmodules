@@ -1,4 +1,0 @@
-[submodule "themes/heroiclands-hugo-theme"]
-	path = themes/heroiclands-hugo-theme
-	url = https://github.com/HeroicLands/heroiclands-hugo-theme.git
-	branch = main

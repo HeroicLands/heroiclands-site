@@ -2,8 +2,8 @@
 public/
 resources/_gen/
 
-# Node (the routing Worker's dev dependencies; the site build itself
-# needs only Hugo)
+# Node (the routing Worker's dev dependencies, and the shared brand theme the
+# site build now installs from npm rather than carrying as a submodule)
 node_modules/
 
 # OS files
