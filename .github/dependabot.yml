@@ -1,0 +1,56 @@
+# Dependabot version updates.
+#
+# No `labels:` here on purpose. The sibling repositories pin one, because their
+# label registries are closed sets that `labels-sync` would fight over — this
+# repository has no registry, so Dependabot's own default label is fine and
+# naming one would invent a convention that nothing enforces.
+#
+# Routine minor and patch bumps are grouped. A major bump is a decision, not
+# housekeeping, so it arrives as its own pull request.
+#
+# That reasoning inverts below 1.0, which is where the theme sits. A `0.x`
+# package signals a breaking change with a **minor** bump — `0.1.0` to `0.2.0`
+# is the break — and the major rule never fires, because `1.0.0` never arrives.
+# So `@heroiclands/hugo-theme` is matched ahead of the catch-all and never
+# grouped: every page on this site renders through it, and a bump to it is
+# never housekeeping.
+#
+# This site had no npm at all until the theme stopped being a git submodule
+# (Song-of-Heroic-Lands-FoundryVTT#1642). Watching it is the other half of that
+# change: the submodule went stale unnoticed on two sibling sites, and moving
+# to npm only helps if something raises the bump.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    groups:
+      # The theme first: it is its own decision. Dependabot assigns a
+      # dependency to the first group it matches, so this entry's position is
+      # what keeps it out of the catch-all below.
+      hugo-theme:
+        patterns:
+          - "@heroiclands/hugo-theme"
+      minor-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(ci)
+    groups:
+      github-actions:
+        patterns:
+          - "*"
