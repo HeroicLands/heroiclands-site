@@ -17,6 +17,6 @@
     "node": ">=24.0.0"
   },
   "devDependencies": {
-    "@heroiclands/hugo-theme": "^0.1.1"
+    "@heroiclands/hugo-theme": "^0.1.2"
   }
 }
