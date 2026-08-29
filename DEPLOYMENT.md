@@ -106,6 +106,36 @@ keeps it off now is the handler's `try`/`catch`, which answers any fault with
 `fetch(request)`. That covers strictly more than the narrow routes did, since it
 also catches a fault on a prefix the router *does* claim.
 
+**A failure is not always a thrown one, and that distinction cost an outage.**
+Cloudflare does **not** throw when an origin hostname does not resolve or does
+not answer: `fetch()` *resolves*, with a status the edge synthesised — 530 for
+"origin DNS error", 521–526 for an origin that refused, timed out, or failed TLS.
+A guard keyed on a thrown error alone therefore never fires for the commonest
+failure there is, which is how `/sohl/` and `/thalorna/` served raw 530s to
+readers for the life of an outage (`heroiclands-site#28`). So the router treats
+those statuses as a failure alongside an exception (`isOriginFailure` in
+`worker/src/router.js`), and both fall through. Ordinary 5xx are deliberately
+**not** in that set: a package's own 500 or 503 is a page it produced and is its
+to serve.
+
+**A package prefix whose origin is unreachable gets this site's 404, not an
+"unavailable" page.** That is a decision, not an oversight. The router holds no
+list of packages, so a first segment it cannot reach is equally "a package whose
+host is down" and "no such package at all" — and by volume it is overwhelmingly
+the second, since *every* mistyped top-level path derives an origin that has
+never existed. A page asserting the first would be a guess, and wrong most of the
+time it was shown. "No such page here" is true either way, is this site's own
+maintained 404, and keeps one code path on the whole domain's critical path. The
+distinction a reader cannot be told is written to the Worker's log instead, where
+an operator can see it; the way to tell the two apart is to ask the upstream
+directly (`curl -sSI https://<package>.pkg.heroiclands.org/<package>/`).
+
+**`wrangler dev` cannot reproduce this failure**, so do not treat a local pass as
+evidence for it. The local runtime *throws* for a hostname that does not resolve,
+where the edge resolves with a 530 — the local check exercises the path that
+already worked. The test that covers it stubs `fetch` **resolving** with a 530
+(`worker/test/router.test.mjs`); that stub, not the local run, is the guard.
+
 **Which prefixes are packages is decided by exclusion.** The router reserves this
 site's own top-level segments — `blog`, `projects`, `tags`, `author`, `license`
 and the theme's asset directories — and treats any other first segment as a
@@ -115,8 +145,9 @@ here. So **adding a section to this site is an edit to `SITE_SEGMENTS`**
 (`worker/src/router.js`), next to the `content/` directory it comes with; a test
 walks `content/`, the theme's `static/` and the taxonomies and fails if anything
 published here is missing from it. Forgetting is not an outage in any case: the
-section is proxied to a host that does not resolve, the fetch throws, and the
-fallthrough serves it from the origin correctly — the cost is latency, not a 404.
+section is proxied to a host that does not resolve, that attempt comes back
+unusable, and the fallthrough serves it from the origin correctly — the cost is
+latency, not a 404.
 
 **Two response headers name the upstream's own address, and both are rewritten
 here** (`canonicalHeaders`). `Location`, because a redirect Pages issues on its
@@ -131,34 +162,29 @@ be indexed; this is the only place the two addresses are distinguishable. A
 package wanting a page indexed nowhere says so in the document
 (`<meta name="robots">`), which passes through untouched.
 
-### The two custom domains that do not exist yet
+### Every package is on a derived origin
 
-`sohl` and `thalorna` predate the derivation and are live at `*.pages.dev` names
-it cannot reach — `/sohl/` is served by `sohl-kb`, because a Cloudflare Pages
-project keeps the subdomain it was created with and that project was renamed to
-`sohl-site` long after. Their `pkg.heroiclands.org` custom domains are a manual
-Cloudflare step that has **not been done**.
+`sohl` and `thalorna` predated the derivation and were live at `*.pages.dev`
+names it could not reach — `/sohl/` was served by `sohl-kb`, because a Cloudflare
+Pages project keeps the subdomain it was created with and that project was
+renamed to `sohl-site` long after. Their `pkg.heroiclands.org` custom domains
+were a manual Cloudflare step, and while it was outstanding `LEGACY_ORIGINS` in
+`worker/src/router.js` named the two projects as a fallback.
 
-Until it is, `LEGACY_ORIGINS` in `worker/src/router.js` names those two projects.
-It is not a routing table and is never consulted on the happy path: the router
-asks for the derived origin first and only retries against a legacy name when
-that origin cannot be fetched at all.
+**That migration is finished.** Both custom domains exist, both answer, and
+`LEGACY_ORIGINS` and its tests are gone (`heroiclands-site#28`). There is no
+second address for a package and no retry against one: the router derives one
+origin and asks for it, and an origin that does not answer falls through to this
+site's own. Adding a package remains no change here at all.
 
-**To finish the migration:**
+Verify at the upstreams directly if a package prefix ever misbehaves — that is
+the check that tells "the package's host is down" apart from "no such package",
+which the router itself cannot:
 
-1. In the Cloudflare dashboard, add `sohl.pkg.heroiclands.org` as a custom domain
-   on the `sohl-site` Pages project, and `thalorna.pkg.heroiclands.org` on
-   `sohl-thalorna`. (Cloudflare creates the DNS records itself; the zone is
-   already here.)
-2. Verify both answer, at the upstream directly:
-
-    ```bash
-    curl -sSI https://sohl.pkg.heroiclands.org/sohl/kb/     | head -1
-    curl -sSI https://thalorna.pkg.heroiclands.org/thalorna/world/thalorna/ | head -1
-    ```
-
-3. Delete `LEGACY_ORIGINS` and its two tests, and deploy. Nothing else changes:
-   the derived origin is what the router was already asking for.
+```bash
+curl -sSI https://sohl.pkg.heroiclands.org/sohl/kb/     | head -1
+curl -sSI https://thalorna.pkg.heroiclands.org/thalorna/ | head -1
+```
 
 Deploying the Worker needs two repository secrets: `CLOUDFLARE_API_TOKEN` (with
 **Workers Scripts: Edit**, **Workers Routes: Edit** and **Zone: Read** on
@@ -230,6 +256,11 @@ done
 
 Each package's build asserts its own `404.html` exists before uploading, because
 its absence is invisible until someone mistypes a URL in production.
+
+**No line of that output may be a 5xx.** `/nope/` in particular is the router's
+own regression check: its first segment derives an origin that has never existed,
+so before `heroiclands-site#28` it answered Cloudflare's raw `530 Origin DNS
+error` page. It must answer `404` with this site's own page.
 
 Two more things worth checking after a routing or hosting change:
 

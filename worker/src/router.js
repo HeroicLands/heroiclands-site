@@ -44,9 +44,10 @@ export const PACKAGE_ORIGIN_SUFFIX = "pkg.heroiclands.org";
  * silently.
  *
  * A section missing from the list is not an outage in any case: its requests
- * are proxied to a `pkg.heroiclands.org` host that does not resolve, the fetch
- * throws, and `src/index.js` falls through to the origin — which serves the
- * section correctly. The cost of the mistake is latency, not a 404.
+ * are proxied to a `pkg.heroiclands.org` host that does not resolve, that
+ * attempt comes back unusable (see `isOriginFailure`), and `src/index.js`
+ * falls through to the origin — which serves the section correctly. The cost of
+ * the mistake is latency, not a 404.
  */
 export const SITE_SEGMENTS = new Set([
     // content/
@@ -78,24 +79,37 @@ export const SITE_SEGMENTS = new Set([
 export const PACKAGE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
 
 /**
- * Hosting projects that predate the derived namespace, kept only as a fallback.
+ * The statuses that mean the upstream never answered, so its "response" is not
+ * a response at all.
  *
- * `sohl` and `thalorna` are live at `*.pages.dev` names that convention cannot
- * reach — `/sohl/` is served by `sohl-kb` because a Cloudflare Pages project
- * keeps the subdomain it was created with, so the project renamed to
- * `sohl-site` still publishes there. Their `pkg.heroiclands.org` custom domains
- * are a manual Cloudflare step that has not happened yet.
+ * **Cloudflare does not throw when an origin is unreachable.** A `fetch()` to a
+ * hostname that does not resolve, or to one that resolves but does not answer,
+ * *resolves* — with a status the edge synthesised on the origin's behalf. 530
+ * is "the origin's DNS does not resolve" (error 1016); 521–526 are the edge
+ * reaching an origin that refused, timed out, or failed TLS. None of them is
+ * content any origin produced, and none should be handed to a reader as though
+ * it were: they are the response-shaped form of the failure the handler's
+ * `try`/`catch` was written for, and keying only on a thrown error missed the
+ * whole of it (heroiclands-site#28).
  *
- * This is **not** the override map issue #25 set out to delete. It is never
- * consulted on the happy path: `src/index.js` uses the derived origin, and only
- * reaches for this one when that origin cannot be fetched at all. The day both
- * custom domains answer, every entry here is dead code and the whole export
- * goes with them.
+ * Deliberately **not** here: 500, 502, 503 and every other ordinary 5xx. Those
+ * an origin can and does produce itself, and a package's own error page is its
+ * to serve — the router must not second-guess a host that answered.
  */
-export const LEGACY_ORIGINS = {
-    sohl: "https://sohl-kb.pages.dev",
-    thalorna: "https://sohl-thalorna.pages.dev",
-};
+export const ORIGIN_FAILURE_STATUSES = new Set([
+    521, 522, 523, 524, 525, 526, 530,
+]);
+
+/**
+ * Whether a status means the attempt failed rather than that the origin
+ * answered.
+ *
+ * @param {number} status - The status of the upstream's response.
+ * @returns {boolean} `true` when nothing usable came back.
+ */
+export function isOriginFailure(status) {
+    return ORIGIN_FAILURE_STATUSES.has(status);
+}
 
 /** Origin this site's own pages are served from, for rewriting stray redirects. */
 export const SITE_ORIGIN = "https://www.heroiclands.org";
@@ -133,25 +147,21 @@ export function packageFor(pathname, siteSegments = SITE_SEGMENTS) {
  * The route serving `pathname`, or `undefined` for anything this site publishes
  * itself.
  *
- * `fallbackOrigin` is present only while a package's derived custom domain does
- * not exist yet — see `LEGACY_ORIGINS`.
+ * The origin is derived and there is no second one to try: every package's
+ * `pkg.heroiclands.org` custom domain now exists, so the migration fallback
+ * this used to carry is gone (heroiclands-site#28). An origin that does not
+ * answer is handled by falling through to this site's own, not by guessing at
+ * another address for the package.
  *
  * @param {string} pathname - The request path.
  * @param {Set<string>} [siteSegments] - Segments this site publishes itself.
- * @returns {{package: string, prefix: string, origin: string,
- *   fallbackOrigin?: string} | undefined} The matching route.
+ * @returns {{package: string, prefix: string, origin: string} | undefined} The
+ *   matching route.
  */
 export function routeFor(pathname, siteSegments = SITE_SEGMENTS) {
     const pkg = packageFor(pathname, siteSegments);
     if (!pkg) return undefined;
-    return {
-        package: pkg,
-        prefix: `/${pkg}/`,
-        origin: originFor(pkg),
-        ...(LEGACY_ORIGINS[pkg] ?
-            { fallbackOrigin: LEGACY_ORIGINS[pkg] }
-        :   {}),
-    };
+    return { package: pkg, prefix: `/${pkg}/`, origin: originFor(pkg) };
 }
 
 /**

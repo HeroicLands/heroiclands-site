@@ -4,10 +4,11 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 import handler from "../src/index.js";
 import {
-    LEGACY_ORIGINS,
+    ORIGIN_FAILURE_STATUSES,
     PACKAGE_ORIGIN_SUFFIX,
     SITE_SEGMENTS,
     canonicalHeaders,
+    isOriginFailure,
     originFor,
     packageFor,
     rewriteLocation,
@@ -178,35 +179,6 @@ test("refuses a segment that could not be a hostname label", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The legacy origins, and the day they go
-// ---------------------------------------------------------------------------
-
-test("keeps a fallback for the two packages whose custom domain is pending", () => {
-    // sohl and thalorna are live at *.pages.dev names convention cannot reach
-    // (`sohl-kb`, because a Pages project keeps the subdomain it was created
-    // with). The derived origin is still what the router asks for first; this
-    // is only what it retries against when that origin cannot be fetched.
-    assert.equal(routeFor("/sohl/").origin, "https://sohl.pkg.heroiclands.org");
-    assert.equal(routeFor("/sohl/").fallbackOrigin, "https://sohl-kb.pages.dev");
-    assert.equal(
-        routeFor("/thalorna/").origin,
-        "https://thalorna.pkg.heroiclands.org",
-    );
-    assert.equal(
-        routeFor("/thalorna/").fallbackOrigin,
-        "https://sohl-thalorna.pages.dev",
-    );
-});
-
-test("gives a package with no legacy name no fallback at all", () => {
-    // The fallback is a migration aid for two named projects, not a mechanism.
-    // When both custom domains answer, LEGACY_ORIGINS empties and this becomes
-    // true of every package.
-    assert.equal(routeFor("/kethira/").fallbackOrigin, undefined);
-    assert.deepEqual(Object.keys(LEGACY_ORIGINS).sort(), ["sohl", "thalorna"]);
-});
-
-// ---------------------------------------------------------------------------
 // URL and header handling
 // ---------------------------------------------------------------------------
 
@@ -304,6 +276,31 @@ test("the Worker route is a wildcard naming no package", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Telling "the origin never answered" from "the origin answered badly"
+// ---------------------------------------------------------------------------
+
+test("treats the edge's did-not-answer statuses as a failure", () => {
+    // 530 is "the origin's DNS does not resolve" — the one that took the site
+    // down (#28) — and 521-526 are the edge reaching an origin that refused,
+    // timed out, or failed TLS. None is content an origin produced.
+    for (const status of [521, 522, 523, 524, 525, 526, 530]) {
+        assert.equal(isOriginFailure(status), true, String(status));
+    }
+    assert.deepEqual(
+        [...ORIGIN_FAILURE_STATUSES].sort(),
+        [521, 522, 523, 524, 525, 526, 530],
+    );
+});
+
+test("leaves a response the origin actually produced alone", () => {
+    // A package's own error page is the package's to serve; the router must not
+    // second-guess a host that answered. Ordinary 5xx included — deliberately.
+    for (const status of [200, 301, 404, 410, 500, 502, 503, 504, 520]) {
+        assert.equal(isOriginFailure(status), false, String(status));
+    }
+});
+
+// ---------------------------------------------------------------------------
 // The handler: a fault must reach the origin, not a 5xx
 // ---------------------------------------------------------------------------
 
@@ -348,29 +345,24 @@ test("a package prefix is proxied to its derived origin", async () => {
     });
 });
 
-test("a pending custom domain retries against the legacy origin", async () => {
-    // Until sohl.pkg.heroiclands.org exists the derived origin does not
-    // resolve, and /sohl/ must still serve. Delete this test with the entry.
+test("asks for the derived origin and nothing else", async () => {
+    // The migration fallback is gone: sohl.pkg.heroiclands.org and
+    // thalorna.pkg.heroiclands.org both answer, so there is no second address
+    // for a package and no retry against one (#28). One request, one origin.
     const request = new Request("https://www.heroiclands.org/sohl/kb/");
     const tried = [];
     await withFetch(async (input) => {
         tried.push(input.url);
-        if (input.url.includes("pkg.heroiclands.org")) {
-            throw new TypeError("getaddrinfo ENOTFOUND");
-        }
         return new Response("sohl", { status: 200 });
     }, async () => {
         assert.equal(await (await handler.fetch(request)).text(), "sohl");
     });
-    assert.deepEqual(tried, [
-        "https://sohl.pkg.heroiclands.org/sohl/kb/",
-        "https://sohl-kb.pages.dev/sohl/kb/",
-    ]);
+    assert.deepEqual(tried, ["https://sohl.pkg.heroiclands.org/sohl/kb/"]);
 });
 
-test("a package with no fallback falls through to the origin", async () => {
-    // No legacy name to retry, so the catch takes it: the origin's 404 beats a
-    // Worker exception page.
+test("a failing package origin falls through to this site's origin", async () => {
+    // Nothing to retry against, so the catch takes it: the origin's 404 beats
+    // a Worker exception page.
     const request = new Request("https://www.heroiclands.org/hm3/");
     await withFetch(async (input) => {
         if (input !== request) throw new TypeError("no such host");
@@ -378,5 +370,75 @@ test("a package with no fallback falls through to the origin", async () => {
     }, async () => {
         const response = await handler.fetch(request);
         assert.equal(response.status, 404);
+    });
+});
+
+test("an origin that resolves with a 530 falls through, not passed on", async () => {
+    // The test that would have caught the outage. Cloudflare does not throw
+    // when an origin hostname does not resolve or does not answer: fetch()
+    // RESOLVES, with a 530. A stub that rejects — the natural shape, and what
+    // every other handler test here does — models a failure the runtime does
+    // not produce, which is exactly why the suite passed through the outage.
+    const request = new Request("https://www.heroiclands.org/kethira/");
+    await withFetch(async (input) => {
+        if (input !== request) {
+            return new Response("error code: 1016", { status: 530 });
+        }
+        return new Response("origin", { status: 200 });
+    }, async () => {
+        const response = await handler.fetch(request);
+        assert.equal(response.status, 200);
+        assert.equal(await response.text(), "origin");
+    });
+});
+
+test("falls through for every 52x the edge synthesises too", async () => {
+    // 530 is the one that happened; the connection-level failures are the same
+    // class of non-answer and must not reach a reader either.
+    for (const status of [521, 522, 523, 524, 525, 526]) {
+        const request = new Request("https://www.heroiclands.org/kethira/");
+        await withFetch(async (input) => {
+            if (input !== request) return new Response("", { status });
+            return new Response("origin", { status: 200 });
+        }, async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 200, String(status));
+        });
+    }
+});
+
+test("serves a package's own error response rather than hiding it", async () => {
+    // The complement of the fix, and the reason it is a named list and not
+    // "any 5xx": a package that answers 503 from its own hosting has answered,
+    // and swapping its page for this site's 404 would lose the truth.
+    const request = new Request("https://www.heroiclands.org/kethira/x/");
+    await withFetch(async (input) => {
+        if (input !== request) {
+            return new Response("kethira is rebuilding", { status: 503 });
+        }
+        return new Response("origin", { status: 200 });
+    }, async () => {
+        const response = await handler.fetch(request);
+        assert.equal(response.status, 503);
+        assert.equal(await response.text(), "kethira is rebuilding");
+    });
+});
+
+test("passes a package's own 404 through, prefix and all", async () => {
+    // The chosen answer to "404 or an explicit error page?" is that a package
+    // prefix gets a 404 either way — from the package when it is up, from this
+    // site when it is not. The router holds no list of packages, so it cannot
+    // tell a package whose host is down from a first segment that was never a
+    // package, and must not claim to.
+    const request = new Request("https://www.heroiclands.org/kethira/gone/");
+    await withFetch(async (input) => {
+        if (input !== request) {
+            return new Response("kethira's 404", { status: 404 });
+        }
+        return new Response("this site's 404", { status: 404 });
+    }, async () => {
+        const response = await handler.fetch(request);
+        assert.equal(response.status, 404);
+        assert.equal(await response.text(), "kethira's 404");
     });
 });
