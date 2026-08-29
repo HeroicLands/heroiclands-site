@@ -63,22 +63,32 @@ mounted into the build and render no page; see its README.
 
 ## The routing layer
 
-`worker/` is a Cloudflare Worker (`heroiclands-router`) holding **no content and
-no per-page knowledge** — one row per package. A request under a package prefix
+`worker/` is a Cloudflare Worker (`heroiclands-router`) holding **no content, no
+per-page knowledge, and no list of packages**. A request under a package prefix
 is proxied to that package's hosting project; everything else is served by this
 repository's own deploy.
 
-Adding a package is two lines:
+**Adding a package is no change here at all** (`heroiclands-site#25`). The origin
+is derived from the prefix:
 
-1. a row in `ROUTES` (`worker/src/router.js`) — its prefix and its origin;
-2. a route pair in `worker/wrangler.toml` — `/<pkg>` and `/<pkg>/*`.
+```
+/<package>/  →  https://<package>.pkg.heroiclands.org
+```
 
-Removing one is deleting them. The two must agree: a route with no row proxies
-nothing, and a row with no route is never consulted — both fail silently, so a
-test asserts they name the same packages. `worker/test/` covers the table and
-the URL handling as ordinary functions: `cd worker && npm test`.
+so a package becomes publishable on this domain entirely from its own
+repository. What that repository does is give its hosting project the matching
+custom domain, from the workflow that already creates the project. Removing a
+package is removing that custom domain; nothing here knows it existed.
 
-Three properties are worth understanding before changing it.
+The namespace is deliberately one this organisation owns rather than
+`<package>.pages.dev`: `*.pages.dev` is global across every Cloudflare account,
+`hm3.pages.dev` is already somebody else's live project, and any other name
+could be claimed tomorrow.
+
+`worker/test/` covers the derivation and the URL handling as ordinary functions,
+plus the handler itself against a stubbed `fetch`: `cd worker && npm test`.
+
+Four properties are worth understanding before changing it.
 
 **The path is preserved, not rewritten.** Each package's deployment carries its
 own prefix physically: `/sohl/kb/x/` is at `sohl/kb/x/` inside the SoHL project's
@@ -88,9 +98,25 @@ verifies a release before anything here points at it. A router that stripped the
 prefix would make those two disagree, and every absolute link in the proxied site
 would be wrong at one of them.
 
-**The Worker only sees what its routes claim.** Everything outside the prefixes
-in `wrangler.toml` never reaches the script, so a broken router cannot take the
-site down — only the prefixes it claims.
+**The Worker sees every request, and a fault falls through to the origin.** The
+route in `wrangler.toml` is a single wildcard, because a route per package would
+be a list of packages in this repository — the thing the derivation removes. What
+used to keep a broken router off the rest of the site was that narrowness; what
+keeps it off now is the handler's `try`/`catch`, which answers any fault with
+`fetch(request)`. That covers strictly more than the narrow routes did, since it
+also catches a fault on a prefix the router *does* claim.
+
+**Which prefixes are packages is decided by exclusion.** The router reserves this
+site's own top-level segments — `blog`, `projects`, `tags`, `author`, `license`
+and the theme's asset directories — and treats any other first segment as a
+package. Only one of the two sets can be written down honestly: packages are
+open-ended and arrive from other repositories, while this site's sections live
+here. So **adding a section to this site is an edit to `SITE_SEGMENTS`**
+(`worker/src/router.js`), next to the `content/` directory it comes with; a test
+walks `content/`, the theme's `static/` and the taxonomies and fails if anything
+published here is missing from it. Forgetting is not an outage in any case: the
+section is proxied to a host that does not resolve, the fetch throws, and the
+fallthrough serves it from the origin correctly — the cost is latency, not a 404.
 
 **Two response headers name the upstream's own address, and both are rewritten
 here** (`canonicalHeaders`). `Location`, because a redirect Pages issues on its
@@ -104,6 +130,35 @@ address — so that header arrives here too, on pages that are canonical and mus
 be indexed; this is the only place the two addresses are distinguishable. A
 package wanting a page indexed nowhere says so in the document
 (`<meta name="robots">`), which passes through untouched.
+
+### The two custom domains that do not exist yet
+
+`sohl` and `thalorna` predate the derivation and are live at `*.pages.dev` names
+it cannot reach — `/sohl/` is served by `sohl-kb`, because a Cloudflare Pages
+project keeps the subdomain it was created with and that project was renamed to
+`sohl-site` long after. Their `pkg.heroiclands.org` custom domains are a manual
+Cloudflare step that has **not been done**.
+
+Until it is, `LEGACY_ORIGINS` in `worker/src/router.js` names those two projects.
+It is not a routing table and is never consulted on the happy path: the router
+asks for the derived origin first and only retries against a legacy name when
+that origin cannot be fetched at all.
+
+**To finish the migration:**
+
+1. In the Cloudflare dashboard, add `sohl.pkg.heroiclands.org` as a custom domain
+   on the `sohl-site` Pages project, and `thalorna.pkg.heroiclands.org` on
+   `sohl-thalorna`. (Cloudflare creates the DNS records itself; the zone is
+   already here.)
+2. Verify both answer, at the upstream directly:
+
+    ```bash
+    curl -sSI https://sohl.pkg.heroiclands.org/sohl/kb/     | head -1
+    curl -sSI https://thalorna.pkg.heroiclands.org/thalorna/world/thalorna/ | head -1
+    ```
+
+3. Delete `LEGACY_ORIGINS` and its two tests, and deploy. Nothing else changes:
+   the derived origin is what the router was already asking for.
 
 Deploying the Worker needs two repository secrets: `CLOUDFLARE_API_TOKEN` (with
 **Workers Scripts: Edit**, **Workers Routes: Edit** and **Zone: Read** on
@@ -141,9 +196,10 @@ publish it at `thalorna.example`:
 2. **Point the new address at its hosting project** — a custom domain on the
    existing Cloudflare Pages project, or any static host: the build's output is
    a plain directory tree. Its deploy credentials are already the package's own.
-3. **In this repository**, delete its row in `ROUTES` and its route pair in
-   `wrangler.toml`, and deploy the Worker. That is the whole of the disconnection
-   here; nothing else in this repository knows the package exists.
+3. **Remove its `pkg.heroiclands.org` custom domain** from its hosting project.
+   That is the whole of the disconnection, and it happens in the package's own
+   Cloudflare project — **nothing changes in this repository**, which has never
+   known the package exists.
 4. **Update the consumers' link bases.** Cross-package links resolve through
    each package's published link manifest, which records addresses _relative to
    its own package base_ (`Song-of-Heroic-Lands-FoundryVTT#1465`), so a consumer
@@ -190,6 +246,7 @@ Two more things worth checking after a routing or hosting change:
 | `www.heroiclands.org` | **Canonical.** Everything is served here.                          |
 | `heroiclands.org`     | 301s to `www`, path and query preserved (Cloudflare rule).         |
 | `cdn.heroiclands.org` | Images and shared assets (`params.cdnBaseURL`).                    |
+| `*.pkg.heroiclands.org` | Where the router proxies a package prefix. A custom domain on the package's own hosting project, set by that package's deploy. |
 | `*.pages.dev`         | Each package project's own address. Real, unadvertised, `noindex`. |
 
 `kb.heroiclands.org` and `api.heroiclands.org` are **retired**: their DNS records

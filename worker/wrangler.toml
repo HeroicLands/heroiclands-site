@@ -1,13 +1,23 @@
 # heroiclands-router — see src/index.js.
 #
-# The routes below are the whole of what this Worker intercepts. Everything
-# else on www.heroiclands.org never reaches the script at all and is served by
-# this repository's GitHub Pages deploy, so a broken router cannot take the
-# site down — only the prefixes listed here.
+# One wildcard route: every request to the hostname reaches the script, and the
+# script decides. It used to be a pair of narrow routes per package, so that
+# everything else was served by this repository's GitHub Pages deploy without
+# the router being involved at all — "a broken router cannot take the site down,
+# only the prefixes it claims."
 #
-# Adding a package is a route here plus a row in ROUTES, and the two must agree:
-# a route with no row proxies nothing (the request falls through to the origin),
-# and a row with no route is never consulted.
+# That property was worth having, and it is not given up here so much as moved.
+# The narrow routes bought it at the cost of naming every package in this file,
+# which is exactly what a package must not have to do (issue #25): a package is
+# publishable from its own repository, so this file cannot be the place its
+# existence is recorded. What replaces the routes is the handler's `try`/`catch`,
+# which falls through to `fetch(request)` on any fault — the same guarantee,
+# applied more completely, since it also covers a fault on a prefix the router
+# *does* claim, which the narrow routes never did.
+#
+# Adding a package is no longer a change here, or anywhere in this repository.
+# The origin is derived from the prefix (see src/router.js); the package's own
+# deploy gives its hosting project the matching custom domain.
 
 name = "heroiclands-router"
 main = "src/index.js"
@@ -22,21 +32,13 @@ compatibility_date = "2026-04-16"
 # with none of the paths right.
 workers_dev = false
 
-# `/sohl/*` and the bare `/sohl`, which the package's own hosting redirects.
+# Everything on the hostname. Requests outside a package prefix are handed
+# straight back to the origin by the handler (`routeFor` returns nothing), so
+# they are served by this repository's deploy exactly as before — the router
+# is now on their path, but makes no decision about them.
+#
+# The apex is not listed: `heroiclands.org` 301s to `www` by a Cloudflare rule
+# before any of this, so the router never needs to see it.
 [[routes]]
-pattern = "www.heroiclands.org/sohl"
-zone_name = "heroiclands.org"
-
-[[routes]]
-pattern = "www.heroiclands.org/sohl/*"
-zone_name = "heroiclands.org"
-
-# `/thalorna/*` and the bare `/thalorna`, served by the sohl-thalorna
-# repository's own Pages project.
-[[routes]]
-pattern = "www.heroiclands.org/thalorna"
-zone_name = "heroiclands.org"
-
-[[routes]]
-pattern = "www.heroiclands.org/thalorna/*"
+pattern = "www.heroiclands.org/*"
 zone_name = "heroiclands.org"
