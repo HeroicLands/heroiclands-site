@@ -22,20 +22,40 @@
  * narrow routes did, since it also catches a fault on a prefix the router *does*
  * claim.
  *
+ * **A failure is not always a thrown one.** Cloudflare answers an unreachable
+ * origin with a 530 (or a 52x) rather than rejecting, so a guard keyed on a
+ * thrown error alone never fires for the commonest failure there is — which is
+ * how `/sohl/` and `/thalorna/` served raw 530s for the life of an outage
+ * (heroiclands-site#28). Both an exception and an unusable response are faults
+ * here, and both fall through.
+ *
  * This module exports **only** the handler: the Workers runtime treats every
  * named export of the entry module as an entrypoint, and refuses to start when
  * one is not a handler. The routing decisions and the URL handling live in
  * src/router.js.
  */
 
-import { routeFor, upstreamURL, canonicalHeaders } from "./router.js";
+import {
+    routeFor,
+    upstreamURL,
+    canonicalHeaders,
+    isOriginFailure,
+} from "./router.js";
 
 /**
  * Proxy a request to a package's origin and answer as this site.
  *
+ * Throws when the origin did not answer at all, so the caller's `catch` handles
+ * an unreachable origin and a thrown fault by one path. That is not a
+ * refinement: **Cloudflare resolves with a 530 rather than throwing** when a
+ * hostname does not resolve, so before this check the guard below existed
+ * without ever being reachable for the failure it was written for, and readers
+ * were served raw 530s (heroiclands-site#28).
+ *
  * @param {Request} request - The incoming request.
  * @param {string} origin - The origin to proxy to.
  * @returns {Promise<Response>} The upstream response, re-headed for this site.
+ * @throws {Error} When the upstream never answered — see `isOriginFailure`.
  */
 async function proxy(request, origin) {
     const proxied = new Request(upstreamURL(request.url, origin), {
@@ -54,6 +74,17 @@ async function proxy(request, origin) {
     // redirects, and marking itself `noindex` — and this is where those
     // answers become this site's. See `canonicalHeaders`.
     const response = await fetch(proxied);
+    if (isOriginFailure(response.status)) {
+        // Release the edge's error page rather than leaving the stream open;
+        // it is not being served, and nothing else will read it.
+        try {
+            await response.body?.cancel();
+        } catch {
+            // Already discarded — there is nothing to release.
+        }
+        throw new Error(`${origin} did not answer (${response.status})`);
+    }
+
     return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
@@ -72,26 +103,25 @@ export default {
 
             // No route: this site publishes the path itself, and the router has
             // no business answering — fall through, as it always has.
-            if (route) {
-                try {
-                    return await proxy(request, route.origin);
-                } catch (error) {
-                    // A package whose derived custom domain does not exist yet.
-                    // Only for a body-less method: a retry cannot re-read a
-                    // body the first attempt may already have consumed, and the
-                    // packages this applies to serve static pages anyway. See
-                    // `LEGACY_ORIGINS`.
-                    const retryable =
-                        request.method === "GET" || request.method === "HEAD";
-                    if (!route.fallbackOrigin || !retryable) throw error;
-                    return await proxy(request, route.fallbackOrigin);
-                }
-            }
+            if (route) return await proxy(request, route.origin);
         } catch (error) {
             // The wildcard Worker route means a fault here is the whole site,
             // not one prefix — so nothing is allowed to escape as a 5xx. The
             // origin serves this repository's own pages correctly, and answers
             // a package prefix with a 404: a bad page rather than a dead site.
+            //
+            // **A package prefix gets that 404 too, deliberately, and not a
+            // "this package is unavailable" page.** The router holds no list of
+            // packages — that is the whole of heroiclands-site#25 — so a first
+            // segment it cannot reach is equally "a package whose host is down"
+            // and "no such package at all", and by volume it is overwhelmingly
+            // the second: every mistyped top-level path derives an origin that
+            // has never existed. A page asserting the first would be a guess,
+            // and wrong most of the time it was shown. "No such page here" is
+            // true either way, is this site's own maintained 404, and keeps one
+            // code path on the whole domain's critical path. The distinction
+            // the reader cannot be told is recorded here instead, where an
+            // operator can see it.
             console.error(
                 "heroiclands-router: falling through to the origin",
                 error,
