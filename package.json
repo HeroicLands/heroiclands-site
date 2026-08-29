@@ -16,6 +16,9 @@
   "engines": {
     "node": ">=24.0.0"
   },
+  "scripts": {
+    "check:assets": "node utils/check-assets.mjs"
+  },
   "devDependencies": {
     "@heroiclands/hugo-theme": "^0.1.2"
   }
