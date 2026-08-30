@@ -132,7 +132,9 @@ test("the reserved segments cover everything this repository publishes", () => {
     }
 
     // The theme's static/ becomes top-level paths too. Only present once the
-    // theme is installed, which the Worker's own CI job does not do.
+    // theme is installed — which the pull-request check does (`npm ci` before
+    // `npm test`, see .github/workflows/worker-test.yml) and the deploy job
+    // does not, so the guard stays for the run that has no node_modules.
     const themeStatic = new URL(
         "node_modules/@heroiclands/hugo-theme/static/",
         repo,
@@ -298,6 +300,30 @@ test("leaves a response the origin actually produced alone", () => {
     for (const status of [200, 301, 404, 410, 500, 502, 503, 504, 520]) {
         assert.equal(isOriginFailure(status), false, String(status));
     }
+});
+
+// ---------------------------------------------------------------------------
+// The entry module: a shape the runtime will start
+// ---------------------------------------------------------------------------
+
+test("the entry module exports its handler and nothing else", async () => {
+    // The Workers runtime treats **every named export of the entry module as an
+    // entrypoint** and refuses to start when one is not a handler ("the
+    // provided value is not of type 'function or ExportedHandler'"). A stray
+    // `export const` in src/index.js is therefore a Worker that deploys and
+    // does not boot — and nothing else here would notice, because Node imports
+    // such a module perfectly happily. It is why the routing decisions live in
+    // src/router.js at all, so the constraint is worth a check rather than a
+    // docstring.
+    //
+    // This is also the one property a `wrangler dev` smoke test would have
+    // added over this suite. It does not need one: #29 established that the
+    // local runtime *throws* where the edge answers with a 530, so a smoke test
+    // passes on exactly the router that took the site down, while this costs a
+    // module import.
+    const module = await import("../src/index.js");
+    assert.deepEqual(Object.keys(module), ["default"]);
+    assert.equal(typeof module.default.fetch, "function");
 });
 
 // ---------------------------------------------------------------------------

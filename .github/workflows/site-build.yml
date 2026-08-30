@@ -1,0 +1,69 @@
+name: Site build
+
+# The same defect as the Worker's, on the other half of the repository
+# (heroiclands-site#27): nothing checked that the site still builds before a
+# change landed on `main`, and a push to `main` publishes. A template or content
+# error was discovered by the deploy that was meant to ship it.
+#
+# The stakes differ, and it is worth being honest about which is which. A failed
+# Hugo build fails `deploy.yml` and Pages keeps serving the previous deploy, so
+# the cost is a broken deploy, not a broken site; a bad router deploys
+# successfully and takes the hostname with it. This check is the cheap half of
+# the pair, not the urgent one.
+#
+# It builds exactly what `deploy.yml` builds and stops short of publishing it.
+# The two pins below (Node, Hugo) are deliberately the same as that workflow's
+# and have to move together — a gate that builds on a different Hugo than the
+# deploy is a gate that can pass for a deploy that will fail.
+
+on:
+    pull_request:
+        paths:
+            - "content/**"
+            - "static/**"
+            - "hugo.toml"
+            - "package.json"
+            - "package-lock.json"
+            - ".github/workflows/site-build.yml"
+
+permissions:
+    contents: read
+
+concurrency:
+    group: site-build-${{ github.head_ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        name: Hugo build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+                  cache: npm
+
+            # The shared brand theme is an npm dependency rather than a
+            # submodule (Song-of-Heroic-Lands-FoundryVTT#1642), so it has to be
+            # installed before Hugo runs.
+            - name: Install the theme
+              run: npm ci
+
+            - name: Setup Hugo
+              uses: peaceiris/actions-hugo@v3
+              with:
+                  # Keep in step with deploy.yml.
+                  hugo-version: "0.163.3"
+                  extended: true
+
+            # `--minify` and the production environment, because those are what
+            # publishes: a build that only succeeds in development mode is not
+            # evidence about the one that runs on `main`.
+            - name: Build Hugo site
+              run: hugo --minify
+              env:
+                  HUGO_ENVIRONMENT: production

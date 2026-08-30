@@ -31,7 +31,7 @@ Everything outside a package prefix: the home page, `/blog/`, `/projects/`,
 `sohl` note, no `thalorna` note — and holds none.
 
 ```
-heroiclands-site (Hugo project + shared theme submodule)
+heroiclands-site (Hugo project + shared theme, an npm dependency)
     │  content/  — authored here, in this repository
     │  .github/workflows/deploy.yml — hugo --minify
     ▼
@@ -42,10 +42,12 @@ Cloudflare  — DNS, CDN, the apex → www redirect, and the routing Worker
 ```
 
 `deploy.yml` runs on every push to `main` and on `workflow_dispatch`. It checks
-this repository out (submodules included, for the theme), builds with Hugo, and
-publishes the artifact to GitHub Pages. **That is the whole build** — no content
-generation step, no other repository checked out, and nothing to install: Hugo
-reads `content/` as it stands.
+this repository out, installs the shared theme with `npm ci`, builds with Hugo,
+and publishes the artifact to GitHub Pages. **That is the whole build** — no
+content generation step and no other repository checked out: Hugo reads
+`content/` as it stands, and the one install is the theme, which is an npm
+dependency rather than a submodule
+(`Song-of-Heroic-Lands-FoundryVTT#1642`).
 
 Nothing rebuilds this site when a package changes, because a package's pages are
 not built here. Its own workflow publishes them.
@@ -60,6 +62,39 @@ it are gone.
 
 `content-templates/` holds the note templates that vault carried. They are not
 mounted into the build and render no page; see its README.
+
+## What a pull request is checked against
+
+On this repository **merging is deploying** — both `deploy.yml` and
+`deploy-worker.yml` trigger on push to `main` — so anything that only runs on
+that trigger reports after the decision it exists to inform. Two checks run on
+the pull request instead (heroiclands-site#27):
+
+| Workflow          | Runs when a pull request touches                 | What it proves                                                            |
+| ----------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
+| `worker-test.yml` | `worker/`, `content/`, `hugo.toml`, the lockfile | The router's suite passes, drift check included, with the theme installed |
+| `site-build.yml`  | `content/`, `static/`, `hugo.toml`, the lockfile | `hugo --minify` still builds the site, on the Hugo the deploy uses        |
+
+`worker-test.yml` runs on more than `worker/` because the suite checks more than
+`worker/`: its drift check walks `content/`, `hugo.toml`'s taxonomies and the
+theme's `static/` and fails when a top-level path this site publishes is missing
+from the router's reserved list. A new section arrives through `content/`, not
+through an edit to the router, so that is where the check has to be armed.
+
+The two are not equally urgent, and the difference is worth keeping in view. A
+Hugo build that fails simply fails the deploy, and Pages goes on serving the
+previous one — a broken deploy, not a broken site. The Worker has no such
+backstop: since #25 gave it a wildcard route it sees every request to the
+hostname, so a bad router deploys successfully and takes the whole hostname with
+it, which is what happened in #28.
+
+`site-build.yml` duplicates `deploy.yml`'s Node and Hugo pins rather than
+sharing them. **They have to move together**: a gate that builds on a different
+Hugo than the deploy is a gate that can pass for a deploy that will fail.
+
+Neither check is listed in the repository's ruleset as a **required status
+check**, so today each turns a pull request red without blocking its merge
+button. Adding them there is what makes them gates rather than reports.
 
 ## The routing layer
 
@@ -86,7 +121,18 @@ The namespace is deliberately one this organisation owns rather than
 could be claimed tomorrow.
 
 `worker/test/` covers the derivation and the URL handling as ordinary functions,
-plus the handler itself against a stubbed `fetch`: `cd worker && npm test`.
+plus the handler itself against a stubbed `fetch`: `cd worker && npm test`. It
+runs on a pull request that touches the router as well as on the deploy — see
+[What a pull request is checked against](#what-a-pull-request-is-checked-against).
+
+**There is no `wrangler dev` smoke check, deliberately.** Driving the real paths
+locally is a useful thing to do by hand, but it is not evidence: the local
+runtime *throws* where the edge answers with a synthesised 530, so the router
+that served raw 530s across the site (#28) passes a local smoke test. A check
+that is green on the failure it is meant to catch is worse than none. What such
+a run would genuinely have added — that the entry module exports only its
+handler, since the runtime treats every named export as an entrypoint — is
+asserted in the suite instead, for the cost of a module import.
 
 Four properties are worth understanding before changing it.
 
@@ -194,7 +240,7 @@ Actions tab.
 
 ## The shared theme carries layout, not addresses
 
-`themes/heroiclands-hugo-theme` is a submodule shared by every site in the
+`@heroiclands/hugo-theme` is an npm dependency shared by every site in the
 family, and it holds **no address of its own**
 (`Song-of-Heroic-Lands-FoundryVTT#1464`). Each consumer supplies its own, so a
 site can move without the theme knowing:
@@ -208,7 +254,7 @@ site can move without the theme knowing:
   links, the home page's hero and cards, and the 404 page's wording and routes
   back.
 
-A change to the theme is a change to every site that pins it; bump the submodule
+A change to the theme is a change to every site that pins it; bump the version
 here deliberately, and check a page of each kind before pushing.
 
 ## Moving a package elsewhere
@@ -306,15 +352,16 @@ keeps its own Cloudflare credentials, scoped to its own project.
 
 ## Local development
 
-Hugo is the only tool the site needs; there is no install step and no
-`node_modules` at the repository root.
+Hugo builds the site; the one thing to install first is the shared theme, which
+is an npm dependency.
 
 ```bash
-git submodule update --init --recursive   # once, for the theme
+npm ci               # once, for the theme
 hugo server -D       # preview, drafts included
 hugo --minify        # what CI publishes, into public/
 ```
 
 The routing Worker is separate and testable on its own — `cd worker && npm test`
 runs the table and URL handling as plain `node:test` functions, no runtime
-required.
+required. It has no dependencies of its own, but run the root `npm ci` first if
+you want the drift check to see the theme's `static/` directories too.
