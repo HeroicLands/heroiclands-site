@@ -26,6 +26,15 @@ on:
             # editing `worker/`, so a pull request that adds one has to run it.
             - "content/**"
             - "hugo.toml"
+            # The package roster and the copy of it Hugo reads. The suite checks
+            # that the router resolves every package the roster names, that none
+            # of them collides with one of this site's own sections, and that the
+            # committed `data/roster.json` is still what `roster.mjs` would
+            # write (heroiclands-site#23). All three go stale from an edit here
+            # rather than one under `worker/`.
+            - "roster.mjs"
+            - "data/**"
+            - "utils/build-roster.mjs"
             - "package.json"
             - "package-lock.json"
             - ".github/workflows/worker-test.yml"

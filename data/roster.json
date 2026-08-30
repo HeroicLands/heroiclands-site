@@ -1,0 +1,81 @@
+{
+    "generatedBy": "utils/build-roster.mjs — do not edit; change roster.mjs and run `npm run roster`",
+    "packages": [
+        {
+            "id": "sohl",
+            "prefix": "/sohl/",
+            "title": "Song of Heroic Lands",
+            "repository": "Song-of-Heroic-Lands-FoundryVTT",
+            "kind": "system",
+            "systems": [],
+            "publishes": "content",
+            "dependents": [
+                "thalorna",
+                "kethira",
+                "harnensemble"
+            ]
+        },
+        {
+            "id": "hm3",
+            "prefix": "/hm3/",
+            "title": "HârnMaster 3 for Foundry VTT",
+            "repository": "HarnMaster-3-FoundryVTT",
+            "kind": "system",
+            "systems": [],
+            "publishes": "homepage",
+            "dependents": [
+                "harnensemble",
+                "harnadventures"
+            ]
+        },
+        {
+            "id": "thalorna",
+            "prefix": "/thalorna/",
+            "title": "The World of Thalorna",
+            "repository": "sohl-thalorna",
+            "kind": "module",
+            "systems": [
+                "sohl"
+            ],
+            "publishes": "content",
+            "dependents": []
+        },
+        {
+            "id": "kethira",
+            "prefix": "/kethira/",
+            "title": "HârnMaster Kethira Basic",
+            "repository": "sohl-kethira-basic",
+            "kind": "module",
+            "systems": [
+                "sohl"
+            ],
+            "publishes": "homepage",
+            "dependents": []
+        },
+        {
+            "id": "harnensemble",
+            "prefix": "/harnensemble/",
+            "title": "Ensemble of Hârn NPCs",
+            "repository": "harn-ensemble",
+            "kind": "module",
+            "systems": [
+                "hm3",
+                "sohl"
+            ],
+            "publishes": "homepage",
+            "dependents": []
+        },
+        {
+            "id": "harnadventures",
+            "prefix": "/harnadventures/",
+            "title": "Hârn Adventures",
+            "repository": "harn-adventures",
+            "kind": "module",
+            "systems": [
+                "hm3"
+            ],
+            "publishes": "homepage",
+            "dependents": []
+        }
+    ]
+}
