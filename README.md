@@ -46,6 +46,35 @@ To do a production build into `public/`, exactly as CI does it:
 hugo --minify
 ```
 
+## Checking the assets a build asks for
+
+Hugo emits image addresses; it never fetches them. A page can name an image
+that was never uploaded and nothing fails — the page simply renders with a dead
+URL behind it, which for a hero banner is a full-height blank band under the
+title (issue #19). Three separate sources feed those addresses: a page's own
+`banner:` / `img:` front matter, the hero the shared theme derives from a
+page's `type:`, and the image URLs `hugo.toml` hands the theme (the home cards,
+the brand logo, the 404 hero).
+
+`npm run check:assets` reads the answer off the built site — every
+`params.cdnBaseURL` address the rendered HTML and CSS actually request — and
+fetches each one, failing on any non-200 and naming the page that asked for it:
+
+```bash
+hugo --minify && npm run check:assets
+```
+
+It takes a build directory (default `public`) and `--base` / `ASSET_BASE_URL`
+for the host. It is not wired into CI yet: the pull-request gate that builds
+the site is still in review (#27), and it is that job — one step after its
+`hugo --minify` — that this belongs in rather than a second workflow doing the
+same build again.
+
+The shared theme runs a complementary check of its own (`lint:banners`), but
+the two answer different questions: the theme verifies the banner inventory it
+declares, which it must do without knowing what any consumer's content or
+config asks for.
+
 ## Content Structure
 
 ```
