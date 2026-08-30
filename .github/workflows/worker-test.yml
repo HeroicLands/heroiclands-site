@@ -1,0 +1,66 @@
+name: Worker tests
+
+# The gate `deploy-worker.yml` cannot be. That workflow runs the same suite, but
+# on push to `main` — the trigger that also deploys — so it reports on a router
+# after the decision it exists to inform, and on this repository merging *is*
+# deploying (heroiclands-site#27).
+#
+# That was survivable while the Worker claimed two narrow prefixes. It is not
+# now: #25 replaced them with a single wildcard, so every request to
+# www.heroiclands.org enters the router, and a router change deployed on 29
+# August served raw 530s for `/sohl/` and `/thalorna/` and a raw Cloudflare
+# error for every mistyped path until #29. The suite that would have caught it
+# could not fail the pull request.
+#
+# This adds a gate; it moves none. `deploy-worker.yml` is untouched.
+
+on:
+    pull_request:
+        paths:
+            # The router itself, obviously.
+            - "worker/**"
+            # And the inputs to the suite's drift check, which walks `content/`,
+            # `hugo.toml`'s taxonomies and the theme's `static/` and fails when
+            # something this site publishes is missing from `SITE_SEGMENTS`. A
+            # new section reaches the router by being added here, not by anyone
+            # editing `worker/`, so a pull request that adds one has to run it.
+            - "content/**"
+            - "hugo.toml"
+            - "package.json"
+            - "package-lock.json"
+            - ".github/workflows/worker-test.yml"
+
+permissions:
+    contents: read
+
+# A push to a pull request supersedes the run in flight on it; nothing here
+# deploys, so there is nothing to protect by letting a stale run finish.
+concurrency:
+    group: worker-test-${{ github.head_ref }}
+    cancel-in-progress: true
+
+jobs:
+    test:
+        name: Router suite
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+                  cache: npm
+
+            # Not for the Worker, which has no dependencies: for the theme. The
+            # drift check reads the theme's `static/` directories and skips that
+            # half of itself when they are absent, so installing here is the
+            # difference between checking what this site publishes and checking
+            # only the part of it that lives in `content/`.
+            - name: Install the theme
+              run: npm ci
+
+            - name: Test the router
+              working-directory: worker
+              run: npm test
