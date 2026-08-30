@@ -43,6 +43,21 @@ export const PACKAGE_ORIGIN_SUFFIX = "pkg.heroiclands.org";
  * if anything published here is missing from this list, so it cannot drift
  * silently.
  *
+ * **This list stays here rather than moving into the package roster**
+ * (`roster.mjs`), though the two divide one namespace between them and must
+ * stay disjoint. Three reasons, and the last is the deciding one. Their
+ * provenance differs: this is a fact about *this* repository's own build
+ * output, already derived and checked against it, while the roster records
+ * other repositories. Their lifecycle differs: this list must **not** grow when
+ * a package is added, and holding it in the file that does grow then invites
+ * exactly the edit #25 removed. And this list is load-bearing at runtime in the
+ * deployed Worker while the roster is not read at runtime at all — merging them
+ * would put a package-shaped list back into the router's bundle, in the one
+ * file where "the router holds no list of packages" most needs to be true.
+ * Disjointness is what actually matters, and that is a test rather than a file
+ * layout: `test/roster.test.mjs` asserts no package claims a segment reserved
+ * here, or a section `content/` publishes.
+ *
  * A section missing from the list is not an outage in any case: its requests
  * are proxied to a `pkg.heroiclands.org` host that does not resolve, that
  * attempt comes back unusable (see `isOriginFailure`), and `src/index.js`
