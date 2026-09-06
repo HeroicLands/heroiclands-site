@@ -17,6 +17,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+      "prepare": "git config core.hooksPath .githooks || true",
     "check:assets": "node utils/check-assets.mjs",
     "roster": "node utils/build-roster.mjs",
     "check:roster": "node utils/build-roster.mjs --check"
