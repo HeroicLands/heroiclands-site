@@ -22,6 +22,6 @@
     "check:roster": "node utils/build-roster.mjs --check"
   },
   "devDependencies": {
-    "@heroiclands/hugo-theme": "^0.1.2"
+    "@heroiclands/hugo-theme": "^0.4.0"
   }
 }
