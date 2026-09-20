@@ -44,7 +44,7 @@ theme = "hugo-theme"
       text  = "The HârnMaster-compatible Foundry VTT system, and where to start with it."
     [[params.notfound.links]]
       title = "Thalorna"
-      url   = "/thalorna/world/thalorna/"
+      url   = "/thalorna/"
       text  = "The world: its realms, peoples, faiths, and the lore behind them."
     [[params.notfound.links]]
       title = "Blog"
@@ -79,7 +79,7 @@ theme = "hugo-theme"
       key   = "thalorna"
       title = "Thalorna"
       alt   = "The World of Thalorna"
-      url   = "/thalorna/world/thalorna/"
+      url   = "/thalorna/"
       image = "images/banners/tapestry-of-dreams.webp"
       text  = "Explore a growing trove of lore — NPCs, monsters, cultures, and adventures — crafted to enrich your settings and bring depth to every campaign."
 
