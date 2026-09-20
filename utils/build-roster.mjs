@@ -6,7 +6,7 @@
  * carrying the reasoning a generated file cannot. This script projects it into
  * the three formats the build and its consumers read natively: `data/*.json`
  * and `static/*` for Hugo, and a dedicated `config/_default/menus.toml` for
- * this site's own header menu, which `hugo.toml` no longer authors.
+ * this site's own header menu; `hugo.toml` carries no `[menu]` of its own.
  *
  * The projections are **committed**, not built at deploy time. `deploy.yml`
  * runs Hugo and nothing else, so a data file produced by a build step would
