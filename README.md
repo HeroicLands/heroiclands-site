@@ -51,7 +51,7 @@ hugo --minify
 Hugo emits image addresses; it never fetches them. A page can name an image
 that was never uploaded and nothing fails — the page simply renders with a dead
 URL behind it, which for a hero banner is a full-height blank band under the
-title (issue #19). Three separate sources feed those addresses: a page's own
+title. Three separate sources feed those addresses: a page's own
 `banner:` / `img:` front matter, the hero the shared theme derives from a
 page's `type:`, and the image URLs `hugo.toml` hands the theme (the home cards,
 the brand logo, the 404 hero).
@@ -65,10 +65,7 @@ hugo --minify && npm run check:assets
 ```
 
 It takes a build directory (default `public`) and `--base` / `ASSET_BASE_URL`
-for the host. It is not wired into CI yet: the pull-request gate that builds
-the site is still in review (#27), and it is that job — one step after its
-`hugo --minify` — that this belongs in rather than a second workflow doing the
-same build again.
+for the host.
 
 The shared theme runs a complementary check of its own (`lint:banners`), but
 the two answer different questions: the theme verifies the banner inventory it
