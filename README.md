@@ -65,9 +65,7 @@ hugo --minify && npm run check:assets
 ```
 
 It takes a build directory (default `public`) and `--base` / `ASSET_BASE_URL`
-for the host. It is not wired into CI: `site-build.yml` — one step after its
-`hugo --minify` — is where it belongs, rather than a second workflow doing the
-same build again.
+for the host.
 
 The shared theme runs a complementary check of its own (`lint:banners`), but
 the two answer different questions: the theme verifies the banner inventory it
