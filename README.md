@@ -10,8 +10,9 @@ routing Worker in `worker/`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Prerequisites
 
-**Hugo** — and nothing else. The site's content is authored in this repository,
-so the build is a single `hugo` run with no generation step ahead of it.
+**Hugo**, **Node.js** and npm. The site's content is authored in this
+repository, so building it is a single `hugo` run, once `npm ci` has installed
+the shared theme.
 
 The pinned-in-CI Hugo version is **0.163.3 extended**
 (see `.github/workflows/deploy.yml`). The minimum supported version is **0.156.0**
@@ -28,8 +29,10 @@ whichever way fits your OS:
 
 Verify with `hugo version` — it should report `+extended`.
 
-Node.js is needed only to run the routing Worker's tests (`cd worker && npm
-test`), never for the site build.
+Node.js **24 or newer** (see `package.json`'s `engines` field) and npm are
+needed for the site build, because the shared theme is an npm dependency that
+`npm ci` installs, and to run the routing Worker's tests (`cd worker && npm
+test`).
 
 ## Local Development
 
