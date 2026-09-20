@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Home",
+        "url": "https://www.heroiclands.org/"
+    },
+    {
+        "name": "Song of Heroic Lands",
+        "url": "https://www.heroiclands.org/sohl/"
+    },
+    {
+        "name": "HârnMaster 3",
+        "url": "https://www.heroiclands.org/hm3/"
+    },
+    {
+        "name": "Thalorna",
+        "url": "https://www.heroiclands.org/thalorna/"
+    },
+    {
+        "name": "Other Modules",
+        "url": "https://www.heroiclands.org/projects/modules/",
+        "children": [
+            {
+                "name": "HârnMaster Kethira Basic",
+                "url": "https://www.heroiclands.org/kethira/"
+            },
+            {
+                "name": "Thalorna Alternative Art",
+                "url": "https://www.heroiclands.org/thalornaaltart/"
+            },
+            {
+                "name": "Ensemble of Hârn NPCs",
+                "url": "https://www.heroiclands.org/harnensemble/"
+            },
+            {
+                "name": "Hârn Adventures",
+                "url": "https://www.heroiclands.org/harnadventures/"
+            }
+        ]
+    },
+    {
+        "name": "License",
+        "url": "https://www.heroiclands.org/license/"
+    }
+]

@@ -31,6 +31,8 @@ import {
     packageById,
     prefixFor,
     renderDataFile,
+    renderMenusFile,
+    renderNavFile,
 } from "../../roster.mjs";
 import {
     PACKAGE_ORIGIN_SUFFIX,
@@ -45,12 +47,20 @@ const repo = new URL("../../", import.meta.url);
 // The roster itself
 // ---------------------------------------------------------------------------
 
-test("names the six packages HeroicLands publishes", () => {
+test("names the seven packages HeroicLands publishes", () => {
     // Verified against each repository's `package-build.config.yaml`
     // (`contentPackage`) rather than against any list written down elsewhere.
     assert.deepEqual(
         PACKAGES.map((pkg) => pkg.id),
-        ["sohl", "hm3", "thalorna", "kethira", "harnensemble", "harnadventures"],
+        [
+            "sohl",
+            "hm3",
+            "thalorna",
+            "kethira",
+            "thalornaaltart",
+            "harnensemble",
+            "harnadventures",
+        ],
     );
 });
 
@@ -69,6 +79,10 @@ test("every entry is complete and well-formed", () => {
         assert.ok(
             ["content", "homepage"].includes(pkg.publishes),
             `${pkg.id} publishes: ${pkg.publishes}`,
+        );
+        assert.ok(
+            ["top", "modules"].includes(pkg.nav),
+            `${pkg.id} nav: ${pkg.nav}`,
         );
     }
 });
@@ -123,7 +137,7 @@ test("the dependents index is the one no package can hold for itself", () => {
     // neither can: a module names the system it is for, never the reverse.
     assert.deepEqual(
         dependentsOf("sohl").map((pkg) => pkg.id),
-        ["thalorna", "kethira", "harnensemble"],
+        ["thalorna", "kethira", "thalornaaltart", "harnensemble"],
     );
     assert.deepEqual(
         dependentsOf("hm3").map((pkg) => pkg.id),
@@ -203,6 +217,27 @@ test("data/roster.json is what roster.mjs would write", () => {
     );
 });
 
+test("config/_default/menus.toml is what roster.mjs would write", () => {
+    const committed = readFileSync(
+        new URL("config/_default/menus.toml", repo),
+        "utf8",
+    );
+    assert.equal(
+        committed,
+        renderMenusFile(),
+        "config/_default/menus.toml is stale — run: npm run roster",
+    );
+});
+
+test("static/nav.json is what roster.mjs would write", () => {
+    const committed = readFileSync(new URL("static/nav.json", repo), "utf8");
+    assert.equal(
+        committed,
+        renderNavFile(),
+        "static/nav.json is stale — run: npm run roster",
+    );
+});
+
 test("the projection resolves what a template should not have to", () => {
     // A projection, not a transcription: it carries the derived prefix and the
     // reverse index, so a Hugo template renders a cross-link without doing a
@@ -210,5 +245,10 @@ test("the projection resolves what a template should not have to", () => {
     const data = JSON.parse(readFileSync(new URL("data/roster.json", repo)));
     const sohl = data.packages.find((pkg) => pkg.id === "sohl");
     assert.equal(sohl.prefix, "/sohl/");
-    assert.deepEqual(sohl.dependents, ["thalorna", "kethira", "harnensemble"]);
+    assert.deepEqual(sohl.dependents, [
+        "thalorna",
+        "kethira",
+        "thalornaaltart",
+        "harnensemble",
+    ]);
 });

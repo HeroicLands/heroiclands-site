@@ -55,11 +55,22 @@
  * manifest cannot answer for, so waiting on a `_stats` redesign would block the
  * link on the wrong dependency. It is authored, and it is authored here.
  *
+ * ## The header navigation is derived from here too
+ *
+ * `nav` places an entry in the header: `top` for one that gets its own entry,
+ * `modules` for one listed under "Other Modules". Roster order is menu order.
+ * `utils/build-roster.mjs` writes the menu three ways from the same list —
+ * `config/_default/menus.toml` for this site's own header,
+ * `static/nav.json` for the package sites' toolchain to read, and
+ * `data/roster.json` unchanged, for the cross-link projection below. Nothing
+ * authors a menu anywhere else; `hugo.toml` carries no `[menu]` block.
+ *
  * ## Adding a package
  *
- * One entry below, then `npm run roster` to regenerate `data/roster.json` (the
- * copy Hugo reads — see `utils/build-roster.mjs`). Nothing else in this
- * repository, and nothing in the Worker.
+ * One entry below, then `npm run roster` to regenerate the three derived files
+ * (`data/roster.json`, `config/_default/menus.toml`, `static/nav.json` — see
+ * `utils/build-roster.mjs`). Nothing else in this repository, and nothing in
+ * the Worker.
  */
 
 /**
@@ -70,6 +81,9 @@
  *   segment. **Not** the repository name.
  * @property {string} title - What the package's own homepage calls itself, so a
  *   cross-link names it the way a reader will find it.
+ * @property {string} [navName] - The header's label for this entry, when the
+ *   header wants something shorter than `title` calls itself on its own
+ *   homepage. Absent when `title` is already the right length for a menu.
  * @property {string} repository - The GitHub repository under `HeroicLands`,
  *   recorded so nobody has to guess it from the address, and so the test can pin
  *   the two apart.
@@ -83,6 +97,8 @@
  *   compiles to; `homepage` publishes that one page and fences the rest off. A
  *   cross-link uses it to decide whether there is anything below `/<id>/` worth
  *   linking to.
+ * @property {"top" | "modules"} nav - Where the header places this package:
+ *   its own top-level entry, or a child under "Other Modules".
  */
 
 /**
@@ -105,22 +121,27 @@ export const PACKAGES = [
         kind: "system",
         systems: [],
         publishes: "content",
+        nav: "top",
     },
     {
         id: "hm3",
         title: "HârnMaster 3 for Foundry VTT",
+        navName: "HârnMaster 3",
         repository: "HarnMaster-3-FoundryVTT",
         kind: "system",
         systems: [],
         publishes: "homepage",
+        nav: "top",
     },
     {
         id: "thalorna",
         title: "The World of Thalorna",
+        navName: "Thalorna",
         repository: "sohl-thalorna",
         kind: "module",
         systems: ["sohl"],
         publishes: "content",
+        nav: "top",
     },
     {
         id: "kethira",
@@ -129,6 +150,16 @@ export const PACKAGES = [
         kind: "module",
         systems: ["sohl"],
         publishes: "homepage",
+        nav: "modules",
+    },
+    {
+        id: "thalornaaltart",
+        title: "Thalorna Alternative Art",
+        repository: "thalornaaltart",
+        kind: "module",
+        systems: ["sohl"],
+        publishes: "homepage",
+        nav: "modules",
     },
     {
         // Two systems, and the reason `systems` is authored rather than read:
@@ -141,6 +172,7 @@ export const PACKAGES = [
         kind: "module",
         systems: ["hm3", "sohl"],
         publishes: "homepage",
+        nav: "modules",
     },
     {
         // Recorded as the maintainer scoped it in heroiclands-site#23: HM3.
@@ -157,6 +189,7 @@ export const PACKAGES = [
         kind: "module",
         systems: ["hm3"],
         publishes: "homepage",
+        nav: "modules",
     },
 ];
 
@@ -237,4 +270,105 @@ export function toDataFile(packages = PACKAGES) {
  */
 export function renderDataFile(packages = PACKAGES) {
     return `${JSON.stringify(toDataFile(packages), null, 4)}\n`;
+}
+
+/** The origin every menu URL in the roster is built against. */
+const SITE_ORIGIN = "https://www.heroiclands.org";
+
+/**
+ * The header menu as a tree — "Home", "Other Modules" and "License" are the
+ * three entries no package declares, filled in around the roster. Roster
+ * order is menu order; `nav` decides placement.
+ *
+ * @param {Package[]} [packages] - The roster to render.
+ * @returns {{name: string, url: string, children?: {name: string, url: string}[]}[]}
+ *   The menu, in order.
+ */
+export function menuTree(packages = PACKAGES) {
+    const entryFor = (pkg) => ({
+        name: pkg.navName ?? pkg.title,
+        url: `${SITE_ORIGIN}${prefixFor(pkg.id)}`,
+    });
+    return [
+        { name: "Home", url: `${SITE_ORIGIN}/` },
+        ...packages.filter((pkg) => pkg.nav === "top").map(entryFor),
+        {
+            name: "Other Modules",
+            url: `${SITE_ORIGIN}/projects/modules/`,
+            children: packages
+                .filter((pkg) => pkg.nav === "modules")
+                .map(entryFor),
+        },
+        { name: "License", url: `${SITE_ORIGIN}/license/` },
+    ];
+}
+
+/**
+ * A TOML basic string, quoted and escaped.
+ *
+ * @param {string} value - The value to quote.
+ * @returns {string} The value as a TOML basic string.
+ */
+function tomlString(value) {
+    return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+}
+
+/**
+ * The exact bytes `config/_default/menus.toml` must hold.
+ *
+ * Hugo reads a dedicated `menus.toml` config file with the menu's own name as
+ * the top-level array — `[[main]]`, not `[[menu.main]]` as `hugo.toml` would
+ * carry it — and its entries take over that menu entirely rather than merging
+ * with a `[menu]` block in the root config, which is why `hugo.toml` carries
+ * no `[menu]` block at all: the two would not combine, and only this file
+ * would render.
+ *
+ * @param {Package[]} [packages] - The roster to render.
+ * @returns {string} The file's contents, newline-terminated.
+ */
+export function renderMenusFile(packages = PACKAGES) {
+    const blocks = [];
+    const tree = menuTree(packages);
+    tree.forEach((entry, topIndex) => {
+        const isModules = entry.name === "Other Modules";
+        const weight = topIndex + 1;
+        blocks.push(
+            [
+                "[[main]]",
+                `  name = ${tomlString(entry.name)}`,
+                `  url = ${tomlString(entry.url)}`,
+                `  weight = ${weight}`,
+                ...(isModules ? ['  identifier = "modules"'] : []),
+            ].join("\n"),
+        );
+        entry.children?.forEach((child, i) => {
+            blocks.push(
+                [
+                    "[[main]]",
+                    `  name = ${tomlString(child.name)}`,
+                    `  url = ${tomlString(child.url)}`,
+                    `  weight = ${i + 1}`,
+                    '  parent = "modules"',
+                ].join("\n"),
+            );
+        });
+    });
+    return (
+        "# The header nav, generated by utils/build-roster.mjs — do not edit;\n" +
+        "# change roster.mjs and run `npm run roster`. Every package entry links\n" +
+        "# to its own landing; \"Other Modules\" is the only dropdown.\n\n" +
+        `${blocks.join("\n\n")}\n`
+    );
+}
+
+/**
+ * The exact bytes `static/nav.json` must hold, published at
+ * `https://www.heroiclands.org/nav.json` for the package sites' build
+ * toolchain to read.
+ *
+ * @param {Package[]} [packages] - The roster to render.
+ * @returns {string} The file's contents, newline-terminated.
+ */
+export function renderNavFile(packages = PACKAGES) {
+    return `${JSON.stringify(menuTree(packages), null, 4)}\n`;
 }
