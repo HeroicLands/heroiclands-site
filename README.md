@@ -34,8 +34,8 @@ test`), never for the site build.
 ## Local Development
 
 ```bash
-git submodule update --init --recursive   # once, for the shared theme
-hugo server -D                            # preview, drafts included
+npm ci            # once, for the shared theme
+hugo server -D    # preview, drafts included
 ```
 
 The site will be available at `http://localhost:1313/`.
