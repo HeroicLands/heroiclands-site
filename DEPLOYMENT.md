@@ -17,12 +17,11 @@ each holds credentials scoped to its own hosting project, deploys on its own
 pushes, and its pages are live when its own workflow finishes. A package repository
 can be re-deployed, broken, or taken away without touching the others.
 
-That independence is the requirement the architecture was designed against
-(`HeroicLands/Song-of-Heroic-Lands-FoundryVTT#1444`): a successor inheriting one
-package repository — and nothing else — must be able to publish it. See
-[Moving a package elsewhere](#moving-a-package-elsewhere), which is that
-requirement written as a procedure. If it ever stops being a short list, the
-design has stopped meeting it.
+That independence is the requirement the architecture is designed to meet: a
+successor inheriting one package repository — and nothing else — must be able
+to publish it. See [Moving a package elsewhere](#moving-a-package-elsewhere),
+which is that requirement written as a procedure. If it ever stops being a
+short list, the design has stopped meeting it.
 
 ## What this repository publishes
 
@@ -46,29 +45,23 @@ this repository out, installs the shared theme with `npm ci`, builds with Hugo,
 and publishes the artifact to GitHub Pages. **That is the whole build** — no
 content generation step and no other repository checked out: Hugo reads
 `content/` as it stands, and the one install is the theme, which is an npm
-dependency rather than a submodule
-(`Song-of-Heroic-Lands-FoundryVTT#1642`).
+dependency rather than a submodule.
 
 Nothing rebuilds this site when a package changes, because a package's pages are
 not built here. Its own workflow publishes them.
 
-**The content is authored, not exported.** It was generated until
-`Song-of-Heroic-Lands-FoundryVTT#1448`, by a script that read the `HeroicLands`
-Obsidian vault — which is why `content/` was once gitignored, and why an edit
-made to a page here used to be reverted without a word. Both are over: the
-markdown under `content/` is the source, edited here like any other file. The
-vault, the exporter, and the `vault-updated` dispatch that rebuilt the site from
-it are gone.
+**The content is authored, not exported.** The markdown under `content/` is
+the source, edited here like any other file.
 
-`content-templates/` holds the note templates that vault carried. They are not
-mounted into the build and render no page; see its README.
+`content-templates/` holds note templates. They are not mounted into the
+build and render no page; see its README.
 
 ## What a pull request is checked against
 
 On this repository **merging is deploying** — both `deploy.yml` and
 `deploy-worker.yml` trigger on push to `main` — so anything that only runs on
 that trigger reports after the decision it exists to inform. Two checks run on
-the pull request instead (heroiclands-site#27):
+the pull request instead:
 
 | Workflow          | Runs when a pull request touches                 | What it proves                                                            |
 | ----------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
@@ -84,9 +77,8 @@ through an edit to the router, so that is where the check has to be armed.
 The two are not equally urgent, and the difference is worth keeping in view. A
 Hugo build that fails simply fails the deploy, and Pages goes on serving the
 previous one — a broken deploy, not a broken site. The Worker has no such
-backstop: since #25 gave it a wildcard route it sees every request to the
-hostname, so a bad router deploys successfully and takes the whole hostname with
-it, which is what happened in #28.
+backstop: its wildcard route means it sees every request to the hostname, so a
+bad router deploys successfully and takes the whole hostname with it.
 
 `site-build.yml` duplicates `deploy.yml`'s Node and Hugo pins rather than
 sharing them. **They have to move together**: a gate that builds on a different
@@ -103,7 +95,7 @@ per-page knowledge, and no list of packages**. A request under a package prefix
 is proxied to that package's hosting project; everything else is served by this
 repository's own deploy.
 
-**Adding a package is no change here at all** (`heroiclands-site#25`). The origin
+**Adding a package is no change here at all.** The origin
 is derived from the prefix:
 
 ```
@@ -127,12 +119,12 @@ runs on a pull request that touches the router as well as on the deploy — see
 
 **There is no `wrangler dev` smoke check, deliberately.** Driving the real paths
 locally is a useful thing to do by hand, but it is not evidence: the local
-runtime *throws* where the edge answers with a synthesised 530, so the router
-that served raw 530s across the site (#28) passes a local smoke test. A check
-that is green on the failure it is meant to catch is worse than none. What such
-a run would genuinely have added — that the entry module exports only its
-handler, since the runtime treats every named export as an entrypoint — is
-asserted in the suite instead, for the cost of a module import.
+runtime *throws* where the edge answers with a synthesised 530, so a router
+serving raw 530s across the site still passes a local smoke test. A check that
+is green on the failure it is meant to catch is worse than none. What such a
+run would genuinely add — that the entry module exports only its handler,
+since the runtime treats every named export as an entrypoint — is asserted in
+the suite instead, for the cost of a module import.
 
 Four properties are worth understanding before changing it.
 
@@ -146,20 +138,17 @@ would be wrong at one of them.
 
 **The Worker sees every request, and a fault falls through to the origin.** The
 route in `wrangler.toml` is a single wildcard, because a route per package would
-be a list of packages in this repository — the thing the derivation removes. What
-used to keep a broken router off the rest of the site was that narrowness; what
-keeps it off now is the handler's `try`/`catch`, which answers any fault with
-`fetch(request)`. That covers strictly more than the narrow routes did, since it
-also catches a fault on a prefix the router *does* claim.
+be a list of packages in this repository — the thing the derivation removes.
+What keeps a broken router off the rest of the site is the handler's
+`try`/`catch`, which answers any fault with `fetch(request)` — including a
+fault on a prefix the router *does* claim.
 
-**A failure is not always a thrown one, and that distinction cost an outage.**
-Cloudflare does **not** throw when an origin hostname does not resolve or does
-not answer: `fetch()` *resolves*, with a status the edge synthesised — 530 for
-"origin DNS error", 521–526 for an origin that refused, timed out, or failed TLS.
-A guard keyed on a thrown error alone therefore never fires for the commonest
-failure there is, which is how `/sohl/` and `/thalorna/` served raw 530s to
-readers for the life of an outage (`heroiclands-site#28`). So the router treats
-those statuses as a failure alongside an exception (`isOriginFailure` in
+**A failure is not always a thrown one.** Cloudflare does **not** throw when an
+origin hostname does not resolve or does not answer: `fetch()` *resolves*, with
+a status the edge synthesised — 530 for "origin DNS error", 521–526 for an
+origin that refused, timed out, or failed TLS. A guard keyed on a thrown error
+alone therefore never fires for the commonest failure there is. So the router
+treats those statuses as a failure alongside an exception (`isOriginFailure` in
 `worker/src/router.js`), and both fall through. Ordinary 5xx are deliberately
 **not** in that set: a package's own 500 or 503 is a page it produced and is its
 to serve.
@@ -201,27 +190,18 @@ own account — a directory missing its trailing slash, an `.html` path served
 extensionless — would otherwise walk the reader onto `*.pages.dev`. And
 `X-Robots-Tag`, because a package's deployment marks its host-assigned address
 `noindex` so that second address for the same pages cannot compete with the
-canonical URL in search results (`Song-of-Heroic-Lands-FoundryVTT#1469`). The
-hosting cannot tell this proxy's request apart from a reader's — same URL, same
-address — so that header arrives here too, on pages that are canonical and must
-be indexed; this is the only place the two addresses are distinguishable. A
-package wanting a page indexed nowhere says so in the document
-(`<meta name="robots">`), which passes through untouched.
+canonical URL in search results. The hosting cannot tell this proxy's request
+apart from a reader's — same URL, same address — so that header arrives here
+too, on pages that are canonical and must be indexed; this is the only place
+the two addresses are distinguishable. A package wanting a page indexed
+nowhere says so in the document (`<meta name="robots">`), which passes through
+untouched.
 
 ### Every package is on a derived origin
 
-`sohl` and `thalorna` predated the derivation and were live at `*.pages.dev`
-names it could not reach — `/sohl/` was served by `sohl-kb`, because a Cloudflare
-Pages project keeps the subdomain it was created with and that project was
-renamed to `sohl-site` long after. Their `pkg.heroiclands.org` custom domains
-were a manual Cloudflare step, and while it was outstanding `LEGACY_ORIGINS` in
-`worker/src/router.js` named the two projects as a fallback.
-
-**That migration is finished.** Both custom domains exist, both answer, and
-`LEGACY_ORIGINS` and its tests are gone (`heroiclands-site#28`). There is no
-second address for a package and no retry against one: the router derives one
-origin and asks for it, and an origin that does not answer falls through to this
-site's own. Adding a package remains no change here at all.
+There is no second address for a package and no retry against one: the router
+derives one origin and asks for it, and an origin that does not answer falls
+through to this site's own. Adding a package remains no change here at all.
 
 Verify at the upstreams directly if a package prefix ever misbehaves — that is
 the check that tells "the package's host is down" apart from "no such package",
@@ -241,9 +221,8 @@ Actions tab.
 ## The shared theme carries layout, not addresses
 
 `@heroiclands/hugo-theme` is an npm dependency shared by every site in the
-family, and it holds **no address of its own**
-(`Song-of-Heroic-Lands-FoundryVTT#1464`). Each consumer supplies its own, so a
-site can move without the theme knowing:
+family, and it holds **no address of its own**. Each consumer supplies its
+own, so a site can move without the theme knowing:
 
 - `baseURL` — the one place this site's address is written down.
 - The navigation — the theme renders whatever `.Site.Menus.main` holds. Here
@@ -276,8 +255,8 @@ publish it at `thalorna.example`:
    known the package exists.
 4. **Update the consumers' link bases.** Cross-package links resolve through
    each package's published link manifest, which records addresses _relative to
-   its own package base_ (`Song-of-Heroic-Lands-FoundryVTT#1465`), so a consumer
-   changes one base per package rather than rewriting links.
+   its own package base_, so a consumer changes one base per package rather
+   than rewriting links.
 
 Nothing above needs this repository's credentials, a coordinated release, or a
 window in which both sides are updated together — steps 1–2 and step 3 can happen
@@ -306,9 +285,9 @@ Each package's build asserts its own `404.html` exists before uploading, because
 its absence is invisible until someone mistypes a URL in production.
 
 **No line of that output may be a 5xx.** `/nope/` in particular is the router's
-own regression check: its first segment derives an origin that has never existed,
-so before `heroiclands-site#28` it answered Cloudflare's raw `530 Origin DNS
-error` page. It must answer `404` with this site's own page.
+own regression check: its first segment derives an origin that has never
+existed. It must answer `404` with this site's own page, never Cloudflare's raw
+`530 Origin DNS error`.
 
 Two more things worth checking after a routing or hosting change:
 
@@ -332,7 +311,7 @@ Two more things worth checking after a routing or hosting change:
 are deleted and they resolve to nothing. The knowledgebase and the API
 documentation live at `/sohl/kb/` and `/sohl/api/`. Links to the old hostnames
 are dead by decision, including from releases of the game system already
-installed — see `Song-of-Heroic-Lands-FoundryVTT#1444`.
+installed.
 
 ## Wiring, if any of it has to be rebuilt
 
