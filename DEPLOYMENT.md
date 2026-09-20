@@ -246,7 +246,9 @@ family, and it holds **no address of its own**
 site can move without the theme knowing:
 
 - `baseURL` — the one place this site's address is written down.
-- `[menu]` — the navigation. The theme renders whatever the consumer declares.
+- The navigation — the theme renders whatever `.Site.Menus.main` holds. Here
+  that comes from `config/_default/menus.toml`, generated from `roster.mjs`
+  (see the README); another consumer may declare `[menu]` directly.
 - `params.cdnBaseURL` — where images resolve from (`cdn.heroiclands.org`). With
   it unset the theme falls back to `relURL`, which yields a working-looking but
   wrong path rather than a build failure, so the config is the guard.

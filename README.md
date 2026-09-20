@@ -92,6 +92,24 @@ Setting and game-system pages are **not** here: `/sohl/` is published by
 and `/thalorna/` by [sohl-thalorna](https://github.com/HeroicLands/sohl-thalorna),
 each onto the same hostname through the routing Worker.
 
+## The package roster and the header navigation
+
+`roster.mjs` is the one authored list of packages HeroicLands publishes — what
+each is, which system it is for, and where the header places it. `npm run
+roster` projects it into three derived files, each checked against the roster
+by `npm run check:roster`:
+
+- `data/roster.json` — the cross-link projection, resolving each package's
+  prefix and the packages that depend on it.
+- `config/_default/menus.toml` — this site's own header menu. `hugo.toml`
+  carries no `[menu]` block; Hugo reads the menu from here instead.
+- `static/nav.json` — the same menu, published at
+  `https://www.heroiclands.org/nav.json` for the package sites' own build
+  toolchain to read.
+
+Adding a package is one entry in `roster.mjs` and a `npm run roster` run —
+nothing else in this repository, and nothing in the Worker.
+
 ## Adding Content
 
 Create a Markdown file in the appropriate `content/` directory with front matter:
