@@ -48,8 +48,7 @@ jobs:
                   cache: npm
 
             # The shared brand theme is an npm dependency rather than a
-            # submodule (Song-of-Heroic-Lands-FoundryVTT#1642), so it has to be
-            # installed before Hugo runs.
+            # submodule, so it has to be installed before Hugo runs.
             - name: Install the theme
               run: npm ci
 
@@ -67,3 +66,8 @@ jobs:
               run: hugo --minify
               env:
                   HUGO_ENVIRONMENT: production
+
+            # Fails the build if a page, its front matter or hugo.toml asks
+            # for an asset address the CDN does not actually serve.
+            - name: Check that referenced assets are published
+              run: npm run check:assets
