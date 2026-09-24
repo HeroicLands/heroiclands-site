@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -21,7 +21,6 @@ sohl:
   trait: ""
   disorder: ""
 packFolder: ""
-draft: true
 ---
 
 <!-- Opening paragraph: a sensory glimpse of the mystery — what it feels like to be touched by it. -->

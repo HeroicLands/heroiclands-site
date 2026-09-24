@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -18,7 +18,6 @@ sohl:
   masteryLevelBase: 0
   improveFlag: false
 packFolder: ""
-draft: true
 ---
 
 <!-- Opening paragraph: what the skill covers, who tends to learn it, and where it shows up in play. -->

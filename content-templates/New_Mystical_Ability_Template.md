@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -22,7 +22,6 @@ sohl:
 hmk:
   name: ""
 packFolder: ""
-draft: true
 ---
 
 <!-- Opening paragraph: a sensory description of the ability in use — what an observer would see, hear, and feel. -->

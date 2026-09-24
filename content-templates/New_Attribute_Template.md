@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -20,7 +20,6 @@ sohl:
   initDiceFormula: 3d6
 sort: 0
 packFolder: attributes
-draft: true
 ---
 
 <!-- Opening paragraph: what this attribute measures and how it manifests in a character's life. -->

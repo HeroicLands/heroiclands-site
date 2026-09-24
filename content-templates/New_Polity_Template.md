@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 type: doc
 category: polity
@@ -10,7 +10,6 @@ name:
 id: <% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>
 shortcode: ""
 img: ""
-draft: true
 # ── Polity identity ─────────────────────────────────────────────
 subType:
   "" # required — canonical values:

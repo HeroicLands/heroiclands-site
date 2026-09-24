@@ -1,6 +1,7 @@
 ---
-aliases: []
-tags: []
+tags:
+  - creature
+  - draft
 title: ""
 description: ""
 name:
@@ -9,9 +10,12 @@ name:
 id: "<% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>"
 shortcode: ""
 img: ""
-draft: true
-portrait: "" # images/being/<shortcode>-portrait.webp — fill in by hand once artwork exists
-type: creature
+type: being
+data:
+  templatePriority: null # null = not a template
+  archetypes: [] # always an array; [] where none apply
+  species: # a lore address
+  frame: "" # scant | light | medium | large | massive
 sohl:
   attributes:
     str: 0
@@ -45,6 +49,8 @@ sohl:
 ---
 
 # Appearance {#appearance}
+
+<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float: top-left}. A being with no portrait writes no lead image. -->
 
 <!-- Opening sensory paragraph: what a character sees, hears, and feels when they first encounter this creature. Written in second person. -->
 

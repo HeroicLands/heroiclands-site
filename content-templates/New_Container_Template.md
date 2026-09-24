@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -16,7 +16,6 @@ sohl:
   value: 0 # in pence
   weight: 0 # pounds (empty)
 packFolder: ""
-draft: true
 ---
 
 <!-- Opening paragraph: a sensory description of the container — materials, closures, and how it's carried. -->

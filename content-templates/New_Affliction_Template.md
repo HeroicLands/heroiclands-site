@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -17,7 +17,6 @@ sohl:
   contagionIndex: 0
   transmission: "" # contact | airborne | vector | ingestion | none
 packFolder: ""
-draft: true
 ---
 
 <!-- Opening paragraph: what the affliction is, how it presents, and why it matters in this setting. -->

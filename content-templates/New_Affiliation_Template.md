@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 title: ""
 description: ""
 name:
@@ -9,7 +9,6 @@ name:
 id: <% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>
 shortcode: "" # alphanumeric, <16 chars, unique in the vault
 img: ""
-draft: true
 type: affiliation
 sohl:
   subType: "" # divine (a religion or church) | arcane (a school of magic)
