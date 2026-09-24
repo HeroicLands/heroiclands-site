@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -15,8 +15,7 @@ sohl:
   maxCapacity: 0 # pounds the container can hold
   value: 0 # in pence
   weight: 0 # pounds (empty)
-folder: ""
-draft: true
+packFolder: ""
 ---
 
 <!-- Opening paragraph: a sensory description of the container — materials, closures, and how it's carried. -->

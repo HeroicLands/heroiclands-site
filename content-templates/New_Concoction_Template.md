@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -19,8 +19,7 @@ sohl:
   strength: 0
   value: 0 # in pence
   weight: 0 # pounds
-folder: ""
-draft: true
+packFolder: ""
 ---
 
 <!-- Opening paragraph: a sensory description of the concoction — color, viscosity, smell, and what it feels like on the tongue or skin. -->

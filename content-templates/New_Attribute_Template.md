@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -19,8 +19,7 @@ sohl:
     - HighestBand:999
   initDiceFormula: 3d6
 sort: 0
-folder: attributes
-draft: true
+packFolder: attributes
 ---
 
 <!-- Opening paragraph: what this attribute measures and how it manifests in a character's life. -->

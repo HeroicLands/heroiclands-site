@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -14,8 +14,7 @@ sohl:
   durability: 0
   value: 0 # in pence
   weight: 0 # pounds
-folder: ""
-draft: true
+packFolder: ""
 ---
 
 <!-- Opening paragraph: a sensory description of the item — what it looks, feels, and smells like. -->

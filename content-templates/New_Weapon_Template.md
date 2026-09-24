@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -60,8 +60,7 @@ sohl:
       defense:
         blockMod: 0
         counterstrikeMod: 0
-folder: ""
-draft: true
+packFolder: ""
 ---
 
 <!-- Opening paragraph: a sensory description of the weapon — its silhouette, weight in the hand, sound in use. -->

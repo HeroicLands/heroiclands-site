@@ -1,16 +1,15 @@
 ---
-aliases: []
 tags:
   - region
+  - draft
 title: ""
 description: ""
 name:
   full:
   aliases: []
 id: <% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>
-shortccode: ""
+shortcode: ""
 img: ""
-draft: true
 type: doc
 category: region
 continents: [] # shortcode(s) of the continent(s) this region belongs to (usually one; multi for cross-continental regions like Mídhalión)

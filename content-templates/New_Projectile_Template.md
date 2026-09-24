@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -23,8 +23,7 @@ sohl:
   traits:
     ARvalue: 0
     bleed: false
-folder: ""
-draft: true
+packFolder: ""
 ---
 
 <!-- Opening paragraph: a sensory description of the projectile — its silhouette in flight, the sound it makes on impact. -->

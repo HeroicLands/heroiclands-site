@@ -1,6 +1,6 @@
 ---
-aliases: []
-tags: []
+tags:
+  - draft
 description: ""
 name:
   full:
@@ -27,10 +27,9 @@ sohl:
     edged: 0
     piercing: 0
     fire: 0
-folder: ""
+packFolder: ""
 origValue: 0
 origWeight: 0
-draft: true
 ---
 
 <!-- Opening paragraph: a sensory description of the piece — its silhouette on the body, the sound it makes when worn. -->

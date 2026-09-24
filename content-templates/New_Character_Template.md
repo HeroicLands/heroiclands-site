@@ -1,6 +1,7 @@
 ---
-aliases: []
-tags: []
+tags:
+  - character
+  - draft
 title: ""
 description: ""
 name:
@@ -12,34 +13,28 @@ name:
 id: "<% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>"
 shortcode: ""
 img: ""
-draft: true
-portrait: "" # images/being/<shortcode>-portrait.webp — fill in by hand once artwork exists
-type: character
-social:
+type: being
+data:
+  templatePriority: null # null = not a template
+  archetypes: [] # always an array; [] where none apply
   occupation: ""
-  class: ""
-  society: ""
-traits:
-  gender: ""
-  age: 0
-  birthday: ""
-  height:
-    m: 0
-  weight:
-    kg: 0
-  build:
-    frame: ""
+  stations: [] # lore addresses — the bodies this being belongs to
+  lore: [] # lore addresses — the people it is of, the standing it holds
+  homes: [] # place addresses
+  affiliations: [] # affiliation addresses
+  gender: "" # male | female | other
+  species: # a lore address
+  birthday: "" # YYYY/MM/DD
+  # age: 0           # optional — years; include it only when you have the figure
+  height: 0 # metres
+  weight: 0 # kilograms
+  frame: "" # scant | light | medium | large | massive
   appearance:
     eye_color: ""
     hair_color: ""
     skin_color: ""
     complexion: ""
     extra_features: []
-gear:
-  containers: []
-  weapons: []
-  armor: []
-  misc: []
 sohl:
   birthsign: ""
   attributes:
@@ -490,12 +485,11 @@ sohl:
 thalorna:
   realm: "" # the polity's shortcode — identity, not its slug, so a retitle cannot break the link
   region: "" # the region's shortcode; leave empty when the realm sits in no region
-harnworld:
-  realm: ""
-  ritual: []
 ---
 
 # Appearance {#appearance}
+
+<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float: top-left}. A being with no portrait writes no lead image. -->
 
 <!-- Physical appearance, bearing, mannerisms, and how others perceive this character at first glance. -->
 
