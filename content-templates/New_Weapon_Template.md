@@ -60,7 +60,7 @@ sohl:
       defense:
         blockMod: 0
         counterstrikeMod: 0
-folder: ""
+packFolder: ""
 draft: true
 ---
 

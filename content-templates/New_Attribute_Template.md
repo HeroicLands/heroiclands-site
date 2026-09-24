@@ -19,7 +19,7 @@ sohl:
     - HighestBand:999
   initDiceFormula: 3d6
 sort: 0
-folder: attributes
+packFolder: attributes
 draft: true
 ---
 

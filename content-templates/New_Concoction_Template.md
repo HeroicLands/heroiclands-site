@@ -19,7 +19,7 @@ sohl:
   strength: 0
   value: 0 # in pence
   weight: 0 # pounds
-folder: ""
+packFolder: ""
 draft: true
 ---
 

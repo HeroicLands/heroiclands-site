@@ -17,7 +17,7 @@ content tree, which is authored in the repository that ships that package:
 | Templates | Package | Authored in |
 | --- | --- | --- |
 | Affliction, Armor, Attribute, Concoction, Container, Misc Gear, Mystery, Mystical Ability, Projectile, Skill, Weapon | `sohl` | `Song-of-Heroic-Lands-FoundryVTT/assets/content/` |
-| Affiliation, Character, Continent, Creature, Location, Lore, People, Polity, Region, Settlement, World | `thalorna` | `sohl-thalorna/assets/content/` |
+| Affiliation, Character, Continent, Creature, Location, Lore, People, Polity, Region, Settlement, World | `thalorna` | `thalorna/assets/content/` |
 
 Held here so that retiring the vault loses nothing. Moving each to the
 repository whose content it templates is the obvious next step, and needs the

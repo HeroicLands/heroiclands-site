@@ -15,7 +15,7 @@ sohl:
   maxCapacity: 0 # pounds the container can hold
   value: 0 # in pence
   weight: 0 # pounds (empty)
-folder: ""
+packFolder: ""
 draft: true
 ---
 

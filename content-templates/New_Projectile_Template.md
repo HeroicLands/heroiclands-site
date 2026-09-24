@@ -23,7 +23,7 @@ sohl:
   traits:
     ARvalue: 0
     bleed: false
-folder: ""
+packFolder: ""
 draft: true
 ---
 

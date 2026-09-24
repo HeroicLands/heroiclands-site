@@ -22,7 +22,7 @@ social:
 traits:
   gender: ""
   age: 0
-  birthday: ""
+  born: "unknown"
   height:
     m: 0
   weight:

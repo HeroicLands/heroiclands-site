@@ -11,7 +11,6 @@ shortcode: "" # alphanumeric, <16 chars, unique in the vault
 img: ""
 draft: true
 type: affiliation
-package: thalorna
 sohl:
   subType: "" # divine (a religion or church) | arcane (a school of magic)
   #          | spirit (a shamanic, totemic, or ancestor tradition)

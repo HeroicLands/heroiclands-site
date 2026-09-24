@@ -16,7 +16,7 @@ sohl:
   healingRateBase: 0
   contagionIndex: 0
   transmission: "" # contact | airborne | vector | ingestion | none
-folder: ""
+packFolder: ""
 draft: true
 ---
 
