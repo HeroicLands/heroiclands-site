@@ -17,7 +17,7 @@ sohl:
   initSkillMult: 0
   masteryLevelBase: 0
   improveFlag: false
-folder: ""
+packFolder: ""
 draft: true
 ---
 

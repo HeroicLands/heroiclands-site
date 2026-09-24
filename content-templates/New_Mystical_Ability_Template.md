@@ -21,7 +21,7 @@ sohl:
     max: 0
 hmk:
   name: ""
-folder: ""
+packFolder: ""
 draft: true
 ---
 

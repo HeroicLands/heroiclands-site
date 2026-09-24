@@ -20,7 +20,7 @@ sohl:
     max: 0
   trait: ""
   disorder: ""
-folder: ""
+packFolder: ""
 draft: true
 ---
 

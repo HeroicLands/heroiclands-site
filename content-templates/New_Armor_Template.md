@@ -27,7 +27,7 @@ sohl:
     edged: 0
     piercing: 0
     fire: 0
-folder: ""
+packFolder: ""
 origValue: 0
 origWeight: 0
 draft: true
