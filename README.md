@@ -34,6 +34,11 @@ needed for the site build, because the shared theme is an npm dependency that
 `npm ci` installs, and to run the routing Worker's tests (`cd worker && npm
 test`).
 
+`npm ci` activates the tracked `.githooks` hooks. The commit-message check also
+uses Node 24 or newer and rejects supported assistant credits while allowing
+human coauthors and explanatory prose. The shared No Attribution workflow checks
+PR titles, bodies and commit messages.
+
 ## Local Development
 
 ```bash
