@@ -24,8 +24,10 @@ data:
   affiliations: [] # affiliation addresses
   gender: "" # male | female | other
   species: # a lore address
-  birthday: "" # YYYY/MM/DD
-  # age: 0           # optional — years; include it only when you have the figure
+  born: "unknown" # a date, or `unknown` where the birth is unrecorded; absent asserts the being was never born
+  # died: "unknown"  # optional — a date, or `unknown`; absent, the being is alive
+  # age: 34          # optional — an override on what `born` says; `~34` for an estimate.
+  #                  # Unstated beside a dated `born` it is computed
   height: 0 # metres
   weight: 0 # kilograms
   frame: "" # scant | light | medium | large | massive
