@@ -1,6 +1,5 @@
 ---
 tags:
-  - creature
   - draft
 title: ""
 description: ""
@@ -11,6 +10,7 @@ id: "<% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrst
 shortcode: ""
 img: ""
 type: being
+subType: creature
 data:
   templatePriority: null # null = not a template
   archetypes: [] # always an array; [] where none apply
