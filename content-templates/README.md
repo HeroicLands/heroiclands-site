@@ -22,9 +22,10 @@ Those twenty-two are held to the note format `@heroiclands/package-build`
 defines, and `docs/content-format.md` in that package is the authority on every
 key they write. A note marks itself unfinished with the `draft` **tag**, which
 keeps it compiling, publishing and resolving while a link into it renders
-marked; a being is `type: being`, carrying `character` or `creature` as the tag
-that says which kind it is; and the facts describing a subject live under
-`data:`, the closed container each note type declares its keys in.
+marked; a being is `type: being`, with `subType: npc`, `subType: character`,
+or `subType: creature` identifying its kind; and the facts describing a
+subject live under `data:`, the closed container each note type declares its
+keys in.
 
 Moving each template to the repository whose content it templates is the
 obvious next step, and needs the frontmatter checked against that repository's
