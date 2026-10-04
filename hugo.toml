@@ -2,13 +2,13 @@ baseURL = "https://www.heroiclands.org/"
 locale = "en-us"
 title = "Heroic Lands"
 
-# Chrome, layouts, CSS, info-block partials, and data/sohl.yaml come from the
-# shared theme, so www / kb / api read as one coherent site.
-# The shared brand theme arrives through `npm ci`, not a git submodule
-# (Song-of-Heroic-Lands-FoundryVTT#1642). Hugo looks for `<themesDir>/<theme>`,
-# so the package's scope is the themes directory and its name is the theme name
-# — nothing is copied and no module mounts are needed.
-themesDir = "node_modules/@heroiclands"
+# Chrome, layouts, CSS, the info-block partials and the banner inventory come
+# from the shared theme, so www / kb / api read as one coherent site. The theme
+# ships inside `@heroiclands/package-build`, which arrives through `npm ci`.
+# Hugo looks for `<themesDir>/<theme>`, so the themes directory is the package
+# and the theme is the directory within it — nothing is copied and no module
+# mounts are needed.
+themesDir = "node_modules/@heroiclands/package-build"
 theme = "hugo-theme"
 
 [params]
