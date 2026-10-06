@@ -23,6 +23,6 @@
     "check:roster": "node utils/build-roster.mjs --check"
   },
   "devDependencies": {
-    "@heroiclands/package-build": "^22.28.0"
+    "@heroiclands/package-build": "^23.0.0"
   }
 }
