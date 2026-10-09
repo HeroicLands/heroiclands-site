@@ -1,7 +1,9 @@
 name: Deploy the routing Worker
 
 # Publishes the path-prefix router that puts each package's own deploy under
-# www.heroiclands.org (HeroicLands/Song-of-Heroic-Lands-FoundryVTT#1468).
+# www.heroiclands.org.
+#
+# Deploying is gated by the repository variable HL_DEPLOY_ENABLED.
 #
 # Separate from deploy.yml on purpose: the site's pages and the routing layer
 # change for entirely different reasons, and a Worker deploy must not wait on a
@@ -12,7 +14,7 @@ on:
         branches: [main]
         paths:
             - "worker/**"
-            - ".github/workflows/deploy-worker.yml"
+            - ".gitea/workflows/deploy-worker.yml"
     workflow_dispatch:
 
 permissions:
@@ -26,6 +28,7 @@ concurrency:
 
 jobs:
     deploy:
+        if: ${{ github.server_url != 'https://github.com' && vars.HL_DEPLOY_ENABLED == 'true' }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout

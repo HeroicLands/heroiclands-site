@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# Publishes heroiclands.org through GitHub Pages. It runs on GitHub when the
+# Gitea push mirror delivers `main`; it is the one workflow here that runs on push.
+
 # This repository authors its own content, so a push to main is the only
 # thing that changes what it publishes. Package content is built and deployed
 # by the repository that owns it (see DEPLOYMENT.md); nothing here rebuilds
