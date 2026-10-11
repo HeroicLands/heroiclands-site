@@ -50,7 +50,7 @@ sohl:
 
 # Appearance {#appearance}
 
-<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float: top-left}. A being with no portrait writes no lead image. -->
+<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float=top-left}. A being with no portrait writes no lead image. -->
 
 <!-- Opening sensory paragraph: what a character sees, hears, and feels when they first encounter this creature. Written in second person. -->
 

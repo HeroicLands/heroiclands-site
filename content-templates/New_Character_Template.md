@@ -491,7 +491,7 @@ thalorna:
 
 # Appearance {#appearance}
 
-<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float: top-left}. A being with no portrait writes no lead image. -->
+<!-- The portrait opens this section, always: ![[<icon address>|<the being's full name>]]{float=top-left}. A being with no portrait writes no lead image. -->
 
 <!-- Physical appearance, bearing, mannerisms, and how others perceive this character at first glance. -->
 
