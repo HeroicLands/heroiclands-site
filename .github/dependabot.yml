@@ -21,36 +21,36 @@
 # to npm only helps if something raises the bump.
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: chore(deps)
-      prefix-development: chore(deps-dev)
-    groups:
-      # The theme first: it is its own decision. Dependabot assigns a
-      # dependency to the first group it matches, so this entry's position is
-      # what keeps it out of the catch-all below.
-      hugo-theme:
-        patterns:
-          - "@heroiclands/hugo-theme"
-      minor-patch:
-        update-types:
-          - minor
-          - patch
+    - package-ecosystem: npm
+      directory: /
+      schedule:
+          interval: weekly
+          day: monday
+      open-pull-requests-limit: 5
+      commit-message:
+          prefix: chore(deps)
+          prefix-development: chore(deps-dev)
+      groups:
+          # The theme first: it is its own decision. Dependabot assigns a
+          # dependency to the first group it matches, so this entry's position is
+          # what keeps it out of the catch-all below.
+          hugo-theme:
+              patterns:
+                  - "@heroiclands/hugo-theme"
+          minor-patch:
+              update-types:
+                  - minor
+                  - patch
 
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: chore(ci)
-    groups:
-      github-actions:
-        patterns:
-          - "*"
+    - package-ecosystem: github-actions
+      directory: /
+      schedule:
+          interval: weekly
+          day: monday
+      open-pull-requests-limit: 5
+      commit-message:
+          prefix: chore(ci)
+      groups:
+          github-actions:
+              patterns:
+                  - "*"

@@ -1,28 +1,32 @@
 {
-  "name": "heroiclands-site",
-  "private": true,
-  "version": "0.0.0",
-  "description": "heroiclands.org — the project's front-door Hugo site.",
-  "type": "module",
-  "license": "GPL-3.0-or-later",
-  "author": {
-    "name": "Tom Rodriguez",
-    "email": "toasty@heroiclands.org"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HeroicLands/heroiclands-site.git"
-  },
-  "engines": {
-    "node": ">=24.0.0"
-  },
-  "scripts": {
-    "prepare": "git config core.hooksPath .githooks || true",
-    "check:assets": "node utils/check-assets.mjs",
-    "roster": "node utils/build-roster.mjs",
-    "check:roster": "node utils/build-roster.mjs --check"
-  },
-  "devDependencies": {
-    "@heroiclands/package-build": "^23.1.0"
-  }
+    "name": "heroiclands-site",
+    "private": true,
+    "version": "0.0.0",
+    "description": "heroiclands.org — the project's front-door Hugo site.",
+    "type": "module",
+    "license": "GPL-3.0-or-later",
+    "author": {
+        "name": "Tom Rodriguez",
+        "email": "toasty@heroiclands.org"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/HeroicLands/heroiclands-site.git"
+    },
+    "engines": {
+        "node": ">=24.0.0"
+    },
+    "scripts": {
+        "prepare": "git config core.hooksPath .githooks || true",
+        "check:assets": "node utils/check-assets.mjs",
+        "roster": "node utils/build-roster.mjs",
+        "check:roster": "node utils/build-roster.mjs --check",
+        "format": "package-build format --write",
+        "format:check": "package-build format",
+        "lint:markdown": "package-build markdown",
+        "lint:markdown:fix": "package-build markdown --fix"
+    },
+    "devDependencies": {
+        "@heroiclands/package-build": "^23.1.0"
+    }
 }

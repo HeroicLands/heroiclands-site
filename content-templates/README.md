@@ -13,10 +13,10 @@ blog is authored here, and its frontmatter is Hugo's, so `draft:` and
 in a **package's** content tree, which is authored in the repository that ships
 that package:
 
-| Templates | Package | Authored in |
-| --- | --- | --- |
-| Affliction, Armor, Attribute, Concoction, Container, Misc Gear, Mystery, Mystical Ability, Projectile, Skill, Weapon | `sohl` | `Song-of-Heroic-Lands-FoundryVTT/assets/content/` |
-| Affiliation, Character, Continent, Creature, Location, Lore, People, Polity, Region, Settlement, World | `thalorna` | `thalorna/assets/content/` |
+| Templates                                                                                                            | Package    | Authored in                                       |
+| -------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------- |
+| Affliction, Armor, Attribute, Concoction, Container, Misc Gear, Mystery, Mystical Ability, Projectile, Skill, Weapon | `sohl`     | `Song-of-Heroic-Lands-FoundryVTT/assets/content/` |
+| Affiliation, Character, Continent, Creature, Location, Lore, People, Polity, Region, Settlement, World               | `thalorna` | `thalorna/assets/content/`                        |
 
 Those twenty-two are held to the note format `@heroiclands/package-build`
 defines, and `docs/content-format.md` in that package is the authority on every

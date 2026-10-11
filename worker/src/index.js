@@ -35,12 +35,7 @@
  * src/router.js.
  */
 
-import {
-    routeFor,
-    upstreamURL,
-    canonicalHeaders,
-    isOriginFailure,
-} from "./router.js";
+import { routeFor, upstreamURL, canonicalHeaders, isOriginFailure } from "./router.js";
 
 /**
  * Proxy a request to a package's origin and answer as this site.
@@ -61,10 +56,7 @@ async function proxy(request, origin) {
     const proxied = new Request(upstreamURL(request.url, origin), {
         method: request.method,
         headers: request.headers,
-        body:
-            request.method === "GET" || request.method === "HEAD" ?
-                undefined
-            :   request.body,
+        body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body,
         // Hand the upstream's own redirects back to the reader rather than
         // resolving them here, so a redirect stays visible as a redirect.
         redirect: "manual",
@@ -122,10 +114,7 @@ export default {
             // code path on the whole domain's critical path. The distinction
             // the reader cannot be told is recorded here instead, where an
             // operator can see it.
-            console.error(
-                "heroiclands-router: falling through to the origin",
-                error,
-            );
+            console.error("heroiclands-router: falling through to the origin", error);
         }
 
         return fetch(request);

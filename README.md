@@ -19,13 +19,13 @@ The pinned-in-CI Hugo version is **0.163.3 extended**
 — layouts use the `hugo.Data` API that was introduced in 0.156. Install it
 whichever way fits your OS:
 
-| OS | Install command |
-|---|---|
-| macOS | `brew install hugo` |
-| Ubuntu / Debian | `sudo apt install hugo` (older repos may ship an out-of-date version — prefer the release below) |
-| Arch | `sudo pacman -S hugo` |
-| Windows | `scoop install hugo-extended` or `choco install hugo-extended` |
-| Any platform | Download the `_extended_` binary from [github.com/gohugoio/hugo/releases](https://github.com/gohugoio/hugo/releases) and place it on `PATH` |
+| OS              | Install command                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| macOS           | `brew install hugo`                                                                                                                         |
+| Ubuntu / Debian | `sudo apt install hugo` (older repos may ship an out-of-date version — prefer the release below)                                            |
+| Arch            | `sudo pacman -S hugo`                                                                                                                       |
+| Windows         | `scoop install hugo-extended` or `choco install hugo-extended`                                                                              |
+| Any platform    | Download the `_extended_` binary from [github.com/gohugoio/hugo/releases](https://github.com/gohugoio/hugo/releases) and place it on `PATH` |
 
 Verify with `hugo version` — it should report `+extended`.
 
@@ -126,7 +126,6 @@ description: "Brief description"
 tags: ["tag1", "tag2"]
 draft: false
 ---
-
 Your content here.
 ```
 

@@ -18,5 +18,5 @@ description: Occasional thoughts on game design, worldbuilding, and development.
 # page wearing a stand-in. Point this at `banners/blog-post.webp` the day one
 # is drawn.
 cascade:
-    banner: brand/sohl-banner.webp
+  banner: brand/sohl-banner.webp
 ---

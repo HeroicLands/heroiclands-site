@@ -73,7 +73,5 @@ for (const { url, render } of TARGETS) {
 
 if (check) {
     if (stale) process.exit(1);
-    console.log(
-        "data/roster.json, config/_default/menus.toml and static/nav.json are current.",
-    );
+    console.log("data/roster.json, config/_default/menus.toml and static/nav.json are current.");
 }

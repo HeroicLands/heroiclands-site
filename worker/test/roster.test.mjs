@@ -34,12 +34,7 @@ import {
     renderMenusFile,
     renderNavFile,
 } from "../../roster.mjs";
-import {
-    PACKAGE_ORIGIN_SUFFIX,
-    PACKAGE_SEGMENT,
-    SITE_SEGMENTS,
-    routeFor,
-} from "../src/router.js";
+import { PACKAGE_ORIGIN_SUFFIX, PACKAGE_SEGMENT, SITE_SEGMENTS, routeFor } from "../src/router.js";
 
 const repo = new URL("../../", import.meta.url);
 
@@ -52,15 +47,7 @@ test("names the seven packages HeroicLands publishes", () => {
     // (`contentPackage`) rather than against any list written down elsewhere.
     assert.deepEqual(
         PACKAGES.map((pkg) => pkg.id),
-        [
-            "sohl",
-            "hm3",
-            "thalorna",
-            "kethira",
-            "thalornaaltart",
-            "harnensemble",
-            "harnadventures",
-        ],
+        ["sohl", "hm3", "thalorna", "kethira", "thalornaaltart", "harnensemble", "harnadventures"],
     );
 });
 
@@ -72,18 +59,12 @@ test("every entry is complete and well-formed", () => {
         assert.match(pkg.id, PACKAGE_SEGMENT, pkg.id);
         assert.ok(pkg.title.length > 0, `${pkg.id} has no title`);
         assert.ok(pkg.repository.length > 0, `${pkg.id} names no repository`);
-        assert.ok(
-            ["system", "module"].includes(pkg.kind),
-            `${pkg.id} kind: ${pkg.kind}`,
-        );
+        assert.ok(["system", "module"].includes(pkg.kind), `${pkg.id} kind: ${pkg.kind}`);
         assert.ok(
             ["content", "homepage"].includes(pkg.publishes),
             `${pkg.id} publishes: ${pkg.publishes}`,
         );
-        assert.ok(
-            ["top", "modules"].includes(pkg.nav),
-            `${pkg.id} nav: ${pkg.nav}`,
-        );
+        assert.ok(["top", "modules"].includes(pkg.nav), `${pkg.id} nav: ${pkg.nav}`);
     }
 });
 
@@ -156,11 +137,7 @@ test("the dependents index is the one no package can hold for itself", () => {
 test("the router resolves every package in the roster", () => {
     for (const pkg of PACKAGES) {
         const origin = `https://${pkg.id}.${PACKAGE_ORIGIN_SUFFIX}`;
-        for (const path of [
-            prefixFor(pkg.id),
-            `/${pkg.id}`,
-            `${prefixFor(pkg.id)}kb/deep/page/`,
-        ]) {
+        for (const path of [prefixFor(pkg.id), `/${pkg.id}`, `${prefixFor(pkg.id)}kb/deep/page/`]) {
             const route = routeFor(path);
             assert.ok(route, `${path} routes nowhere`);
             assert.equal(route.package, pkg.id, path);
@@ -210,18 +187,11 @@ test("data/roster.json is what roster.mjs would write", () => {
     // that says so — the same one `npm run check:roster` runs, here so that the
     // suite the pull request already runs cannot miss it.
     const committed = readFileSync(new URL("data/roster.json", repo), "utf8");
-    assert.equal(
-        committed,
-        renderDataFile(),
-        "data/roster.json is stale — run: npm run roster",
-    );
+    assert.equal(committed, renderDataFile(), "data/roster.json is stale — run: npm run roster");
 });
 
 test("config/_default/menus.toml is what roster.mjs would write", () => {
-    const committed = readFileSync(
-        new URL("config/_default/menus.toml", repo),
-        "utf8",
-    );
+    const committed = readFileSync(new URL("config/_default/menus.toml", repo), "utf8");
     assert.equal(
         committed,
         renderMenusFile(),
@@ -231,11 +201,7 @@ test("config/_default/menus.toml is what roster.mjs would write", () => {
 
 test("static/nav.json is what roster.mjs would write", () => {
     const committed = readFileSync(new URL("static/nav.json", repo), "utf8");
-    assert.equal(
-        committed,
-        renderNavFile(),
-        "static/nav.json is stale — run: npm run roster",
-    );
+    assert.equal(committed, renderNavFile(), "static/nav.json is stale — run: npm run roster");
 });
 
 test("the projection resolves what a template should not have to", () => {
@@ -245,10 +211,5 @@ test("the projection resolves what a template should not have to", () => {
     const data = JSON.parse(readFileSync(new URL("data/roster.json", repo)));
     const sohl = data.packages.find((pkg) => pkg.id === "sohl");
     assert.equal(sohl.prefix, "/sohl/");
-    assert.deepEqual(sohl.dependents, [
-        "thalorna",
-        "kethira",
-        "thalornaaltart",
-        "harnensemble",
-    ]);
+    assert.deepEqual(sohl.dependents, ["thalorna", "kethira", "thalornaaltart", "harnensemble"]);
 });

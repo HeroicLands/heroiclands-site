@@ -24,6 +24,12 @@ on:
             - "hugo.toml"
             - "package.json"
             - "package-lock.json"
+            - "prettier.config.js"
+            - ".prettierignore"
+            - "**/*.md"
+            - "**/*.mjs"
+            - "**/*.js"
+            - "**/*.yml"
             - ".github/workflows/site-build.yml"
 
 permissions:
@@ -51,6 +57,15 @@ jobs:
             # submodule, so it has to be installed before Hugo runs.
             - name: Install the theme
               run: npm ci
+
+            # Prettier over the whole tree.
+            - name: Check formatting
+              run: npm run format:check
+
+            # markdownlint: document structure, and links that do not link.
+            - name: Check markdown
+              if: ${{ !cancelled() }}
+              run: npm run lint:markdown
 
             - name: Setup Hugo
               uses: peaceiris/actions-hugo@v3

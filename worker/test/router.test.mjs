@@ -135,10 +135,7 @@ test("the reserved segments cover everything this repository publishes", () => {
     // theme is installed — which the pull-request check does (`npm ci` before
     // `npm test`, see .github/workflows/worker-test.yml) and the deploy job
     // does not, so the guard stays for the run that has no node_modules.
-    const themeStatic = new URL(
-        "node_modules/@heroiclands/hugo-theme/static/",
-        repo,
-    );
+    const themeStatic = new URL("node_modules/@heroiclands/hugo-theme/static/", repo);
     if (existsSync(themeStatic)) {
         for (const dir of readdirSync(themeStatic, { withFileTypes: true })) {
             if (!dir.isDirectory()) continue;
@@ -153,9 +150,7 @@ test("the reserved segments cover everything this repository publishes", () => {
     // And the taxonomies, which are configured rather than directories.
     const hugo = readFileSync(new URL("hugo.toml", repo), "utf8");
     const taxonomies = hugo.split("[taxonomies]")[1] ?? "";
-    const terms = [...taxonomies.matchAll(/^\s*\S+ = "([\w-]+)"$/gm)].map(
-        (m) => m[1],
-    );
+    const terms = [...taxonomies.matchAll(/^\s*\S+ = "([\w-]+)"$/gm)].map((m) => m[1]);
     assert.ok(terms.length > 0, "hugo.toml declared no taxonomy");
     for (const term of terms) {
         assert.equal(
@@ -200,10 +195,7 @@ test("keeps the prefix rather than stripping it", () => {
     // The package's deployment carries /sohl/ physically, so stripping it here
     // would 404 upstream and make the project's own address disagree.
     assert.ok(
-        upstreamURL(
-            "https://www.heroiclands.org/sohl/kb/",
-            "https://x.dev",
-        ).endsWith("/sohl/kb/"),
+        upstreamURL("https://www.heroiclands.org/sohl/kb/", "https://x.dev").endsWith("/sohl/kb/"),
     );
 });
 
@@ -218,10 +210,7 @@ test("rewrites a redirect that names the upstream host", () => {
 test("leaves relative and third-party redirects alone", () => {
     const origin = originFor("sohl");
     assert.equal(rewriteLocation("/sohl/kb/x/", origin), "/sohl/kb/x/");
-    assert.equal(
-        rewriteLocation("https://example.org/x", origin),
-        "https://example.org/x",
-    );
+    assert.equal(rewriteLocation("https://example.org/x", origin), "https://example.org/x");
     assert.equal(rewriteLocation(null, origin), null);
 });
 
@@ -231,10 +220,7 @@ test("drops the noindex a package sets for its own address", () => {
     // (Song-of-Heroic-Lands-FoundryVTT#1469). Served here the page IS the
     // canonical one and must stay indexable — and this is the only place the
     // two addresses can be told apart.
-    const headers = canonicalHeaders(
-        new Headers({ "x-robots-tag": "noindex" }),
-        originFor("sohl"),
-    );
+    const headers = canonicalHeaders(new Headers({ "x-robots-tag": "noindex" }), originFor("sohl"));
     assert.equal(headers.get("x-robots-tag"), null);
 });
 
@@ -252,10 +238,7 @@ test("passes every other header through untouched", () => {
         origin,
     );
     assert.equal(headers.get("content-type"), "text/html; charset=utf-8");
-    assert.equal(
-        headers.get("cache-control"),
-        "public, max-age=0, must-revalidate",
-    );
+    assert.equal(headers.get("cache-control"), "public, max-age=0, must-revalidate");
     assert.equal(headers.get("link"), link);
     assert.equal(headers.get("location"), null);
 });
@@ -269,10 +252,7 @@ test("the Worker route is a wildcard naming no package", () => {
     // to contain no list at all: a per-package route here would be a change to
     // this repository every time a package is added, which is the thing #25
     // removes. One wildcard, and the handler decides.
-    const toml = readFileSync(
-        new URL("../wrangler.toml", import.meta.url),
-        "utf8",
-    );
+    const toml = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8");
     const patterns = [...toml.matchAll(/^pattern = "(.+)"$/gm)].map((m) => m[1]);
     assert.deepEqual(patterns, ["www.heroiclands.org/*"]);
 });
@@ -288,10 +268,7 @@ test("treats the edge's did-not-answer statuses as a failure", () => {
     for (const status of [521, 522, 523, 524, 525, 526, 530]) {
         assert.equal(isOriginFailure(status), true, String(status));
     }
-    assert.deepEqual(
-        [...ORIGIN_FAILURE_STATUSES].sort(),
-        [521, 522, 523, 524, 525, 526, 530],
-    );
+    assert.deepEqual([...ORIGIN_FAILURE_STATUSES].sort(), [521, 522, 523, 524, 525, 526, 530]);
 });
 
 test("leaves a response the origin actually produced alone", () => {
@@ -334,41 +311,50 @@ test("a thrown error yields the origin's response, not a 5xx", async () => {
     // The wildcard route means a fault here is the whole site. There is no
     // narrow route left to contain it, so the catch is what does.
     const request = new Request("https://www.heroiclands.org/kethira/");
-    await withFetch(async (input) => {
-        // Anything proxied upstream blows up; the origin answers normally.
-        if (input !== request) throw new TypeError("upstream is on fire");
-        return new Response("origin", { status: 200 });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(response.status, 200);
-        assert.equal(await response.text(), "origin");
-    });
+    await withFetch(
+        async (input) => {
+            // Anything proxied upstream blows up; the origin answers normally.
+            if (input !== request) throw new TypeError("upstream is on fire");
+            return new Response("origin", { status: 200 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 200);
+            assert.equal(await response.text(), "origin");
+        },
+    );
 });
 
 test("a non-package path reaches the origin unchanged", async () => {
     const request = new Request("https://www.heroiclands.org/blog/");
-    await withFetch(async (input) => {
-        assert.equal(input, request, "the request was rewritten");
-        return new Response("origin", { status: 200 });
-    }, async () => {
-        assert.equal(await (await handler.fetch(request)).text(), "origin");
-    });
+    await withFetch(
+        async (input) => {
+            assert.equal(input, request, "the request was rewritten");
+            return new Response("origin", { status: 200 });
+        },
+        async () => {
+            assert.equal(await (await handler.fetch(request)).text(), "origin");
+        },
+    );
 });
 
 test("a package prefix is proxied to its derived origin", async () => {
     const request = new Request("https://www.heroiclands.org/kethira/x/");
-    await withFetch(async (input) => {
-        assert.equal(input.url, "https://kethira.pkg.heroiclands.org/kethira/x/");
-        return new Response("upstream", {
-            status: 200,
-            headers: { "x-robots-tag": "noindex" },
-        });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(await response.text(), "upstream");
-        // Re-headed as this site's, per canonicalHeaders.
-        assert.equal(response.headers.get("x-robots-tag"), null);
-    });
+    await withFetch(
+        async (input) => {
+            assert.equal(input.url, "https://kethira.pkg.heroiclands.org/kethira/x/");
+            return new Response("upstream", {
+                status: 200,
+                headers: { "x-robots-tag": "noindex" },
+            });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(await response.text(), "upstream");
+            // Re-headed as this site's, per canonicalHeaders.
+            assert.equal(response.headers.get("x-robots-tag"), null);
+        },
+    );
 });
 
 test("asks for the derived origin and nothing else", async () => {
@@ -377,12 +363,15 @@ test("asks for the derived origin and nothing else", async () => {
     // for a package and no retry against one (#28). One request, one origin.
     const request = new Request("https://www.heroiclands.org/sohl/kb/");
     const tried = [];
-    await withFetch(async (input) => {
-        tried.push(input.url);
-        return new Response("sohl", { status: 200 });
-    }, async () => {
-        assert.equal(await (await handler.fetch(request)).text(), "sohl");
-    });
+    await withFetch(
+        async (input) => {
+            tried.push(input.url);
+            return new Response("sohl", { status: 200 });
+        },
+        async () => {
+            assert.equal(await (await handler.fetch(request)).text(), "sohl");
+        },
+    );
     assert.deepEqual(tried, ["https://sohl.pkg.heroiclands.org/sohl/kb/"]);
 });
 
@@ -390,13 +379,16 @@ test("a failing package origin falls through to this site's origin", async () =>
     // Nothing to retry against, so the catch takes it: the origin's 404 beats
     // a Worker exception page.
     const request = new Request("https://www.heroiclands.org/hm3/");
-    await withFetch(async (input) => {
-        if (input !== request) throw new TypeError("no such host");
-        return new Response("not found", { status: 404 });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(response.status, 404);
-    });
+    await withFetch(
+        async (input) => {
+            if (input !== request) throw new TypeError("no such host");
+            return new Response("not found", { status: 404 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 404);
+        },
+    );
 });
 
 test("an origin that resolves with a 530 falls through, not passed on", async () => {
@@ -406,16 +398,19 @@ test("an origin that resolves with a 530 falls through, not passed on", async ()
     // every other handler test here does — models a failure the runtime does
     // not produce, which is exactly why the suite passed through the outage.
     const request = new Request("https://www.heroiclands.org/kethira/");
-    await withFetch(async (input) => {
-        if (input !== request) {
-            return new Response("error code: 1016", { status: 530 });
-        }
-        return new Response("origin", { status: 200 });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(response.status, 200);
-        assert.equal(await response.text(), "origin");
-    });
+    await withFetch(
+        async (input) => {
+            if (input !== request) {
+                return new Response("error code: 1016", { status: 530 });
+            }
+            return new Response("origin", { status: 200 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 200);
+            assert.equal(await response.text(), "origin");
+        },
+    );
 });
 
 test("falls through for every 52x the edge synthesises too", async () => {
@@ -423,13 +418,16 @@ test("falls through for every 52x the edge synthesises too", async () => {
     // class of non-answer and must not reach a reader either.
     for (const status of [521, 522, 523, 524, 525, 526]) {
         const request = new Request("https://www.heroiclands.org/kethira/");
-        await withFetch(async (input) => {
-            if (input !== request) return new Response("", { status });
-            return new Response("origin", { status: 200 });
-        }, async () => {
-            const response = await handler.fetch(request);
-            assert.equal(response.status, 200, String(status));
-        });
+        await withFetch(
+            async (input) => {
+                if (input !== request) return new Response("", { status });
+                return new Response("origin", { status: 200 });
+            },
+            async () => {
+                const response = await handler.fetch(request);
+                assert.equal(response.status, 200, String(status));
+            },
+        );
     }
 });
 
@@ -438,16 +436,19 @@ test("serves a package's own error response rather than hiding it", async () => 
     // "any 5xx": a package that answers 503 from its own hosting has answered,
     // and swapping its page for this site's 404 would lose the truth.
     const request = new Request("https://www.heroiclands.org/kethira/x/");
-    await withFetch(async (input) => {
-        if (input !== request) {
-            return new Response("kethira is rebuilding", { status: 503 });
-        }
-        return new Response("origin", { status: 200 });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(response.status, 503);
-        assert.equal(await response.text(), "kethira is rebuilding");
-    });
+    await withFetch(
+        async (input) => {
+            if (input !== request) {
+                return new Response("kethira is rebuilding", { status: 503 });
+            }
+            return new Response("origin", { status: 200 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 503);
+            assert.equal(await response.text(), "kethira is rebuilding");
+        },
+    );
 });
 
 test("passes a package's own 404 through, prefix and all", async () => {
@@ -457,14 +458,17 @@ test("passes a package's own 404 through, prefix and all", async () => {
     // tell a package whose host is down from a first segment that was never a
     // package, and must not claim to.
     const request = new Request("https://www.heroiclands.org/kethira/gone/");
-    await withFetch(async (input) => {
-        if (input !== request) {
-            return new Response("kethira's 404", { status: 404 });
-        }
-        return new Response("this site's 404", { status: 404 });
-    }, async () => {
-        const response = await handler.fetch(request);
-        assert.equal(response.status, 404);
-        assert.equal(await response.text(), "kethira's 404");
-    });
+    await withFetch(
+        async (input) => {
+            if (input !== request) {
+                return new Response("kethira's 404", { status: 404 });
+            }
+            return new Response("this site's 404", { status: 404 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 404);
+            assert.equal(await response.text(), "kethira's 404");
+        },
+    );
 });

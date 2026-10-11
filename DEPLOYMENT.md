@@ -119,7 +119,7 @@ runs on a pull request that touches the router as well as on the deploy — see
 
 **There is no `wrangler dev` smoke check, deliberately.** Driving the real paths
 locally is a useful thing to do by hand, but it is not evidence: the local
-runtime *throws* where the edge answers with a synthesised 530, so a router
+runtime _throws_ where the edge answers with a synthesised 530, so a router
 serving raw 530s across the site still passes a local smoke test. A check that
 is green on the failure it is meant to catch is worse than none. What such a
 run would genuinely add — that the entry module exports only its handler,
@@ -141,10 +141,10 @@ route in `wrangler.toml` is a single wildcard, because a route per package would
 be a list of packages in this repository — the thing the derivation removes.
 What keeps a broken router off the rest of the site is the handler's
 `try`/`catch`, which answers any fault with `fetch(request)` — including a
-fault on a prefix the router *does* claim.
+fault on a prefix the router _does_ claim.
 
 **A failure is not always a thrown one.** Cloudflare does **not** throw when an
-origin hostname does not resolve or does not answer: `fetch()` *resolves*, with
+origin hostname does not resolve or does not answer: `fetch()` _resolves_, with
 a status the edge synthesised — 530 for "origin DNS error", 521–526 for an
 origin that refused, timed out, or failed TLS. A guard keyed on a thrown error
 alone therefore never fires for the commonest failure there is. So the router
@@ -157,7 +157,7 @@ to serve.
 "unavailable" page.** That is a decision, not an oversight. The router holds no
 list of packages, so a first segment it cannot reach is equally "a package whose
 host is down" and "no such package at all" — and by volume it is overwhelmingly
-the second, since *every* mistyped top-level path derives an origin that has
+the second, since _every_ mistyped top-level path derives an origin that has
 never existed. A page asserting the first would be a guess, and wrong most of the
 time it was shown. "No such page here" is true either way, is this site's own
 maintained 404, and keeps one code path on the whole domain's critical path. The
@@ -166,7 +166,7 @@ an operator can see it; the way to tell the two apart is to ask the upstream
 directly (`curl -sSI https://<package>.pkg.heroiclands.org/<package>/`).
 
 **`wrangler dev` cannot reproduce this failure**, so do not treat a local pass as
-evidence for it. The local runtime *throws* for a hostname that does not resolve,
+evidence for it. The local runtime _throws_ for a hostname that does not resolve,
 where the edge resolves with a 530 — the local check exercises the path that
 already worked. The test that covers it stubs `fetch` **resolving** with a 530
 (`worker/test/router.test.mjs`); that stub, not the local run, is the guard.
@@ -299,13 +299,13 @@ Two more things worth checking after a routing or hosting change:
 
 ## Hostnames
 
-| Hostname              | What it does                                                       |
-| --------------------- | ------------------------------------------------------------------ |
-| `www.heroiclands.org` | **Canonical.** Everything is served here.                          |
-| `heroiclands.org`     | 301s to `www`, path and query preserved (Cloudflare rule).         |
-| `cdn.heroiclands.org` | Images and shared assets (`params.cdnBaseURL`).                    |
+| Hostname                | What it does                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `www.heroiclands.org`   | **Canonical.** Everything is served here.                                                                                      |
+| `heroiclands.org`       | 301s to `www`, path and query preserved (Cloudflare rule).                                                                     |
+| `cdn.heroiclands.org`   | Images and shared assets (`params.cdnBaseURL`).                                                                                |
 | `*.pkg.heroiclands.org` | Where the router proxies a package prefix. A custom domain on the package's own hosting project, set by that package's deploy. |
-| `*.pages.dev`         | Each package project's own address. Real, unadvertised, `noindex`. |
+| `*.pages.dev`           | Each package project's own address. Real, unadvertised, `noindex`.                                                             |
 
 `kb.heroiclands.org` and `api.heroiclands.org` are **retired**: their DNS records
 are deleted and they resolve to nothing. The knowledgebase and the API

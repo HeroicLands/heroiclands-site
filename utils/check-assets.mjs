@@ -88,8 +88,7 @@ function* walk(dir) {
         const full = join(dir, entry);
         const st = statSync(full);
         if (st.isDirectory()) yield* walk(full);
-        else if (SCANNED.has(entry.slice(entry.lastIndexOf(".")).toLowerCase()))
-            yield full;
+        else if (SCANNED.has(entry.slice(entry.lastIndexOf(".")).toLowerCase())) yield full;
     }
 }
 

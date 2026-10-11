@@ -55,4 +55,3 @@ jobs:
                   # The action still defaults to wrangler 3, which is not what
                   # this Worker was developed and checked against.
                   wranglerVersion: "4"
-

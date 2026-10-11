@@ -7,7 +7,7 @@ aliases:
 
 This is a game system definition of the HârnMaster 3 RPG for [Foundry Virtual Tabletop](http://foundryvtt.com/).
 
-### HârnMaster Copyright Notice
+## HârnMaster Copyright Notice
 
 This is an unofficial HârnFanon work. It is a derivative work from material created by N. Robin Crossby and is released for free distribution and personal use without the permission or endorsement of N. Robin Crossby or his estate.
 
@@ -171,7 +171,7 @@ ln $RELEASEDIR/$HM3FILE.json $RELEASEDIR/system.json
 echo "Finished packaging HarnMaster 3 $VERSION"
 ```
 
-This script depends on the `foundryvtt-cli` package in order to run; see https://github.com/foundryvtt/foundryvtt-cli. This package, in turn, requires Node.js to be installed.
+This script depends on the `foundryvtt-cli` package in order to run; see <https://github.com/foundryvtt/foundryvtt-cli>. This package, in turn, requires Node.js to be installed.
 
 You can then unzip the ZIP file into your `$FOUNDRY_DATA_DIR/systems/hm3` directory (create that directory if it doesn't exist).
 

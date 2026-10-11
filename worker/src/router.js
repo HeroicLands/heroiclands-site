@@ -111,9 +111,7 @@ export const PACKAGE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
  * an origin can and does produce itself, and a package's own error page is its
  * to serve — the router must not second-guess a host that answered.
  */
-export const ORIGIN_FAILURE_STATUSES = new Set([
-    521, 522, 523, 524, 525, 526, 530,
-]);
+export const ORIGIN_FAILURE_STATUSES = new Set([521, 522, 523, 524, 525, 526, 530]);
 
 /**
  * Whether a status means the attempt failed rather than that the origin
@@ -217,9 +215,7 @@ export function upstreamURL(requestUrl, origin) {
  */
 export function rewriteLocation(location, origin, siteOrigin = SITE_ORIGIN) {
     if (!location) return location;
-    return location.startsWith(origin) ?
-            siteOrigin + location.slice(origin.length)
-        :   location;
+    return location.startsWith(origin) ? siteOrigin + location.slice(origin.length) : location;
 }
 
 /**
