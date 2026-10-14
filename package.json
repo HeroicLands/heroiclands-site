@@ -27,6 +27,6 @@
         "lint:markdown:fix": "package-build markdown --fix"
     },
     "devDependencies": {
-        "@heroiclands/package-build": "^23.3.2"
+        "@heroiclands/package-build": "^23.4.0"
     }
 }
