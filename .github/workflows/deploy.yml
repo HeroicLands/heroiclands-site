@@ -29,14 +29,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout site repo
-              uses: actions/checkout@v7
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
             # The shared brand theme is an npm dependency rather than a submodule
             # (Song-of-Heroic-Lands-FoundryVTT#1642), so it has to be installed
             # before Hugo runs. `npm ci` installs from the lockfile, which is the
             # whole of this site's Node footprint: one package.
             - name: Setup Node.js
-              uses: actions/setup-node@v7
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
               with:
                   node-version: 24
                   cache: npm
@@ -45,7 +45,7 @@ jobs:
               run: npm ci
 
             - name: Setup Hugo
-              uses: peaceiris/actions-hugo@v3
+              uses: peaceiris/actions-hugo@2752ce1d29631191ea3f27c23495fa06139a5b78 # v3
               with:
                   # `hugo.Data` (used in layouts) requires >= 0.156.0; pinning to
                   # 0.163.3 (latest extended release as of June 2026).
@@ -58,7 +58,7 @@ jobs:
                   HUGO_ENVIRONMENT: production
 
             - name: Upload artifact
-              uses: actions/upload-pages-artifact@v5
+              uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
               with:
                   path: ./public
 
@@ -71,4 +71,4 @@ jobs:
         steps:
             - name: Deploy to GitHub Pages
               id: deployment
-              uses: actions/deploy-pages@v5
+              uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
