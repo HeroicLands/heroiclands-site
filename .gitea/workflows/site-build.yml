@@ -30,7 +30,7 @@ on:
             - "**/*.mjs"
             - "**/*.js"
             - "**/*.yml"
-            - ".github/workflows/site-build.yml"
+            - ".gitea/workflows/site-build.yml"
 
 permissions:
     contents: read

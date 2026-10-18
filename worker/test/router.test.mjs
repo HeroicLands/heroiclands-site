@@ -133,7 +133,7 @@ test("the reserved segments cover everything this repository publishes", () => {
 
     // The theme's static/ becomes top-level paths too. Only present once the
     // theme is installed — which the pull-request check does (`npm ci` before
-    // `npm test`, see .github/workflows/worker-test.yml) and the deploy job
+    // `npm test`, see .gitea/workflows/worker-test.yml) and the deploy job
     // does not, so the guard stays for the run that has no node_modules.
     const themeStatic = new URL("node_modules/@heroiclands/hugo-theme/static/", repo);
     if (existsSync(themeStatic)) {
