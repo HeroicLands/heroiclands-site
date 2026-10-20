@@ -4,8 +4,7 @@
  * Hugo emits image addresses; it never fetches them. So a page can name an
  * image that was never uploaded and nothing fails — not the build, not the
  * deploy, not the Worker. The page just renders with a dead URL behind it,
- * which for a hero banner means a full-height blank band under the title
- * (heroiclands-site#19).
+ * which for a hero banner means a full-height blank band under the title.
  *
  * The addresses come from three places that no single check upstream can
  * cover: a page's own `banner:` / `img:` front matter, the hero banner the

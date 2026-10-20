@@ -11,8 +11,8 @@
  * The projections are **committed**, not built at deploy time. `deploy.yml`
  * runs Hugo and nothing else, so a data file produced by a build step would
  * have to add one — and a step that only ever runs on `main` is a step whose
- * failure is discovered by the deploy it was meant to protect
- * (heroiclands-site#27). A committed copy is readable in review and is
+ * failure is discovered by the deploy it was meant to protect.
+ * A committed copy is readable in review and is
  * checked on the pull request instead, which is the trade every other
  * generated artifact here makes.
  *

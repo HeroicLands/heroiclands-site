@@ -105,7 +105,7 @@ export const PACKAGE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
  * content any origin produced, and none should be handed to a reader as though
  * it were: they are the response-shaped form of the failure the handler's
  * `try`/`catch` was written for, and keying only on a thrown error missed the
- * whole of it (heroiclands-site#28).
+ * whole of it.
  *
  * Deliberately **not** here: 500, 502, 503 and every other ordinary 5xx. Those
  * an origin can and does produce itself, and a package's own error page is its
@@ -161,8 +161,8 @@ export function packageFor(pathname, siteSegments = SITE_SEGMENTS) {
  * itself.
  *
  * The origin is derived and there is no second one to try: every package's
- * `pkg.heroiclands.org` custom domain now exists, so the migration fallback
- * this used to carry is gone (heroiclands-site#28). An origin that does not
+ * `pkg.heroiclands.org` custom domain now exists, so there is no
+ * migration fallback. An origin that does not
  * answer is handled by falling through to this site's own, not by guessing at
  * another address for the package.
  *

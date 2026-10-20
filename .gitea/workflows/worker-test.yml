@@ -3,14 +3,12 @@ name: Worker tests
 # The gate `deploy-worker.yml` cannot be. That workflow runs the same suite, but
 # on push to `main` — the trigger that also deploys — so it reports on a router
 # after the decision it exists to inform, and on this repository merging *is*
-# deploying (heroiclands-site#27).
+# deploying.
 #
-# That was survivable while the Worker claimed two narrow prefixes. It is not
-# now: #25 replaced them with a single wildcard, so every request to
-# www.heroiclands.org enters the router, and a router change deployed on 29
-# August served raw 530s for `/sohl/` and `/thalorna/` and a raw Cloudflare
-# error for every mistyped path until #29. The suite that would have caught it
-# could not fail the pull request.
+# The Worker claims a single wildcard route, so every request to
+# www.heroiclands.org enters the router, and a router change that breaks it
+# breaks every path. The suite therefore has to be able to fail the pull
+# request.
 #
 # This adds a gate; it moves none. `deploy-worker.yml` is untouched.
 
@@ -30,7 +28,7 @@ on:
             # that the router resolves every package the roster names, that none
             # of them collides with one of this site's own sections, and that the
             # committed `data/roster.json` is still what `roster.mjs` would
-            # write (heroiclands-site#23). All three go stale from an edit here
+            # write. All three go stale from an edit here
             # rather than one under `worker/`.
             - "roster.mjs"
             - "data/**"

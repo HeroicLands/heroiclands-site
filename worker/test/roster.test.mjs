@@ -3,7 +3,7 @@
  *
  * The roster (`roster.mjs`) is not a routing table and the router does not read
  * it — a package's origin is derived from its prefix and this repository holds
- * no list (heroiclands-site#25). So the roster is *checked* against the router
+ * no list. So the roster is *checked* against the router
  * rather than driving it, and these are the checks:
  *
  * 1. **The router resolves every package the roster names.** A roster entry the

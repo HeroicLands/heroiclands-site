@@ -10,9 +10,8 @@
  * packages**. A package's origin is derived from its prefix
  * (`/<package>/` → `https://<package>.pkg.heroiclands.org`), so a package
  * becomes publishable here entirely from its own repository and this one is
- * never edited for it (heroiclands-site#25). That is the point: each repository
- * stays publishable on its own, and none is required for another to deploy
- * (HeroicLands/Song-of-Heroic-Lands-FoundryVTT#1468).
+ * never edited for it. That is the point: each repository
+ * stays publishable on its own, and none is required for another to deploy.
  *
  * **Every request to the hostname reaches this script** — the Worker route is a
  * wildcard, because narrow per-package routes would be a list of packages in
@@ -24,10 +23,8 @@
  *
  * **A failure is not always a thrown one.** Cloudflare answers an unreachable
  * origin with a 530 (or a 52x) rather than rejecting, so a guard keyed on a
- * thrown error alone never fires for the commonest failure there is — which is
- * how `/sohl/` and `/thalorna/` served raw 530s for the life of an outage
- * (heroiclands-site#28). Both an exception and an unusable response are faults
- * here, and both fall through.
+ * thrown error alone never fires for the commonest failure there is. Both an
+ * exception and an unusable response are faults here, and both fall through.
  *
  * This module exports **only** the handler: the Workers runtime treats every
  * named export of the entry module as an entrypoint, and refuses to start when
@@ -43,9 +40,8 @@ import { routeFor, upstreamURL, canonicalHeaders, isOriginFailure } from "./rout
  * Throws when the origin did not answer at all, so the caller's `catch` handles
  * an unreachable origin and a thrown fault by one path. That is not a
  * refinement: **Cloudflare resolves with a 530 rather than throwing** when a
- * hostname does not resolve, so before this check the guard below existed
- * without ever being reachable for the failure it was written for, and readers
- * were served raw 530s (heroiclands-site#28).
+ * hostname does not resolve, so the guard below is reachable for that failure
+ * only through this check.
  *
  * @param {Request} request - The incoming request.
  * @param {string} origin - The origin to proxy to.
@@ -104,7 +100,7 @@ export default {
             //
             // **A package prefix gets that 404 too, deliberately, and not a
             // "this package is unavailable" page.** The router holds no list of
-            // packages — that is the whole of heroiclands-site#25 — so a first
+            // packages — that is the whole point — so a first
             // segment it cannot reach is equally "a package whose host is down"
             // and "no such package at all", and by volume it is overwhelmingly
             // the second: every mistyped top-level path derives an origin that

@@ -30,7 +30,7 @@ Everything outside a package prefix: the home page, `/blog/`, `/projects/`,
 `sohl` note, no `thalorna` note — and holds none.
 
 ```
-heroiclands-site (Hugo project + shared theme, an npm dependency)
+site (Hugo project + shared theme, an npm dependency)
     │  content/  — authored here, in this repository
     │  .github/workflows/deploy.yml — hugo --minify
     ▼

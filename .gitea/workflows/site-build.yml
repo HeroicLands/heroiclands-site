@@ -1,9 +1,9 @@
 name: Site build
 
-# The same defect as the Worker's, on the other half of the repository
-# (heroiclands-site#27): nothing checked that the site still builds before a
-# change landed on `main`, and a push to `main` publishes. A template or content
-# error was discovered by the deploy that was meant to ship it.
+# The same gate as the Worker's, on the other half of the repository: the site
+# is built before a change lands on `main`, because a push to `main` publishes.
+# A template or content error is caught here rather than by the deploy that is
+# meant to ship it.
 #
 # The stakes differ, and it is worth being honest about which is which. A failed
 # Hugo build fails `deploy.yml` and Pages keeps serving the previous deploy, so

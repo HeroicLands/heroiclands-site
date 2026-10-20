@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/HeroicLands/heroiclands-site.git"
+        "url": "git+https://github.com/HeroicLands/site.git"
     },
     "engines": {
         "node": ">=24.0.0"

@@ -5,7 +5,7 @@
  * ## What this is not
  *
  * **It is not a routing table, and the router does not read it.** Adding a
- * package must not be a change to this repository (heroiclands-site#25), so the
+ * package must not be a change to this repository, so the
  * Worker derives a package's origin from its prefix alone
  * (`/<package>/` → `https://<package>.pkg.heroiclands.org`) and holds no list.
  * `wrangler.toml` names no package either — one wildcard route, and the handler
@@ -175,7 +175,7 @@ export const PACKAGES = [
         nav: "modules",
     },
     {
-        // Recorded as the maintainer scoped it in heroiclands-site#23: HM3.
+        // Scoped by the maintainer: HM3.
         // Its own configuration is less decisive and deliberately so — it ships
         // one Adventure pack declaring no system, and its homepage says the
         // documents "carry no system data, so they import into a world running
