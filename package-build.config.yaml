@@ -1,0 +1,48 @@
+contentPackage: heroiclands
+packageKind: documentation
+
+authors:
+    - name: Tom Rodriguez
+      email: toasty@heroiclands.org
+      url: https://www.heroiclands.org/
+
+paths:
+    content: content
+
+site:
+    title: Heroic Lands
+    description: Heroic Lands — World of Thalorna and Foundry VTT Game Systems and Modules
+    assets: https://cdn.heroiclands.org
+    base: /
+    sections:
+        blog: doc-blog
+        projects: doc-projects
+        author: doc-author
+        license: doc-license
+        songofheroiclands: doc-sohl
+        harnmaster3: doc-harnmaster3
+        modules: doc-modules
+        reference: doc-reference
+    feed: blog
+    tags: true
+    # Every package site in `roster.mjs`; `worker/test/roster.test.mjs` holds the two to one list.
+    sitemaps: [sohl, hm3, thalorna, kethira, thalornaaltart, harnensemble, harnadventures]
+    # The package sites whose `site.search` is on, read from `/<package>/pagefind/` on this origin.
+    mergeIndexes: [sohl, thalorna, kethira, harnensemble]
+    notfound:
+        heroimage: images/brand/sohl-banner.webp
+        tagline: This site has no page at
+        sitenoun: site
+        links:
+            - title: Home
+              url: /
+              text: Everything Heroic Lands, from the top.
+            - title: Song of Heroic Lands
+              url: /songofheroiclands/
+              text: The HârnMaster-compatible Foundry VTT system, and where to start with it.
+            - title: Thalorna
+              url: https://www.heroiclands.org/thalorna/
+              text: "The world: its realms, peoples, faiths, and the lore behind them."
+            - title: Blog
+              url: /blog/
+              text: Development notes and announcements.

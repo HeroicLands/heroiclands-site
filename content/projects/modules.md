@@ -1,12 +1,9 @@
 ---
-title: Foundry VTT Modules
+shortcode: modules
+name: {full: Foundry VTT Modules}
+type: doc
 description: A growing collection of Foundry VTT modules providing Hârn locations, adventures, characters, and HârnMaster system extensions.
-tags:
-  - foundry-vtt
-  - modules
-  - harn
-aliases:
-  - /projects/modules/
+tags: [foundry-vtt, modules, harn]
 ---
 
 The _Song of Heroic Lands_ and _HârnMaster 3_ systems come with a number of compendium packs pre-installed providing standard skills, weapons, armor, spells, invocations, etc. But there are also a growing number of additional modules available to extend capabilities and provide ready-made content to use.
@@ -80,8 +77,6 @@ These modules provide additional HârnMaster item compendiums to represent gear,
 To install Foundry VTT modules:
 
 1. Find the desired module above and copy the **Manifest URL** (click the little copy icon to the right of the URL)
-2. Go to the "Configuration and Setup" screen, then select the "Add-on Modules" tab. ![FVTT Add-on Modules](/images/fvtt-add-on-modules.jpg)
+2. Go to the "Configuration and Setup" screen, then select the "Add-on Modules" tab.
 3. Click "Install Module".
 4. Back in the _Foundry VTT Install Modules_ page paste the URL you copied above into the **Manifest URL** text box at the bottom of the dialog and click "Install".
-
-![Download Module](/images/module-dnload.jpg)

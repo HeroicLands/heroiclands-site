@@ -4,12 +4,15 @@ Obsidian [Templater](https://github.com/SilentVoid13/Templater) templates for
 starting a new note: the frontmatter each kind of note carries, and a body
 outline with the sections a finished note is expected to have.
 
-They are **not** site content: nothing here is mounted into the Hugo build, and
-these files render no page. The directory is deliberately outside `content/`.
+They are **not** site content: the site build reads `content/` and nothing
+else, and these files render no page. The directory is deliberately outside
+`content/`.
 
 `New_Blog_Post_Template.md` is the one that belongs to this repository — the
-blog is authored here, and its frontmatter is Hugo's, so `draft:` and
-`aliases:` there are keys Hugo itself reads. The other twenty-two start a note
+blog is authored here. A post is a `doc` note of `subType: post`: it states the
+day it is published in `data.date` and may name its writer in `data.author`,
+and a post naming none carries the site's byline. Its `shortcode` is its
+address, so the post publishes at `/doc-<shortcode>/`. The other twenty-two start a note
 in a **package's** content tree, which is authored in the repository that ships
 that package:
 

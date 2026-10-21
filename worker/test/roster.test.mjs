@@ -10,20 +10,23 @@
  *    router will not route is a page that 404s. Since the router derives, the
  *    only ways that happens are a malformed id and a collision with one of this
  *    site's own top-level sections — and both are silent.
- * 2. **The committed projection is current.** `data/roster.json` is generated
- *    from `roster.mjs` and committed, so it can go stale between the two. This
- *    fails when it has.
+ * 2. **The committed projections are current.** `data/roster.json` and
+ *    `static/nav.json` are generated from `roster.mjs` and committed, so they
+ *    can go stale between the two. This fails when they have.
+ * 3. **The site's sitemap index names every package.** `site.sitemaps` in
+ *    `package-build.config.yaml` lists the roster's packages, in roster order,
+ *    and `site.mergeIndexes` names none outside it.
  *
  * These live in the router's suite because it is the only Node suite this
  * repository has and the only one a pull request runs (`worker-test.yml`), and
  * because the agreement being checked is with the router. That suite already
  * reaches outside `worker/` for the same reason — its `SITE_SEGMENTS` drift
- * check reads `content/` and `hugo.toml`.
+ * check reads `package-build.config.yaml`.
  */
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 
 import {
     PACKAGES,
@@ -31,10 +34,10 @@ import {
     packageById,
     prefixFor,
     renderDataFile,
-    renderMenusFile,
     renderNavFile,
 } from "../../roster.mjs";
 import { PACKAGE_ORIGIN_SUFFIX, PACKAGE_SEGMENT, SITE_SEGMENTS, routeFor } from "../src/router.js";
+import { SITE, publishedSections } from "./site-config.mjs";
 
 const repo = new URL("../../", import.meta.url);
 
@@ -160,15 +163,12 @@ test("no package claims a path this site publishes itself", () => {
 });
 
 test("no package collides with a top-level section of this repository", () => {
-    // The same check against the tree rather than against the list, because the
-    // list can itself be behind — `content/` is what actually publishes.
-    const published = readdirSync(new URL("content/", repo), {
-        withFileTypes: true,
-    })
-        .filter((e) => !e.name.startsWith("_") && !e.name.startsWith("."))
-        .map((e) => e.name.replace(/\.md$/, ""));
+    // The same check against the configuration rather than against the list,
+    // because the list can itself be behind — the sections the configuration
+    // names are what actually publishes.
+    const published = publishedSections();
 
-    assert.ok(published.length > 0, "content/ read no sections");
+    assert.ok(published.length > 0, "package-build.config.yaml names no section");
     const ids = new Set(PACKAGES.map((pkg) => pkg.id));
     for (const section of published) {
         assert.ok(
@@ -179,7 +179,7 @@ test("no package collides with a top-level section of this repository", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The committed projection Hugo reads
+// The committed projections
 // ---------------------------------------------------------------------------
 
 test("data/roster.json is what roster.mjs would write", () => {
@@ -190,15 +190,6 @@ test("data/roster.json is what roster.mjs would write", () => {
     assert.equal(committed, renderDataFile(), "data/roster.json is stale — run: npm run roster");
 });
 
-test("config/_default/menus.toml is what roster.mjs would write", () => {
-    const committed = readFileSync(new URL("config/_default/menus.toml", repo), "utf8");
-    assert.equal(
-        committed,
-        renderMenusFile(),
-        "config/_default/menus.toml is stale — run: npm run roster",
-    );
-});
-
 test("static/nav.json is what roster.mjs would write", () => {
     const committed = readFileSync(new URL("static/nav.json", repo), "utf8");
     assert.equal(committed, renderNavFile(), "static/nav.json is stale — run: npm run roster");
@@ -206,10 +197,32 @@ test("static/nav.json is what roster.mjs would write", () => {
 
 test("the projection resolves what a template should not have to", () => {
     // A projection, not a transcription: it carries the derived prefix and the
-    // reverse index, so a Hugo template renders a cross-link without doing a
-    // reverse lookup in Go templates.
+    // reverse index, so a reader renders a cross-link without doing a reverse
+    // lookup.
     const data = JSON.parse(readFileSync(new URL("data/roster.json", repo)));
     const sohl = data.packages.find((pkg) => pkg.id === "sohl");
     assert.equal(sohl.prefix, "/sohl/");
     assert.deepEqual(sohl.dependents, ["thalorna", "kethira", "thalornaaltart", "harnensemble"]);
+});
+
+// ---------------------------------------------------------------------------
+// The site's sitemap index and merged search
+// ---------------------------------------------------------------------------
+
+test("the sitemap index names every package in the roster, in roster order", () => {
+    // `robots.txt` and `sitemap-index.xml` are written from `site.sitemaps`. A
+    // package missing there is a site no crawler is told about.
+    assert.deepEqual(
+        SITE.sitemaps,
+        PACKAGES.map((pkg) => pkg.id),
+        "site.sitemaps in package-build.config.yaml does not list the roster",
+    );
+});
+
+test("the merged search reads only packages in the roster", () => {
+    // Each is read from `/<package>/pagefind/`, which only a package published
+    // under this hostname serves.
+    assert.ok(SITE.mergeIndexes?.length, "site.mergeIndexes names no package");
+    const ids = new Set(PACKAGES.map((pkg) => pkg.id));
+    for (const id of SITE.mergeIndexes) assert.ok(ids.has(id), `${id} is not in the roster`);
 });

@@ -87,11 +87,6 @@ Session.vim
 /nogit/
 *.wip
 
-# Hugo build output
-public/
-resources/_gen/
-.hugo_build.lock
-
 # Wrangler scratch from `wrangler dev`
 /worker/.wrangler/
 

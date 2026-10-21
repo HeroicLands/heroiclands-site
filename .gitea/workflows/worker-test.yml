@@ -17,21 +17,23 @@ on:
         paths:
             # The router itself, obviously.
             - "worker/**"
-            # And the inputs to the suite's drift check, which walks `content/`,
-            # `hugo.toml`'s taxonomies and the theme's `static/` and fails when
-            # something this site publishes is missing from `SITE_SEGMENTS`. A
-            # new section reaches the router by being added here, not by anyone
-            # editing `worker/`, so a pull request that adds one has to run it.
-            - "content/**"
-            - "hugo.toml"
-            # The package roster and the copy of it Hugo reads. The suite checks
+            # And the inputs to the suite's drift check, which reads
+            # `package-build.config.yaml`'s sections and the theme's `static/`
+            # and fails when something this site publishes is missing from
+            # `SITE_SEGMENTS`. A new section reaches the router by being added
+            # there, not by anyone editing `worker/`, so a pull request that adds
+            # one has to run it.
+            - "package-build.config.yaml"
+            # The package roster and its committed projections. The suite checks
             # that the router resolves every package the roster names, that none
-            # of them collides with one of this site's own sections, and that the
-            # committed `data/roster.json` is still what `roster.mjs` would
-            # write. All three go stale from an edit here
+            # of them collides with one of this site's own sections, that the
+            # sitemap index names every one of them, and that the committed
+            # `data/roster.json` and `static/nav.json` are still what
+            # `roster.mjs` would write. All of these go stale from an edit here
             # rather than one under `worker/`.
             - "roster.mjs"
             - "data/**"
+            - "static/**"
             - "utils/build-roster.mjs"
             - "package.json"
             - "package-lock.json"
@@ -64,8 +66,8 @@ jobs:
             # drift check reads the theme's `static/` directories and skips that
             # half of itself when they are absent, so installing here is the
             # difference between checking what this site publishes and checking
-            # only the part of it that lives in `content/`.
-            - name: Install the theme
+            # only the sections its configuration names.
+            - name: Install dependencies
               run: npm ci
 
             - name: Test the router

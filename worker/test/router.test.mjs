@@ -6,6 +6,7 @@ import handler from "../src/index.js";
 import {
     ORIGIN_FAILURE_STATUSES,
     PACKAGE_ORIGIN_SUFFIX,
+    SITE_HOSTING_ORIGIN,
     SITE_SEGMENTS,
     canonicalHeaders,
     isOriginFailure,
@@ -15,8 +16,13 @@ import {
     routeFor,
     upstreamURL,
 } from "../src/router.js";
+import { publishedSections } from "./site-config.mjs";
 
 const repo = new URL("../../", import.meta.url);
+
+/** Whether a proxied request went to this site's own origin. */
+const toSite = (input) =>
+    input instanceof Request && input.url.startsWith(`${SITE_HOSTING_ORIGIN}/`);
 
 /**
  * Run `fn` with `globalThis.fetch` replaced, restoring it afterwards.
@@ -82,24 +88,31 @@ test("leaves this site's own paths alone", () => {
     const own = [
         "/",
         "/blog/",
-        "/blog/2025/a-post/",
-        "/projects/song-of-heroic-lands/",
+        "/blog/atom.xml",
+        "/projects/",
         "/tags/harn/",
+        "/doc-welcome/",
         "/license",
         "/author/",
+        "/songofheroiclands/",
+        "/harnmaster3/",
+        "/modules/",
+        "/reference/",
         "/css/style.css",
         "/img/brand/sohl-icon-white.webp",
         "/fonts/x.woff2",
+        "/pagefind/pagefind-ui.js",
     ];
     for (const p of own) assert.equal(routeFor(p), undefined, p);
 });
 
 test("leaves the site's root files alone without listing them", () => {
     // A dot cannot appear in a package name, which is what keeps every one of
-    // these out — no enumeration of Hugo's output files needed.
+    // these out — no enumeration of the site build's output files needed.
     for (const p of [
         "/sitemap.xml",
-        "/index.xml",
+        "/sitemap-index.xml",
+        "/nav.json",
         "/404.html",
         "/robots.txt",
         "/favicon.ico",
@@ -111,18 +124,12 @@ test("leaves the site's root files alone without listing them", () => {
 });
 
 test("the reserved segments cover everything this repository publishes", () => {
-    // Replaces the old "wrangler.toml and ROUTES name the same packages" check.
-    // That agreement is gone — neither file names a package now — but the same
-    // silent-drift hazard moved here: a new top-level section of this site that
-    // nobody reserved would be treated as a package. Checked against the tree
-    // rather than by eye, as before.
-    const published = readdirSync(new URL("content/", repo), {
-        withFileTypes: true,
-    })
-        .filter((e) => !e.name.startsWith("_") && !e.name.startsWith("."))
-        .map((e) => e.name.replace(/\.md$/, ""));
-
-    assert.ok(published.length > 0, "content/ read no sections");
+    // A new top-level section of this site that nobody reserved would be
+    // treated as a package. Checked against the configuration that publishes
+    // it rather than by eye: every section `site.sections` and `site.feed`
+    // name, and `tags` when `site.tags` is on.
+    const published = publishedSections();
+    assert.ok(published.length > 0, "package-build.config.yaml names no section");
     for (const section of published) {
         assert.equal(
             routeFor(`/${section}/`),
@@ -131,11 +138,13 @@ test("the reserved segments cover everything this repository publishes", () => {
         );
     }
 
-    // The theme's static/ becomes top-level paths too. Only present once the
-    // theme is installed — which the pull-request check does (`npm ci` before
-    // `npm test`, see .gitea/workflows/worker-test.yml) and the deploy job
-    // does not, so the guard stays for the run that has no node_modules.
-    const themeStatic = new URL("node_modules/@heroiclands/hugo-theme/static/", repo);
+    // The theme's static/ becomes top-level paths too, beside the search
+    // index. Only present once the toolchain is installed — which the
+    // pull-request check does (`npm ci` before `npm test`, see
+    // .gitea/workflows/worker-test.yml) and the deploy job does not, so the
+    // guard stays for the run that has no node_modules.
+    assert.equal(routeFor("/pagefind/"), undefined, "/pagefind/ is the search index");
+    const themeStatic = new URL("node_modules/@heroiclands/package-build/site-theme/static/", repo);
     if (existsSync(themeStatic)) {
         for (const dir of readdirSync(themeStatic, { withFileTypes: true })) {
             if (!dir.isDirectory()) continue;
@@ -146,26 +155,22 @@ test("the reserved segments cover everything this repository publishes", () => {
             );
         }
     }
+});
 
-    // And the taxonomies, which are configured rather than directories.
-    const hugo = readFileSync(new URL("hugo.toml", repo), "utf8");
-    const taxonomies = hugo.split("[taxonomies]")[1] ?? "";
-    const terms = [...taxonomies.matchAll(/^\s*\S+ = "([\w-]+)"$/gm)].map((m) => m[1]);
-    assert.ok(terms.length > 0, "hugo.toml declared no taxonomy");
-    for (const term of terms) {
-        assert.equal(
-            routeFor(`/${term}/`),
-            undefined,
-            `/${term}/ is a taxonomy of this site, not a package`,
-        );
+test("a page's own address is never a package", () => {
+    // Every page without a section is at `<type>-<shortcode>/`, and a
+    // package's name carries no hyphen, so no such page needs reserving.
+    for (const p of ["/doc-welcome/", "/doc-welcome/x"]) {
+        assert.equal(routeFor(p), undefined, p);
     }
 });
 
 test("does not route a prefix that merely starts the same way", () => {
     // /sohlx/ is a different package, not a longer form of /sohl/ — each gets
-    // its own origin, and neither is a prefix match on the other.
+    // its own origin, and neither is a prefix match on the other. /sohl-legacy/
+    // is no package at all: a hyphen is never in a package's name.
     assert.equal(packageFor("/sohlx/"), "sohlx");
-    assert.equal(packageFor("/sohl-legacy/"), "sohl-legacy");
+    assert.equal(packageFor("/sohl-legacy/"), undefined);
     assert.notEqual(routeFor("/sohlx/").origin, routeFor("/sohl/").origin);
 });
 
@@ -304,17 +309,22 @@ test("the entry module exports its handler and nothing else", async () => {
 });
 
 // ---------------------------------------------------------------------------
-// The handler: a fault must reach the origin, not a 5xx
+// The handler: a fault must reach this site's origin, not a 5xx
 // ---------------------------------------------------------------------------
 
-test("a thrown error yields the origin's response, not a 5xx", async () => {
+test("this site's own origin is its Pages project, in the package namespace", () => {
+    assert.equal(SITE_HOSTING_ORIGIN, `https://www.${PACKAGE_ORIGIN_SUFFIX}`);
+    assert.equal(new URL(SITE_HOSTING_ORIGIN).pathname, "/");
+});
+
+test("a thrown error yields this site's response, not a 5xx", async () => {
     // The wildcard route means a fault here is the whole site. There is no
     // narrow route left to contain it, so the catch is what does.
     const request = new Request("https://www.heroiclands.org/kethira/");
     await withFetch(
         async (input) => {
-            // Anything proxied upstream blows up; the origin answers normally.
-            if (input !== request) throw new TypeError("upstream is on fire");
+            // The package's origin blows up; this site's answers normally.
+            if (!toSite(input)) throw new TypeError("upstream is on fire");
             return new Response("origin", { status: 200 });
         },
         async () => {
@@ -325,17 +335,52 @@ test("a thrown error yields the origin's response, not a 5xx", async () => {
     );
 });
 
-test("a non-package path reaches the origin unchanged", async () => {
-    const request = new Request("https://www.heroiclands.org/blog/");
+test("a non-package path is proxied to this site's origin, path and query intact", async () => {
+    const request = new Request("https://www.heroiclands.org/blog/atom.xml?x=1");
     await withFetch(
         async (input) => {
-            assert.equal(input, request, "the request was rewritten");
+            assert.equal(input.url, `${SITE_HOSTING_ORIGIN}/blog/atom.xml?x=1`);
             return new Response("origin", { status: 200 });
         },
         async () => {
             assert.equal(await (await handler.fetch(request)).text(), "origin");
         },
     );
+});
+
+test("this site's own answer is re-headed as this site's", async () => {
+    // Its deployment marks its own hosting address `noindex`, as a package's
+    // does, and Pages names that address in its redirects.
+    const request = new Request("https://www.heroiclands.org/blog");
+    await withFetch(
+        async () =>
+            new Response(null, {
+                status: 308,
+                headers: { location: `${SITE_HOSTING_ORIGIN}/blog/`, "x-robots-tag": "noindex" },
+            }),
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 308);
+            assert.equal(response.headers.get("location"), "https://www.heroiclands.org/blog/");
+            assert.equal(response.headers.get("x-robots-tag"), null);
+        },
+    );
+});
+
+test("this site's own origin failing is passed on, there being nothing behind it", async () => {
+    const request = new Request("https://www.heroiclands.org/blog/");
+    const tried = [];
+    await withFetch(
+        async (input) => {
+            tried.push(input.url);
+            return new Response("error code: 1016", { status: 530 });
+        },
+        async () => {
+            const response = await handler.fetch(request);
+            assert.equal(response.status, 530);
+        },
+    );
+    assert.deepEqual(tried, [`${SITE_HOSTING_ORIGIN}/blog/`]);
 });
 
 test("a package prefix is proxied to its derived origin", async () => {
@@ -376,12 +421,12 @@ test("asks for the derived origin and nothing else", async () => {
 });
 
 test("a failing package origin falls through to this site's origin", async () => {
-    // Nothing to retry against, so the catch takes it: the origin's 404 beats
+    // Nothing to retry against, so the catch takes it: this site's 404 beats
     // a Worker exception page.
     const request = new Request("https://www.heroiclands.org/hm3/");
     await withFetch(
         async (input) => {
-            if (input !== request) throw new TypeError("no such host");
+            if (!toSite(input)) throw new TypeError("no such host");
             return new Response("not found", { status: 404 });
         },
         async () => {
@@ -400,7 +445,7 @@ test("an origin that resolves with a 530 falls through, not passed on", async ()
     const request = new Request("https://www.heroiclands.org/kethira/");
     await withFetch(
         async (input) => {
-            if (input !== request) {
+            if (!toSite(input)) {
                 return new Response("error code: 1016", { status: 530 });
             }
             return new Response("origin", { status: 200 });
@@ -420,7 +465,7 @@ test("falls through for every 52x the edge synthesises too", async () => {
         const request = new Request("https://www.heroiclands.org/kethira/");
         await withFetch(
             async (input) => {
-                if (input !== request) return new Response("", { status });
+                if (!toSite(input)) return new Response("", { status });
                 return new Response("origin", { status: 200 });
             },
             async () => {
@@ -438,7 +483,7 @@ test("serves a package's own error response rather than hiding it", async () => 
     const request = new Request("https://www.heroiclands.org/kethira/x/");
     await withFetch(
         async (input) => {
-            if (input !== request) {
+            if (!toSite(input)) {
                 return new Response("kethira is rebuilding", { status: 503 });
             }
             return new Response("origin", { status: 200 });
@@ -460,7 +505,7 @@ test("passes a package's own 404 through, prefix and all", async () => {
     const request = new Request("https://www.heroiclands.org/kethira/gone/");
     await withFetch(
         async (input) => {
-            if (input !== request) {
+            if (!toSite(input)) {
                 return new Response("kethira's 404", { status: 404 });
             }
             return new Response("this site's 404", { status: 404 });

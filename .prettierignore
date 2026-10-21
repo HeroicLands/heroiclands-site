@@ -4,6 +4,5 @@ package-lock.json
 # Written by `npm run roster` and compared byte for byte by `check:roster`.
 data/roster.json
 
-# Hugo build output.
-public/
-resources/
+# The site build's output.
+build/

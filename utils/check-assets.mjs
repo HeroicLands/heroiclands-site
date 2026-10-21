@@ -1,26 +1,25 @@
 /**
  * CI guard: every asset URL this site renders must actually be published.
  *
- * Hugo emits image addresses; it never fetches them. So a page can name an
- * image that was never uploaded and nothing fails — not the build, not the
- * deploy, not the Worker. The page just renders with a dead URL behind it,
+ * The site build emits image addresses; it never fetches them. So a page can
+ * name an image that was never uploaded and nothing fails — not the build, not
+ * the deploy, not the Worker. The page just renders with a dead URL behind it,
  * which for a hero banner means a full-height blank band under the title.
  *
- * The addresses come from three places that no single check upstream can
- * cover: a page's own `banner:` / `img:` front matter, the hero banner the
- * shared theme derives from a page's `type:`, and the image URLs `hugo.toml`
- * hands the theme (the home cards, the brand logo, the 404 hero). The theme
- * declares which banners it believes exist and checks that list against the
- * CDN, but it cannot know what a consumer's config and content ask for. This
- * check reads the answer off the built site instead: whatever the rendered
- * HTML and CSS actually request, from any of those sources, is what gets
- * probed.
+ * The addresses come from places no single check upstream can cover: a
+ * note's own art, the hero banner the shared theme derives from a page's
+ * `type:`, and the image addresses `package-build.config.yaml` hands the theme
+ * (the 404 hero) beside the brand logo. The theme declares which banners it
+ * believes exist and checks that list against the CDN, but it cannot know
+ * what a consumer's config and content ask for. This check reads the answer
+ * off the built site instead: whatever the rendered HTML and CSS actually
+ * request, from any of those sources, is what gets probed.
  *
  * Usage:
  *   node utils/check-assets.mjs [<dir>] [--base <url>] [--concurrency <n>]
  *
- * `<dir>` is a built site and defaults to `public`, so the whole invocation is
- * `hugo --minify && npm run check:assets`. The host defaults to the Heroic
+ * `<dir>` is a built site and defaults to `build/site`, so the whole invocation
+ * is `npm run build && npm run check:assets`. The host defaults to the Heroic
  * Lands CDN and can be pointed anywhere with `--base` or `ASSET_BASE_URL`.
  *
  * A network failure is reported as a failure rather than skipped: a check that
@@ -31,7 +30,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { isAbsolute, join, relative, sep } from "node:path";
 
 const DEFAULT_BASE = "https://cdn.heroiclands.org";
-const DEFAULT_DIR = "public";
+const DEFAULT_DIR = "build/site";
 
 /** The rendered files that can carry an asset address. */
 const SCANNED = new Set([".html", ".css", ".xml", ".json", ".svg"]);
@@ -95,8 +94,8 @@ function* walk(dir) {
  * Every reference to the asset host in the built site, as url → where it came
  * from.
  *
- * `hugo --minify` strips attribute quotes and rewrites `url('…')` to `url(…)`,
- * so the terminator can be a quote, a paren, whitespace, or a tag close. The
+ * A minifier may strip attribute quotes and rewrite `url('…')` to `url(…)`, so
+ * the terminator can be a quote, a paren, whitespace, or a tag close. The
  * character class below is what stops the match; it is deliberately wider than
  * the un-minified form needs.
  */
@@ -151,7 +150,7 @@ async function main() {
     }
     if (!root) {
         console.error(
-            `check-assets: no built site at ${dir}${sep} — run \`hugo --minify\` first, or name a directory`,
+            `check-assets: no built site at ${dir}${sep} — run \`npm run build\` first, or name a directory`,
         );
         process.exit(2);
     }

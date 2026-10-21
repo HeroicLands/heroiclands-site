@@ -1,8 +1,8 @@
 ---
-title: HârnMaster 3
+shortcode: harnmaster3
+name: {full: HârnMaster 3}
+type: doc
 description: Game system definition of the HârnMaster 3 RPG for Foundry VTT.
-aliases:
-  - /projects/hm3/
 ---
 
 This is a game system definition of the HârnMaster 3 RPG for [Foundry Virtual Tabletop](http://foundryvtt.com/).

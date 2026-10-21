@@ -5,9 +5,9 @@ name: Deploy the routing Worker
 #
 # Deploying is gated by the repository variable HL_DEPLOY_ENABLED.
 #
-# Separate from deploy.yml on purpose: the site's pages and the routing layer
-# change for entirely different reasons, and a Worker deploy must not wait on a
-# vault export and a full Hugo build — nor a site deploy on the router.
+# Separate from deploy-site.yml on purpose: the site's pages and the routing
+# layer change for entirely different reasons, and a Worker deploy must not wait
+# on a full site build — nor a site deploy on the router.
 
 on:
     push:

@@ -1,14 +1,13 @@
 ---
-aliases: []
-tags: []
-title: ""
+type: doc
+subType: post
+shortcode: ""
+name:
+  full: ""
 description: ""
-id: "<% [...Array(16)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 62)]).join('') %>"
-img: ""
-draft: true
-type: blog-post
-date: '<% tp.date.now("YYYY-MM-DD") %>'
-series: ""
+tags: [draft]
+data:
+  date: '<% tp.date.now("YYYY-MM-DD") %>'
 ---
 
 <!-- Opening hook: a single paragraph that sets up the post — the question, observation, or moment that sparked it. Keep it short; the reader is still deciding whether to read on. -->
@@ -29,4 +28,4 @@ series: ""
 
 ## See Also
 
-- <!-- [[Related vault page]] — why it's relevant -->
+- <!-- [[doc-<shortcode>|Related page]] — why it's relevant -->

@@ -1,10 +1,11 @@
 /**
  * heroiclands-router — the path-prefix routing layer for www.heroiclands.org.
  *
- * One hostname, several publishers. This site's own deploy (GitHub Pages) serves
- * everything by default; a package repository that builds and publishes its own
- * subtree is reached under `/<package>/`, and requests there are proxied to that
- * repository's hosting project instead.
+ * One hostname, several publishers. This site's own deploy — its Cloudflare
+ * Pages project, at `SITE_HOSTING_ORIGIN` — serves everything by default; a
+ * package repository that builds and publishes its own subtree is reached
+ * under `/<package>/`, and requests there are proxied to that repository's
+ * hosting project instead.
  *
  * The router holds **no content, no per-page knowledge, and no list of
  * packages**. A package's origin is derived from its prefix
@@ -15,10 +16,10 @@
  *
  * **Every request to the hostname reaches this script** — the Worker route is a
  * wildcard, because narrow per-package routes would be a list of packages in
- * `wrangler.toml`. What used to keep a broken router off the rest of the site is
- * now the `try`/`catch` below: any fault, anywhere, falls through to
- * `fetch(request)` and the origin answers. That covers strictly more than the
- * narrow routes did, since it also catches a fault on a prefix the router *does*
+ * `wrangler.toml`. What keeps a broken route off the rest of the site is the
+ * `try`/`catch` below: any fault on a package prefix falls through to this
+ * site's own origin, which answers. That covers strictly more than narrow
+ * routes would, since it also catches a fault on a prefix the router *does*
  * claim.
  *
  * **A failure is not always a thrown one.** Cloudflare answers an unreachable
@@ -32,23 +33,34 @@
  * src/router.js.
  */
 
-import { routeFor, upstreamURL, canonicalHeaders, isOriginFailure } from "./router.js";
+import {
+    SITE_HOSTING_ORIGIN,
+    canonicalHeaders,
+    isOriginFailure,
+    routeFor,
+    upstreamURL,
+} from "./router.js";
 
 /**
- * Proxy a request to a package's origin and answer as this site.
+ * Proxy a request to an origin and answer as this site.
  *
  * Throws when the origin did not answer at all, so the caller's `catch` handles
  * an unreachable origin and a thrown fault by one path. That is not a
  * refinement: **Cloudflare resolves with a 530 rather than throwing** when a
  * hostname does not resolve, so the guard below is reachable for that failure
- * only through this check.
+ * only through this check. The last resort, this site's own origin, passes its
+ * answer on whatever it is: there is no origin behind it to fall through to.
  *
  * @param {Request} request - The incoming request.
  * @param {string} origin - The origin to proxy to.
+ * @param {object} [options] - Options.
+ * @param {boolean} [options.lastResort] - Pass a did-not-answer status on
+ *   rather than throwing.
  * @returns {Promise<Response>} The upstream response, re-headed for this site.
- * @throws {Error} When the upstream never answered — see `isOriginFailure`.
+ * @throws {Error} When the upstream never answered — see `isOriginFailure` —
+ *   and it is not the last resort.
  */
-async function proxy(request, origin) {
+async function proxy(request, origin, { lastResort = false } = {}) {
     const proxied = new Request(upstreamURL(request.url, origin), {
         method: request.method,
         headers: request.headers,
@@ -62,7 +74,7 @@ async function proxy(request, origin) {
     // redirects, and marking itself `noindex` — and this is where those
     // answers become this site's. See `canonicalHeaders`.
     const response = await fetch(proxied);
-    if (isOriginFailure(response.status)) {
+    if (!lastResort && isOriginFailure(response.status)) {
         // Release the edge's error page rather than leaving the stream open;
         // it is not being served, and nothing else will read it.
         try {
@@ -89,8 +101,8 @@ export default {
         try {
             const route = routeFor(new URL(request.url).pathname);
 
-            // No route: this site publishes the path itself, and the router has
-            // no business answering — fall through, as it always has.
+            // No route: this site publishes the path itself, and its own
+            // origin answers it below.
             if (route) return await proxy(request, route.origin);
         } catch (error) {
             // The wildcard Worker route means a fault here is the whole site,
@@ -113,6 +125,6 @@ export default {
             console.error("heroiclands-router: falling through to the origin", error);
         }
 
-        return fetch(request);
+        return proxy(request, SITE_HOSTING_ORIGIN, { lastResort: true });
     },
 };

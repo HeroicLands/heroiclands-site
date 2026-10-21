@@ -2,26 +2,23 @@ name: Site build
 
 # The same gate as the Worker's, on the other half of the repository: the site
 # is built before a change lands on `main`, because a push to `main` publishes.
-# A template or content error is caught here rather than by the deploy that is
-# meant to ship it.
+# A content or configuration error is caught here rather than by the deploy
+# that is meant to ship it.
 #
-# The stakes differ, and it is worth being honest about which is which. A failed
-# Hugo build fails `deploy.yml` and Pages keeps serving the previous deploy, so
-# the cost is a broken deploy, not a broken site; a bad router deploys
-# successfully and takes the hostname with it. This check is the cheap half of
-# the pair, not the urgent one.
+# The stakes differ. A failed build fails `deploy-site.yml` and Pages keeps
+# serving the previous deploy, so the cost is a broken deploy, not a broken
+# site; a bad router deploys successfully and takes the hostname with it. This
+# check is the cheap half of the pair, not the urgent one.
 #
-# It builds exactly what `deploy.yml` builds and stops short of publishing it.
-# The two pins below (Node, Hugo) are deliberately the same as that workflow's
-# and have to move together — a gate that builds on a different Hugo than the
-# deploy is a gate that can pass for a deploy that will fail.
+# It builds exactly what `deploy-site.yml` builds, on the same Node, and stops
+# short of publishing it.
 
 on:
     pull_request:
         paths:
             - "content/**"
             - "static/**"
-            - "hugo.toml"
+            - "package-build.config.yaml"
             - "package.json"
             - "package-lock.json"
             - "prettier.config.js"
@@ -41,7 +38,7 @@ concurrency:
 
 jobs:
     build:
-        name: Hugo build
+        name: Site build
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -53,9 +50,7 @@ jobs:
                   node-version: 24
                   cache: npm
 
-            # The shared brand theme is an npm dependency rather than a
-            # submodule, so it has to be installed before Hugo runs.
-            - name: Install the theme
+            - name: Install dependencies
               run: npm ci
 
             # Prettier over the whole tree.
@@ -67,22 +62,12 @@ jobs:
               if: ${{ !cancelled() }}
               run: npm run lint:markdown
 
-            - name: Setup Hugo
-              uses: peaceiris/actions-hugo@2752ce1d29631191ea3f27c23495fa06139a5b78 # v3
-              with:
-                  # Keep in step with deploy.yml.
-                  hugo-version: "0.163.3"
-                  extended: true
+            # Checks the roster's projections are current, then builds what
+            # publishes.
+            - name: Build the site
+              run: npm run build
 
-            # `--minify` and the production environment, because those are what
-            # publishes: a build that only succeeds in development mode is not
-            # evidence about the one that runs on `main`.
-            - name: Build Hugo site
-              run: hugo --minify
-              env:
-                  HUGO_ENVIRONMENT: production
-
-            # Fails the build if a page, its front matter or hugo.toml asks
-            # for an asset address the CDN does not actually serve.
+            # Fails the build if a page or the configuration asks for an asset
+            # address the CDN does not actually serve.
             - name: Check that referenced assets are published
               run: npm run check:assets

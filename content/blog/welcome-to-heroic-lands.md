@@ -1,14 +1,14 @@
 ---
-title: Welcome to Heroic Lands
+shortcode: welcome
+name: {full: Welcome to Heroic Lands}
+type: doc
+subType: post
 description: A first post, and a short note on what this blog is for.
-type: blog-post
-tags:
-  - meta
-  - announcements
-date: 2026-04-15
+tags: [meta, announcements]
+data: {date: 2026-04-15}
 ---
 
-Thalorna is an original fantasy setting — a richly detailed world of lands, cultures, organizations, and conflicts, designed for tabletop roleplaying. Everything on this site is released under Creative Commons (CC-BY-SA), so you're free to use it, expand on it, adapt it into your own products, or contribute back to it, so long as you give attribution. See the [license](/license/) for full details.
+Thalorna is an original fantasy setting — a richly detailed world of lands, cultures, organizations, and conflicts, designed for tabletop roleplaying. Everything on this site is released under Creative Commons (CC-BY-SA), so you're free to use it, expand on it, adapt it into your own products, or contribute back to it, so long as you give attribution. See the [[doc-license|license]] for full details.
 
 About a year ago, I decided to bring together a number of projects I've been working on under a common umbrella called Heroic Lands. This includes my work on Foundry VTT — game systems, modules, adventures, mini-campaigns, and setting materials. One of the main things I was building at the time was a new Foundry VTT system compatible with Kelestia Productions' HârnMaster and the World of Kethira (HMK). I call that system Song of Heroic Lands (SoHL).
 

@@ -1,9 +1,11 @@
 ---
-title: Reference
+shortcode: reference
+name: {full: Reference}
+type: doc
 description: Reference catalogs for SoHL and HârnMaster — skills, abilities, armor, weapons, and the other building blocks of a character.
 ---
 
-The pages below are the reference catalogs behind [Song of Heroic Lands](/projects/song-of-heroic-lands/) and [HârnMaster 3](/projects/harnmaster-3/). Every item, skill, and ability that appears on a character sheet or creature stat block is defined in one of these catalogs.
+The pages below are the reference catalogs behind [[doc-sohl|Song of Heroic Lands]] and [[doc-harnmaster3|HârnMaster 3]]. Every item, skill, and ability that appears on a character sheet or creature stat block is defined in one of these catalogs.
 
 # Characteristics
 

@@ -1,6 +1,7 @@
 ---
-title: About the Author
-slug: author
+shortcode: author
+name: {full: About the Author}
+type: doc
 description: Tom Rodriguez — author bio
 ---
 

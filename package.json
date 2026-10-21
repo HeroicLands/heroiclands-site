@@ -2,7 +2,8 @@
     "name": "heroiclands-site",
     "private": true,
     "version": "0.0.0",
-    "description": "heroiclands.org — the project's front-door Hugo site.",
+    "description": "heroiclands.org — the project's front door, built with package-build.",
+    "homepage": "https://www.heroiclands.org/",
     "type": "module",
     "license": "GPL-3.0-or-later",
     "author": {
@@ -18,6 +19,8 @@
     },
     "scripts": {
         "prepare": "git config core.hooksPath .githooks || true",
+        "build": "node utils/build-roster.mjs --cache && package-build site build && node utils/build-roster.mjs --publish build/site",
+        "serve": "node utils/build-roster.mjs --cache && package-build site serve",
         "check:assets": "node utils/check-assets.mjs",
         "roster": "node utils/build-roster.mjs",
         "check:roster": "node utils/build-roster.mjs --check",
@@ -27,6 +30,6 @@
         "lint:markdown:fix": "package-build markdown --fix"
     },
     "devDependencies": {
-        "@heroiclands/package-build": "^23.4.0"
+        "@heroiclands/package-build": "^24.0.0"
     }
 }

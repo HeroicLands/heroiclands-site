@@ -1,8 +1,8 @@
 ---
-title: Song of Heroic Lands
+shortcode: sohl
+name: {full: Song of Heroic Lands}
+type: doc
 description: SoHL — the HârnMaster-compatible Foundry VTT system designed to run the world of Thalorna.
-aliases:
-  - /projects/sohl.md/
 ---
 
 **Song of Heroic Lands** (SoHL) is a classless, skill-based Foundry VTT system, compatible with the [HârnMaster](https://www.kelestia.com/harnmaster) ruleset and built to run the world of Thalorna.

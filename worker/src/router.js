@@ -34,14 +34,17 @@ export const PACKAGE_ORIGIN_SUFFIX = "pkg.heroiclands.org";
  * and only one of those two sets can be written down honestly. Packages are
  * open-ended and arrive from other repositories — enumerating them here is the
  * very thing issue #25 removes. This site's own top-level paths are a small,
- * closed set that lives in *this* repository (`content/`, the taxonomy, the
- * theme's static directories), so this is exactly where they are known. Adding
- * a package needs no edit here; adding a **section** does, and that edit is
- * next to the `content/` directory it comes with.
+ * closed set that lives in *this* repository — the sections
+ * `package-build.config.yaml` names, the tag pages, and the directories the site
+ * build writes beside them — so this is exactly where they are known. A page's
+ * own address, `<type>-<shortcode>`, carries a hyphen and so is never a package
+ * (see {@link PACKAGE_SEGMENT}); it needs no entry. Adding a package needs no
+ * edit here; adding a **section** does, and that edit is beside the
+ * `site.sections` entry it comes with.
  *
- * `test/router.test.mjs` walks `content/` and the theme's `static/` and fails
- * if anything published here is missing from this list, so it cannot drift
- * silently.
+ * `test/router.test.mjs` reads `site.sections`, `site.feed` and the theme's
+ * `static/` and fails if anything published here is missing from this list,
+ * so it cannot drift silently.
  *
  * **This list stays here rather than moving into the package roster**
  * (`roster.mjs`), though the two divide one namespace between them and must
@@ -65,33 +68,41 @@ export const PACKAGE_ORIGIN_SUFFIX = "pkg.heroiclands.org";
  * the mistake is latency, not a 404.
  */
 export const SITE_SEGMENTS = new Set([
-    // content/
-    "author",
+    // site.sections and site.feed in package-build.config.yaml
     "blog",
-    "license",
     "projects",
-    // taxonomy (hugo.toml [taxonomies])
+    "author",
+    "license",
+    "songofheroiclands",
+    "harnmaster3",
+    "modules",
+    "reference",
+    // site.tags
     "tags",
-    // the theme's static/
+    // what the site build writes beside the pages: the theme's static/ and the
+    // search index
     "css",
     "fonts",
     "img",
+    "js",
+    "pagefind",
     // not published today, but too easy to add later to leave unclaimed
     "images",
-    "js",
 ]);
 
 /**
  * The shape a package name may take, and therefore the shape a first path
  * segment must have before it is treated as one.
  *
- * Lower-case alphanumerics and hyphens, which is what a package id already is
- * and what a hostname label can carry. **No dot**, which is what keeps the
- * site's root files out of it without listing them: `/sitemap.xml`,
- * `/index.xml`, `/404.html` and `/robots.txt` are not package prefixes, and
- * neither is `/.well-known/`.
+ * Lower-case letters and digits, which is what a package's `contentPackage` is
+ * held to and what a hostname label can carry. **No hyphen**, which is what
+ * keeps this site's pages without a section out of it without listing them:
+ * such a page is published at `<type>-<shortcode>/`, so `/doc-welcome/` is never
+ * a package prefix. **No dot**, which keeps the site's root files out: `/sitemap.xml`,
+ * `/sitemap-index.xml`, `/nav.json`, `/404.html` and `/robots.txt` are not
+ * package prefixes, and neither is `/.well-known/`.
  */
-export const PACKAGE_SEGMENT = /^[a-z0-9][a-z0-9-]*$/;
+export const PACKAGE_SEGMENT = /^[a-z0-9]+$/;
 
 /**
  * The statuses that mean the upstream never answered, so its "response" is not
@@ -126,6 +137,18 @@ export function isOriginFailure(status) {
 
 /** Origin this site's own pages are served from, for rewriting stray redirects. */
 export const SITE_ORIGIN = "https://www.heroiclands.org";
+
+/**
+ * The origin serving this site's own pages: the custom domain of its Cloudflare
+ * Pages project, which `.gitea/workflows/deploy-site.yml` deploys.
+ *
+ * It sits in the namespace every package origin does, so the project's
+ * deployment marks it `noindex` with the same `_headers` rule a package's
+ * does, and {@link canonicalHeaders} drops that header here exactly as it does
+ * for a package. `/www/` derives the same origin, and is answered by this
+ * site's 404 like any other path it does not publish.
+ */
+export const SITE_HOSTING_ORIGIN = `https://www.${PACKAGE_ORIGIN_SUFFIX}`;
 
 /**
  * The origin serving a package, derived from its name alone.

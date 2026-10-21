@@ -1,6 +1,7 @@
 ---
-title: License
-slug: license
+shortcode: license
+name: {full: License}
+type: doc
 description: Licensing for Heroic Lands content, fiction, and brand
 ---
 

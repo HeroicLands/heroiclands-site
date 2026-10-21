@@ -1,0 +1,198 @@
+name: Deploy the site
+
+# Builds heroiclands.org's own pages with `package-build site build` and
+# publishes them to the Cloudflare Pages project `heroiclands-site`, whose custom
+# domain `www.pkg.heroiclands.org` is the origin the routing Worker proxies every
+# path outside a package prefix to.
+#
+# It follows `HeroicLands/.github`'s `deploy-package-site.yml` step for step —
+# the project, its custom domain and its DNS record ensured, then the upload —
+# and differs where this site differs from a package's: it is served at the
+# root of the origin rather than under a prefix, so the tree it verifies is the
+# deployment root itself, and its build writes the sitemap index, `robots.txt`
+# and `nav.json` there.
+#
+# Deploying is gated by the repository variable HL_DEPLOY_ENABLED.
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+# Two deploys of the one project must never race.
+concurrency:
+    group: site-deploy
+    cancel-in-progress: false
+
+env:
+    PROJECT: heroiclands-site
+    DOMAIN: www.pkg.heroiclands.org
+    SITE: build/site
+    # Fewest pages a complete build writes, counted as `index.html` files: a
+    # floor that catches a collapsed build, set below the real figure.
+    MIN_PAGES: 10
+
+jobs:
+    deploy:
+        if: ${{ github.server_url != 'https://github.com' && vars.HL_DEPLOY_ENABLED == 'true' }}
+        runs-on: ubuntu-latest
+        env:
+            CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+            CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+            - name: Check the runner has the tools the deploy uses
+              run: |
+                  missing=""
+                  for tool in jq curl; do
+                      command -v "$tool" >/dev/null 2>&1 || missing="${missing} ${tool}"
+                  done
+                  if [ -n "$missing" ]; then
+                      echo "::error::These tools are not on this runner:${missing}."
+                      exit 1
+                  fi
+
+            - name: Setup Node.js
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build the site
+              run: npm run build
+
+            # Fails the deploy if a page asks for an asset address the CDN does
+            # not serve.
+            - name: Check that referenced assets are published
+              run: npm run check:assets
+
+            - name: Verify the tree is a complete site
+              run: |
+                  set -euo pipefail
+                  for file in index.html 404.html sitemap.xml sitemap-index.xml robots.txt nav.json _headers; do
+                      test -s "${SITE}/${file}" || {
+                          echo "::error::${SITE}/${file} is missing or empty. Refusing to replace" \
+                               "the live site with a build that did not write it."
+                          exit 1
+                      }
+                  done
+                  if ! node -e '
+                      const html = require("fs").readFileSync(process.argv[1], "utf8");
+                      const main = /<main\b[^>]*>([\s\S]*?)<\/main>/i.exec(html);
+                      if (!main || main[1].replace(/<!--[\s\S]*?-->/g, "").trim() === "") process.exit(3);
+                  ' "${SITE}/index.html"; then
+                      echo "::error::${SITE}/index.html has an empty <main>: the build wrote no home page."
+                      exit 1
+                  fi
+                  pages=$(find "$SITE" -name index.html -not -path "${SITE}/pagefind/*" | wc -l | tr -d ' ')
+                  echo "${SITE} carries ${pages} page(s)."
+                  if [ "$pages" -lt "$MIN_PAGES" ]; then
+                      echo "::error::${SITE} carries ${pages} page(s), fewer than the ${MIN_PAGES} a" \
+                           "complete build writes. Refusing to replace the live site with it."
+                      exit 1
+                  fi
+
+            - name: Require the deploy credentials
+              run: |
+                  set -euo pipefail
+                  missing=""
+                  [ -n "${CLOUDFLARE_API_TOKEN}" ] || missing="${missing} CLOUDFLARE_API_TOKEN"
+                  [ -n "${CLOUDFLARE_ACCOUNT_ID}" ] || missing="${missing} CLOUDFLARE_ACCOUNT_ID"
+                  if [ -n "$missing" ]; then
+                      echo "::error::The site built and verified, but these secrets are not set:${missing}."
+                      exit 1
+                  fi
+
+            - name: Ensure the hosting project exists
+              run: |
+                  set -euo pipefail
+                  api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+                  code=$(curl -sS -o /dev/null -w '%{http_code}' \
+                         -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                         "${api}/${PROJECT}")
+                  case "$code" in
+                    200) echo "Pages project ${PROJECT} already exists." ;;
+                    404) echo "Creating Pages project ${PROJECT}."
+                         npx --yes wrangler@4 pages project create "${PROJECT}" \
+                           --production-branch=main ;;
+                    *)   echo "::error::Cloudflare answered ${code} for the project lookup."
+                         exit 1 ;;
+                  esac
+
+            - name: Ensure the custom domain is on the project
+              run: |
+                  set -euo pipefail
+                  api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT}/domains"
+                  auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+                  has_domain() {
+                      curl -sS "${auth[@]}" "$api" \
+                        | jq -e --arg d "$DOMAIN" '(.result // []) | any(.name == $d)' >/dev/null
+                  }
+                  if has_domain; then
+                      echo "${DOMAIN} is already a custom domain on ${PROJECT}."
+                      exit 0
+                  fi
+                  echo "Adding ${DOMAIN} to ${PROJECT}."
+                  body=$(curl -sS "${auth[@]}" -H 'Content-Type: application/json' \
+                         -X POST --data "$(jq -nc --arg d "$DOMAIN" '{name: $d}')" "$api")
+                  if jq -e '.success == true' >/dev/null <<<"$body" || has_domain; then
+                      echo "${DOMAIN} is on ${PROJECT}."
+                      exit 0
+                  fi
+                  echo "::error::Could not add ${DOMAIN} to ${PROJECT}. Cloudflare said:"
+                  jq -r '(.errors // []) | .[] | "  \(.code): \(.message)"' <<<"$body" || echo "$body"
+                  echo "::error::Until this hostname exists, the router has no origin for this site's pages."
+                  exit 1
+
+            # Registering a custom domain on a Pages project does not create its
+            # DNS record, so this step does; the token needs Zone → DNS → Edit on
+            # heroiclands.org beside Account → Cloudflare Pages → Edit.
+            - name: Ensure the custom domain has a DNS record
+              run: |
+                  set -euo pipefail
+                  api="https://api.cloudflare.com/client/v4"
+                  auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+                  target="${PROJECT}.pages.dev"
+                  zone_json=$(curl -sS "${auth[@]}" --get --data-urlencode "name=heroiclands.org" "${api}/zones")
+                  zone_id=$(jq -r '.result[0].id // ""' <<<"$zone_json")
+                  if [ -z "$zone_id" ]; then
+                      echo "::error::No Cloudflare zone heroiclands.org is visible to the token;" \
+                           "it needs Zone → DNS → Edit on it."
+                      exit 1
+                  fi
+                  records=$(curl -sS "${auth[@]}" --get --data-urlencode "name=${DOMAIN}" \
+                            "${api}/zones/${zone_id}/dns_records")
+                  if [ "$(jq '(.result // []) | length' <<<"$records")" -gt 0 ]; then
+                      echo "${DOMAIN} already has a record:" \
+                           "$(jq -r '.result[0] | "\(.type) → \(.content) (proxied=\(.proxied))"' <<<"$records")."
+                      exit 0
+                  fi
+                  echo "Creating CNAME ${DOMAIN} → ${target}, proxied."
+                  created=$(curl -sS "${auth[@]}" -X POST -H 'Content-Type: application/json' \
+                            --data "$(jq -nc --arg n "${DOMAIN%.heroiclands.org}" --arg c "$target" \
+                                      '{type: "CNAME", name: $n, content: $c, proxied: true}')" \
+                            "${api}/zones/${zone_id}/dns_records")
+                  if ! jq -e '.success == true' >/dev/null <<<"$created"; then
+                      echo "::error::Could not create the DNS record for ${DOMAIN}. Cloudflare said:"
+                      jq -r '(.errors // []) | .[] | "  \(.code): \(.message)"' <<<"$created" || echo "$created"
+                      exit 1
+                  fi
+
+            - name: Deploy to Cloudflare Pages (production)
+              uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  wranglerVersion: "4"
+                  command: >-
+                      pages deploy ${{ env.SITE }}
+                      --project-name=${{ env.PROJECT }}
+                      --branch=main

@@ -8,7 +8,7 @@ composes their deploys at the edge, by path prefix.
 | --------------- | --------------------------------- | --------------------------------------- | ------------------- |
 | `/sohl/*`       | `Song-of-Heroic-Lands-FoundryVTT` | Cloudflare Pages, `sohl-site`           | `deploy-sohl.yml`   |
 | `/thalorna/*`   | `sohl-thalorna`                   | Cloudflare Pages, `sohl-thalorna`       | `deploy-site.yml`   |
-| everything else | this repository                   | GitHub Pages                            | `deploy.yml`        |
+| everything else | this repository                   | Cloudflare Pages, `heroiclands-site`    | `deploy-site.yml`   |
 | the composition | this repository, `worker/`        | Cloudflare Worker, `heroiclands-router` | `deploy-worker.yml` |
 
 **No repository is required for another to publish.** There is no dispatch
@@ -26,63 +26,74 @@ short list, the design has stopped meeting it.
 ## What this repository publishes
 
 Everything outside a package prefix: the home page, `/blog/`, `/projects/`,
-`/tags/`, `/license/` and `/author/`. It publishes **no package content** — no
-`sohl` note, no `thalorna` note — and holds none.
+`/tags/`, `/license/`, `/author/`, the project pages (`/songofheroiclands/`,
+`/harnmaster3/`, `/modules/`, `/reference/`), every other page at
+`/<type>-<shortcode>/` (each post) — the sitemap index,
+`robots.txt` and `/nav.json`. It publishes **no package content** — no `sohl`
+note, no `thalorna` note — and holds none.
 
 ```
-site (Hugo project + shared theme, an npm dependency)
+site (package-build content tree)
     │  content/  — authored here, in this repository
-    │  .github/workflows/deploy.yml — hugo --minify
+    │  .gitea/workflows/deploy-site.yml — npm run build
     ▼
-GitHub Pages  (custom domain: www.heroiclands.org)
+Cloudflare Pages, project heroiclands-site  (custom domain: www.pkg.heroiclands.org)
     │
     ▼
-Cloudflare  — DNS, CDN, the apex → www redirect, and the routing Worker
+Cloudflare  — DNS, CDN, the apex → www redirect, and the routing Worker,
+              which proxies every path outside a package prefix to the project
 ```
 
-`deploy.yml` runs on every push to `main` and on `workflow_dispatch`. It checks
-this repository out, installs the shared theme with `npm ci`, builds with Hugo,
-and publishes the artifact to GitHub Pages. **That is the whole build** — no
-content generation step and no other repository checked out: Hugo reads
-`content/` as it stands, and the one install is the theme, which is an npm
-dependency rather than a submodule.
+`deploy-site.yml` runs on every push to `main` and on `workflow_dispatch`, on
+Gitea. It checks this repository out, installs `@heroiclands/package-build`
+with `npm ci`, builds with `npm run build`, checks the assets the pages ask for
+and that the tree is a complete site, and publishes `build/site/` to the
+Pages project. **That is the whole build** — no content generation step and no
+other repository checked out: `package-build site build` reads `content/` as it
+stands.
 
-Nothing rebuilds this site when a package changes, because a package's pages are
-not built here. Its own workflow publishes them.
+The build writes the sitemap index and `robots.txt` from `site.sitemaps` in
+`package-build.config.yaml`, which names every package in the roster, and
+merges into its search the indexes `site.mergeIndexes` names, each read from
+`/<package>/pagefind/` on this hostname. Nothing rebuilds this site when a
+package changes, because a package's pages are not built here: its own workflow
+publishes them, and its sitemap and search index with them.
 
-**The content is authored, not exported.** The markdown under `content/` is
-the source, edited here like any other file.
+**The content is authored, not exported.** The notes under `content/` are the
+source, edited here like any other file.
 
-`content-templates/` holds note templates. They are not mounted into the
-build and render no page; see its README.
+`content-templates/` holds note templates. They are not read by the build and
+render no page; see its README.
 
 ## What a pull request is checked against
 
-On this repository **merging is deploying** — both `deploy.yml` and
+On this repository **merging is deploying** — both `deploy-site.yml` and
 `deploy-worker.yml` trigger on push to `main` — so anything that only runs on
 that trigger reports after the decision it exists to inform. Two checks run on
 the pull request instead:
 
-| Workflow          | Runs when a pull request touches                 | What it proves                                                            |
-| ----------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
-| `worker-test.yml` | `worker/`, `content/`, `hugo.toml`, the lockfile | The router's suite passes, drift check included, with the theme installed |
-| `site-build.yml`  | `content/`, `static/`, `hugo.toml`, the lockfile | `hugo --minify` still builds the site, on the Hugo the deploy uses        |
+| Workflow          | Runs when a pull request touches                                 | What it proves                                                            |
+| ----------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `worker-test.yml` | `worker/`, `package-build.config.yaml`, the roster, the lockfile | The router's suite passes, drift check included, with the theme installed |
+| `site-build.yml`  | `content/`, `static/`, `package-build.config.yaml`, the lockfile | `npm run build` still builds the site, and its assets are published       |
 
 `worker-test.yml` runs on more than `worker/` because the suite checks more than
-`worker/`: its drift check walks `content/`, `hugo.toml`'s taxonomies and the
+`worker/`: its drift check reads `package-build.config.yaml`'s sections and the
 theme's `static/` and fails when a top-level path this site publishes is missing
-from the router's reserved list. A new section arrives through `content/`, not
-through an edit to the router, so that is where the check has to be armed.
+from the router's reserved list, and its roster check fails when `site.sitemaps`
+does not list the roster. A new section arrives through
+`package-build.config.yaml`, not through an edit to the router, so that is where
+the check has to be armed.
 
 The two are not equally urgent, and the difference is worth keeping in view. A
-Hugo build that fails simply fails the deploy, and Pages goes on serving the
+site build that fails simply fails the deploy, and Pages goes on serving the
 previous one — a broken deploy, not a broken site. The Worker has no such
 backstop: its wildcard route means it sees every request to the hostname, so a
 bad router deploys successfully and takes the whole hostname with it.
 
-`site-build.yml` duplicates `deploy.yml`'s Node and Hugo pins rather than
-sharing them. **They have to move together**: a gate that builds on a different
-Hugo than the deploy is a gate that can pass for a deploy that will fail.
+`site-build.yml` builds with the same Node and the same `npm run build` as
+`deploy-site.yml`. **They have to move together**: a gate that builds
+differently from the deploy is a gate that can pass for a deploy that will fail.
 
 Neither check is listed in the repository's ruleset as a **required status
 check**, so today each turns a pull request red without blocking its merge
@@ -92,8 +103,8 @@ button. Adding them there is what makes them gates rather than reports.
 
 `worker/` is a Cloudflare Worker (`heroiclands-router`) holding **no content, no
 per-page knowledge, and no list of packages**. A request under a package prefix
-is proxied to that package's hosting project; everything else is served by this
-repository's own deploy.
+is proxied to that package's hosting project; everything else is proxied to this
+repository's own Pages project, at `www.pkg.heroiclands.org`.
 
 **Adding a package is no change here at all.** The origin
 is derived from the prefix:
@@ -136,12 +147,14 @@ verifies a release before anything here points at it. A router that stripped the
 prefix would make those two disagree, and every absolute link in the proxied site
 would be wrong at one of them.
 
-**The Worker sees every request, and a fault falls through to the origin.** The
-route in `wrangler.toml` is a single wildcard, because a route per package would
-be a list of packages in this repository — the thing the derivation removes.
-What keeps a broken router off the rest of the site is the handler's
-`try`/`catch`, which answers any fault with `fetch(request)` — including a
-fault on a prefix the router _does_ claim.
+**The Worker sees every request, and a fault falls through to this site's
+origin.** The route in `wrangler.toml` is a single wildcard, because a route per
+package would be a list of packages in this repository — the thing the
+derivation removes. What keeps a broken package origin off the rest of the site
+is the handler's `try`/`catch`, which answers any fault on a prefix by
+proxying the request to this site's own Pages project — including a fault on a
+prefix the router _does_ claim. That origin is the last resort, so its own
+answer is passed on whatever it is.
 
 **A failure is not always a thrown one.** Cloudflare does **not** throw when an
 origin hostname does not resolve or does not answer: `fetch()` _resolves_, with
@@ -171,17 +184,20 @@ where the edge resolves with a 530 — the local check exercises the path that
 already worked. The test that covers it stubs `fetch` **resolving** with a 530
 (`worker/test/router.test.mjs`); that stub, not the local run, is the guard.
 
-**Which prefixes are packages is decided by exclusion.** The router reserves this
-site's own top-level segments — `blog`, `projects`, `tags`, `author`, `license`
-and the theme's asset directories — and treats any other first segment as a
-package. Only one of the two sets can be written down honestly: packages are
-open-ended and arrive from other repositories, while this site's sections live
-here. So **adding a section to this site is an edit to `SITE_SEGMENTS`**
-(`worker/src/router.js`), next to the `content/` directory it comes with; a test
-walks `content/`, the theme's `static/` and the taxonomies and fails if anything
-published here is missing from it. Forgetting is not an outage in any case: the
-section is proxied to a host that does not resolve, that attempt comes back
-unusable, and the fallthrough serves it from the origin correctly — the cost is
+**Which prefixes are packages is decided by exclusion.** A package's name is its
+`contentPackage`, lowercase letters and digits, so a first segment holding a
+hyphen is never one: every page of this site is at `/<type>-<shortcode>/` and
+needs no reserving. The router reserves this site's other top-level segments —
+`blog`, `projects`, `tags`, `pagefind` and the theme's asset directories — and
+treats any other first segment as a package. Only one of the two sets can be
+written down honestly: packages are open-ended and arrive from other
+repositories, while this site's sections live here. So **adding a section to
+this site is an edit to `SITE_SEGMENTS`** (`worker/src/router.js`), beside the
+`site.sections` entry it comes with; a test reads `site.sections`, `site.feed`,
+`site.tags` and the theme's `static/` and fails if anything published here is
+missing from it. Forgetting is not an outage in any case: the section is
+proxied to a host that does not resolve, that attempt comes back unusable, and
+the fallthrough serves it from this site's origin correctly — the cost is
 latency, not a 404.
 
 **Two response headers name the upstream's own address, and both are rewritten
@@ -220,32 +236,31 @@ Actions tab.
 
 ## The shared theme carries layout, not addresses
 
-`@heroiclands/hugo-theme` is an npm dependency shared by every site in the
-family, and it holds **no address of its own**. Each consumer supplies its
-own, so a site can move without the theme knowing:
+The theme every site in the family is drawn with ships inside
+`@heroiclands/package-build`, and it holds **no address of its own**. Each
+consumer supplies its own, so a site can move without the theme knowing:
 
-- `baseURL` — the one place this site's address is written down.
-- The navigation — the theme renders whatever `.Site.Menus.main` holds. Here
-  that comes from `config/_default/menus.toml`, generated from `roster.mjs`
-  (see the README); another consumer may declare `[menu]` directly.
-- `params.cdnBaseURL` — where images resolve from (`cdn.heroiclands.org`). With
-  it unset the theme falls back to `relURL`, which yields a working-looking but
-  wrong path rather than a build failure, so the config is the guard.
-- `params.brand`, `params.home`, `params.notfound` — logo, licence and Discord
-  links, the home page's hero and cards, and the 404 page's wording and routes
-  back.
+- `package.json`'s `homepage` — the one place this site's address is written
+  down, with `site.base: /` saying it is the root of its origin.
+- The navigation — the theme renders whatever navigation the build caches.
+  Here that is `static/nav.json`, generated from `roster.mjs` (see the README)
+  and cached by `npm run build` before the site build reads it; a package site
+  caches the copy this site publishes with `package-build deps fetch`.
+- `site.assets` — where images resolve from (`cdn.heroiclands.org`).
+- `site.notfound` — the 404 page's wording and routes back.
 
-A change to the theme is a change to every site that pins it; bump the version
-here deliberately, and check a page of each kind before pushing.
+A change to the theme is a change to every site that pins package-build; bump
+the version here deliberately, and check a page of each kind before pushing.
 
 ## Moving a package elsewhere
 
 The succession case, in full. To take `/thalorna/` (say) off this domain and
 publish it at `thalorna.example`:
 
-1. **In the package repository**, set the new address: `baseURL` in
-   `site/hugo.toml`, and the directory the build publishes into, which carries
-   the path prefix physically. At a domain root there is no prefix to carry.
+1. **In the package repository**, set the new address: `homepage` in its
+   `package.json`, and at a domain root `site.base: /` in its
+   `package-build.config.yaml`, so the build writes the site at the root of
+   the deployed tree rather than under its prefix.
 2. **Point the new address at its hosting project** — a custom domain on the
    existing Cloudflare Pages project, or any static host: the build's output is
    a plain directory tree. Its deploy credentials are already the package's own.
@@ -299,13 +314,14 @@ Two more things worth checking after a routing or hosting change:
 
 ## Hostnames
 
-| Hostname                | What it does                                                                                                                   |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `www.heroiclands.org`   | **Canonical.** Everything is served here.                                                                                      |
-| `heroiclands.org`       | 301s to `www`, path and query preserved (Cloudflare rule).                                                                     |
-| `cdn.heroiclands.org`   | Images and shared assets (`params.cdnBaseURL`).                                                                                |
-| `*.pkg.heroiclands.org` | Where the router proxies a package prefix. A custom domain on the package's own hosting project, set by that package's deploy. |
-| `*.pages.dev`           | Each package project's own address. Real, unadvertised, `noindex`.                                                             |
+| Hostname                  | What it does                                                                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `www.heroiclands.org`     | **Canonical.** Everything is served here.                                                                                      |
+| `heroiclands.org`         | 301s to `www`, path and query preserved (Cloudflare rule).                                                                     |
+| `cdn.heroiclands.org`     | Images and shared assets (`params.cdnBaseURL`).                                                                                |
+| `*.pkg.heroiclands.org`   | Where the router proxies a package prefix. A custom domain on the package's own hosting project, set by that package's deploy. |
+| `www.pkg.heroiclands.org` | Where the router proxies every other path: the custom domain of this site's Pages project, set by `deploy-site.yml`.           |
+| `*.pages.dev`             | Each project's own address, this site's included. Real, unadvertised, `noindex`.                                               |
 
 `kb.heroiclands.org` and `api.heroiclands.org` are **retired**: their DNS records
 are deleted and they resolve to nothing. The knowledgebase and the API
@@ -315,34 +331,20 @@ installed.
 
 ## Wiring, if any of it has to be rebuilt
 
-**GitHub Pages.** Settings → Pages → Source: **GitHub Actions**; custom domain
-`www.heroiclands.org`. The workflow publishes with `actions/deploy-pages`.
+**Cloudflare Pages.** The project `heroiclands-site`, production branch
+`main`, with the custom domain `www.pkg.heroiclands.org` and its proxied CNAME
+to `heroiclands-site.pages.dev`. `deploy-site.yml` creates any of the three
+that is missing, so a rebuild is a run of that workflow.
 
-**Cloudflare DNS** for `heroiclands.org`: `www` → `<owner>.github.io`, proxied;
-the apex proxied likewise, with a redirect rule sending `heroiclands.org/*` to
-`https://www.heroiclands.org/$1` (301). SSL/TLS mode **Full** — GitHub Pages
-serves its own certificate.
+**Cloudflare DNS** for `heroiclands.org`: `www` proxied, so the Worker's route
+receives it — the Worker answers every request, so the record's own target is
+never fetched; the apex proxied likewise, with a redirect rule sending
+`heroiclands.org/*` to `https://www.heroiclands.org/$1` (301).
 
-**Repository secrets.** `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`, for
-the Worker — and nothing else. The Pages build needs no credential of its own,
-and this repository holds none belonging to another: each package repository
-keeps its own Cloudflare credentials, scoped to its own project.
-
-**Rebuilding by hand** is the **Run workflow** button on the Actions tab (the
-**Deploy to GitHub Pages** workflow). Nothing else triggers a build.
-
-## Local development
-
-Hugo builds the site; the one thing to install first is the shared theme, which
-is an npm dependency.
-
-```bash
-npm ci               # once, for the theme
-hugo server -D       # preview, drafts included
-hugo --minify        # what CI publishes, into public/
-```
-
-The routing Worker is separate and testable on its own — `cd worker && npm test`
-runs the table and URL handling as plain `node:test` functions, no runtime
-required. It has no dependencies of its own, but run the root `npm ci` first if
-you want the drift check to see the theme's `static/` directories too.
+**Repository secrets and variables.** `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID`, shared by the Worker deploy and the site deploy, so the
+token carries **Workers Scripts: Edit**, **Workers Routes: Edit**, **Account →
+Cloudflare Pages: Edit** and **Zone → DNS: Edit** on `heroiclands.org`; and the
+variable `HL_DEPLOY_ENABLED`, `true`, which gates both deploys. This repository
+holds no credential belonging to another: each package repository keeps its own
+Cloudflare credentials, scoped to its own project.
