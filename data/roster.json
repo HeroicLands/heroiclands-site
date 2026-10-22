@@ -12,7 +12,6 @@
             "dependents": [
                 "thalorna",
                 "kethira",
-                "thalornaaltart",
                 "harnensemble"
             ]
         },
@@ -46,18 +45,6 @@
             "prefix": "/kethira/",
             "title": "HârnMaster Kethira Basic",
             "repository": "sohl-kethira-basic",
-            "kind": "module",
-            "systems": [
-                "sohl"
-            ],
-            "publishes": "homepage",
-            "dependents": []
-        },
-        {
-            "id": "thalornaaltart",
-            "prefix": "/thalornaaltart/",
-            "title": "Thalorna Alternative Art",
-            "repository": "thalornaaltart",
             "kind": "module",
             "systems": [
                 "sohl"

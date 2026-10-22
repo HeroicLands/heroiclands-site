@@ -26,7 +26,7 @@ site:
     feed: blog
     tags: true
     # Every package site in `roster.mjs`; `worker/test/roster.test.mjs` holds the two to one list.
-    sitemaps: [sohl, hm3, thalorna, kethira, thalornaaltart, harnensemble, harnadventures]
+    sitemaps: [sohl, hm3, thalorna, kethira, harnensemble, harnadventures]
     # The package sites whose `site.search` is on, read from `/<package>/pagefind/` on this origin.
     mergeIndexes: [sohl, thalorna, kethira, harnensemble]
     notfound:

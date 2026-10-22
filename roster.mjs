@@ -153,15 +153,6 @@ export const PACKAGES = [
         nav: "modules",
     },
     {
-        id: "thalornaaltart",
-        title: "Thalorna Alternative Art",
-        repository: "thalornaaltart",
-        kind: "module",
-        systems: ["sohl"],
-        publishes: "homepage",
-        nav: "modules",
-    },
-    {
         // Two systems, and the reason `systems` is authored rather than read:
         // its manifest names neither, because naming them would hide the module
         // from every other system. Its pack list is what says so — `actors-hm3`

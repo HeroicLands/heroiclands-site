@@ -50,7 +50,7 @@ test("names the seven packages HeroicLands publishes", () => {
     // (`contentPackage`) rather than against any list written down elsewhere.
     assert.deepEqual(
         PACKAGES.map((pkg) => pkg.id),
-        ["sohl", "hm3", "thalorna", "kethira", "thalornaaltart", "harnensemble", "harnadventures"],
+        ["sohl", "hm3", "thalorna", "kethira", "harnensemble", "harnadventures"],
     );
 });
 
@@ -121,7 +121,7 @@ test("the dependents index is the one no package can hold for itself", () => {
     // neither can: a module names the system it is for, never the reverse.
     assert.deepEqual(
         dependentsOf("sohl").map((pkg) => pkg.id),
-        ["thalorna", "kethira", "thalornaaltart", "harnensemble"],
+        ["thalorna", "kethira", "harnensemble"],
     );
     assert.deepEqual(
         dependentsOf("hm3").map((pkg) => pkg.id),
@@ -202,7 +202,7 @@ test("the projection resolves what a template should not have to", () => {
     const data = JSON.parse(readFileSync(new URL("data/roster.json", repo)));
     const sohl = data.packages.find((pkg) => pkg.id === "sohl");
     assert.equal(sohl.prefix, "/sohl/");
-    assert.deepEqual(sohl.dependents, ["thalorna", "kethira", "thalornaaltart", "harnensemble"]);
+    assert.deepEqual(sohl.dependents, ["thalorna", "kethira", "harnensemble"]);
 });
 
 // ---------------------------------------------------------------------------
