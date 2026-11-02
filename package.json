@@ -30,6 +30,11 @@
         "lint:markdown:fix": "package-build markdown --fix"
     },
     "devDependencies": {
-        "@heroiclands/package-build": "^25.2.0"
+        "@heroiclands/package-build": "^25.5.5"
+    },
+    "overrides": {
+        "@heroiclands/package-build": {
+            "minimatch": "^11.0.3"
+        }
     }
 }
